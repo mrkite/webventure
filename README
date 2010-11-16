@@ -1,0 +1,20 @@
+WebVenture
+(c) 2010, Sean Kasun
+
+This is my html5 implementation of the MacVenture game engine.  It specifically
+targets the mac versions of the games, and supports any version from 1.0
+to the 1992 reissues.
+
+All of the javascript files can be compiled into a single minimized js using
+the compile.sh script, this will require you to download the Closure
+Compiler from Google.
+
+The games themselves are not included in this repository.  You must
+acquire those elsewhere.  The games must be the mac version.  They
+must be in an HFS disk image format.  You can create your own by using
+a mac emulator like Mini vMac, create a floppy disk and drop all the
+game files onto the virtual floppy disk.
+
+games.js contains the filenames for the game disks, along with the title and
+path to the savegame icon. The game icons must be placed in
+icons/<gamefilename>.png
