@@ -1,0 +1,531 @@
+div.screen {
+	font-family: sans-serif;
+	background: #ccc;
+	background-image: url("images/gray.png");
+	width: 512;
+	height: 342;
+}
+div.menubar {
+	background: #fff;
+	padding-left: 10px;
+	border-bottom: 1px solid #000;
+	height: 19px;
+}
+div.menu {
+	float: left;
+	font-size: 12px;
+	padding-top: 3px;
+	padding-left: 5px;
+	padding-right: 5px;
+	cursor: pointer;
+	height: 19px;
+}
+div.menu.apple {
+	background-image: url("images/apple.png");
+	background-repeat: no-repeat;
+	background-position: center 3px;
+	
+	width: 11px;
+}
+div.menu.active {
+	background: #000;
+	color: #fff;
+}
+div.menu.apple.active {
+	background-image: url("images/iapple.png");
+	background-repeat: no-repeat;
+	background-position: center 3px;
+}
+table.menu {
+	position: absolute;
+	font-size: 12px;
+	background: #fff;
+	padding: 0px;
+	z-index: 100000;
+	border: 1px solid #000;
+	-moz-box-shadow: 2px 2px 0px #000;
+	-webkit-box-shadow: 2px 2px 0px #000;
+	box-shadow: 2px 2px 0px #000;
+	cursor: pointer;
+	border-collapse: collapse;
+}
+table.menu hr {
+	padding: 0px;
+	margin: 0px;
+	border: 1px dotted #000;
+	border-style: none none dotted;
+}
+table.menu tr.menuitem.active {
+	background: #000;
+	color: #fff;
+}
+table.menu tr.menuitem.active td.shortcut{
+	background-image: url("images/iclover.png");
+	background-repeat: no-repeat;
+	background-position: 15px 4px;
+}
+table.menu td {
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+table.menu td.divider {
+	padding: 0px;
+}
+table.menu td.shortcut {
+	width: 30px;
+	text-align: right;
+	background-image: url("images/clover.png");
+	background-repeat: no-repeat;
+	background-position: 15px 4px;
+}
+div.document {
+	background: #fff;
+	border: 1px solid #000;
+	position: absolute;
+}
+div.document div.title {
+	cursor: move;
+	background: #fff;
+	height: 17px;
+	font-size: 13px;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #fff;
+	text-align: center;
+}
+div.document.active {
+	z-index: 50000;
+}
+div.document.active div.title {
+	background-image: url('images/activeTitle.png');
+	background-repeat: repeat-x;
+}
+div.document.canvas {
+	border-top: 1px solid #000;
+}
+div.document div.textEdit {
+	border-top: 1px solid #000;
+	overflow: auto;
+	font-size: 12px;
+}
+div.document div.title span {
+	background: #fff;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+div.document div.close {
+	visibility: hidden;
+	display: inline;
+	float: left;
+	width: 13px;
+	height: 13px;
+	margin-top: 2px;
+	margin-left: 6px;
+}
+div.document.active div.close {
+	cursor: pointer;
+	visibility: visible;
+	background-image: url('images/closeBox.png');
+}
+div.dBox {
+	background: #fff;
+	position: absolute;
+	border: 4px double #000;
+}
+div.dBox canvas {
+	border: 1px solid #000;
+}
+div.dBox.active {
+	z-index: 50000;
+}
+div.plainDBox {
+	background: #fff;
+	position: absolute;
+}
+div.plainDBox.active {
+	z-index: 50000;
+}
+div.altDBox {
+	background: #fff;
+	position: absolute;
+	-moz-box-shadow: 3px 3px 0px #000;
+	-webkit-box-shadow: 3px 3px 0px #000;
+	box-shadow: 3px 3px 0px #000;
+}
+div.altDBox.active {
+	z-index: 50000;
+}
+div.noGrowDoc {
+	background: #fff;
+	border: 1px solid #000;
+	position: absolute;
+}
+div.noGrowDoc div.title {
+	cursor: move;
+	background: #fff;
+	height: 17px;
+	font-size: 13px;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #fff;
+	text-align: center;
+}
+div.noGrowDoc.active {
+	z-index: 50000;
+}
+div.noGrowDoc.active div.title {
+	background-image: url('images/activeTitle.png');
+	background-repeat: repeat-x;
+}
+div.noGrowDoc canvas {
+	border-top: 1px solid #000;
+}
+div.noGrowDoc div.title span {
+	background: #fff;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+div.movableDBox {
+	background: #fff;
+	position: absolute;
+}
+div.movableDBox.active {
+	z-index: 50000;
+}
+div.zoomDoc {
+	background: #fff;
+	border: 1px solid #000;
+	position: absolute;
+}
+div.zoomDoc div.title {
+	cursor: move;
+	background: #fff;
+	height: 17px;
+	font-size: 13px;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #fff;
+	text-align: center;
+}
+div.zoomDoc.active {
+	z-index: 50000;
+}
+div.zoomDoc.active div.title {
+	background-image: url('images/activeTitle.png');
+	background-repeat: repeat-x;
+}
+div.zoomDoc canvas {
+	border-top: 1px solid #000;
+}
+div.zoomDoc div.grow {
+	position: absolute;
+	border-top: 1px solid #000;
+	border-left: 1px solid #000;
+	background: #fff;
+}
+div.zoomDoc.active div.grow {
+	background-image: url('images/grow.png');
+	cursor: pointer;
+}
+div.zoomDoc div.hscroll {
+	position: absolute;
+	border-top: 1px solid #000;
+	background: #fff;
+}
+div.zoomDoc div.vscroll {
+	position: absolute;
+	border-top: 1px solid #000;
+	border-left: 1px solid #000;
+	background: #fff;
+}
+div.zoomDoc div.leftarrow,
+div.zoomDoc div.rightarrow,
+div.zoomDoc div.uparrow,
+div.zoomDoc div.downarrow, 
+div.zoomDoc div.slider {
+	display: none;
+}
+div.zoomDoc.active div.hscroll {
+	background-image: url('images/ltGray.png');
+	cursor: pointer;
+}
+div.zoomDoc.active div.vscroll {
+	background-image: url('images/ltGray.png');
+	cursor: pointer;
+}
+div.zoomDoc.active div.leftarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/scrollleft.png');
+	border-right: 1px solid #000;
+}
+div.zoomDoc.active div.rightarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/scrollright.png');
+	border-left: 1px solid #000;
+}
+div.zoomDoc.active div.uparrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/scrollup.png');
+	border-bottom: 1px solid #000;
+}
+div.zoomDoc.active div.downarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/scrolldown.png');
+	border-top: 1px solid #000;
+}
+div.zoomDoc.active div.slider {
+	display: block;
+	position: absolute;
+	background: #fff;
+	border: 1px solid #000;
+}
+div.zoomDoc div.textEdit {
+	border-top: 1px solid #000;
+	overflow: auto;
+	font-size: 12px;
+}
+div.zoomDoc div.title span {
+	background: #fff;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+div.zoomDoc div.close {
+	visibility: hidden;
+	display: inline;
+	float: left;
+	width: 13px;
+	height: 13px;
+	margin-top: 2px;
+	margin-left: 6px;
+}
+div.zoomDoc.active div.close {
+	cursor: pointer;
+	visibility: visible;
+	background-image: url('images/closeBox.png');
+}
+div.zoomDoc div.resize {
+	visibility: hidden;
+	display: inline;
+	float: right;
+	width: 13px;
+	height: 13px;
+	margin-top: 2px;
+	margin-right: 6px;
+}
+div.zoomDoc.active div.resize {
+	cursor: pointer;
+	visibility: visible;
+	background-image: url('images/resizeBox.png');
+}
+div.zoomNoGrow {
+	background: #fff;
+	position: absolute;
+}
+div.zoomNoGrow.active {
+	z-index: 50000;
+}
+div.rDoc16 {
+	background: #fff;
+	position: absolute;
+	-moz-border-radius: 16px;
+	-webkit-border-radius: 16px;
+	border-radius: 16px;
+	border: 1px solid #000;
+}
+div.rDoc16 div.title {
+	cursor: move;
+	background: #fff;
+	-moz-border-radius-topleft: 16px;
+	-moz-border-radius-topright: 16px;
+	-webkit-border-top-left-radius: 16px;
+	-webkit-border-top-right-radius: 16px;
+	border-top-left-radius: 16px;
+	border-top-right-radius: 16px;
+	height: 17px;
+	font-size: 13px;
+	border-bottom: 1px solid #000;
+	text-align: center;
+}
+div.rDoc16.active {
+	z-index: 50000;
+}
+div.rDoc4 {
+	background: #fff;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	position: absolute;
+	border: 1px solid #000;
+}
+div.rDoc4 div.title {
+	cursor: move;
+	background: #fff;
+	-moz-border-radius-topleft: 4px;
+	-moz-border-radius-topright: 4px;
+	-webkit-border-top-left-radius: 4px;
+	-webkit-border-top-right-radius: 4px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	height: 17px;
+	font-size: 13px;
+	border-bottom: 1px solid #000;
+	text-align: center;
+}
+div.rDoc4.active {
+	z-index: 50000;
+}
+div.rDoc4.active div.title {
+	background: #000;
+	color: #fff;
+}
+div.rDoc6 {
+	background: #fff;
+	position: absolute;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	border: 1px solid #000;
+}
+div.rDoc6 div.title {
+	cursor: move;
+	background: #fff;
+	-moz-border-radius-topleft: 6px;
+	-moz-border-radius-topright: 6px;
+	-webkit-border-top-left-radius: 6px;
+	-webkit-border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	height: 17px;
+	font-size: 13px;
+	border-bottom: 1px solid #000;
+	text-align: center;
+}
+div.rDoc6.active {
+	z-index: 50000;
+}
+div.rDoc6.active div.title {
+	background: #000;
+	color: #fff;
+}
+div.rDoc10 {
+	background: #fff;
+	position: absolute;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 1px solid #000;
+}
+div.rDoc10 div.title {
+	cursor: move;
+	background: #fff;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	height: 17px;
+	font-size: 13px;
+	border-bottom: 1px solid #000;
+	text-align: center;
+}
+div.rDoc10.active {
+	z-index: 50000;
+}
+div.cbutton {
+	cursor: pointer;
+	background: #fff;
+	color: #000;
+	border: 1px solid #000;
+	position: absolute;
+	font-size: 12px;
+	text-align: center;
+	overflow: hidden;
+}
+div.cbutton.active {
+	background: #000;
+	color: #fff;
+}
+div.cbutton.ctc {
+	line-height: 30px;
+	font-weight: bold;
+}
+div.button {
+	cursor: pointer;
+	background: #fff;
+	color: #000;
+	border: 1px solid #000;
+	position: absolute;
+	font-size: 12px;
+	text-align: center;
+	overflow: hidden;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+input.textinput {
+	position: absolute;
+	background: #fff;
+	color: #000;
+	border: 1px solid #000;
+	font-size: 12px;
+}
+div.text {
+	position: absolute;
+	background: #fff;
+	color: #000;
+	font-size: 12px;
+	overflow: none;
+}
+div.list {
+	position: absolute;
+	background: #fff;
+	color: #000;
+	font-size: 12px;
+	border: 1px solid #000;
+	overflow: auto;
+}
+div.listitem {
+	background: #fff;
+	color: #000;
+	cursor: pointer;
+} 
+div.listitem.active {
+	background: #000;
+	color: #fff;
+}
+canvas.proxy {
+	z-index: 100000;
+	position: absolute;
+}
+div.lasso {
+	z-index: 100000;
+	position: absolute;
+	border: 1px dashed #000;
+}
+div.zoom {
+	z-index: 1000000;
+	position: absolute;
+	background: #fff;
+	opacity: 0.7;
+	border: 1px solid #000;
+}
+div.commands {
+	background: #000;
+}
+div.exits {
+	background-image: url("images/ltGray.png");
+}
+div.exits.selected {
+	background-image: url("images/dkGray.png");
+}
+div.resizeProxy {
+	position: absolute;
+	background: #fff;
+	opacity: 0.5;
+	border: 1px dotted #000;
+	z-index: 1000000;
+}

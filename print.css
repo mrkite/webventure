@@ -1,0 +1,16 @@
+div.screen {
+	background: #fff !important;
+}
+div.menubar {
+	display: none !important;
+}
+div.dBox {
+	display: none !important;
+}
+input.textinput {
+	border: 0px solid #fff !important;
+}
+input.textinput:focus {
+	outline: none;
+}
+
