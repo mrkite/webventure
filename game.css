@@ -497,6 +497,35 @@ div.listitem.active {
 	background: #000;
 	color: #fff;
 }
+div.hslider {
+	position: absolute;
+	background: #fff;
+	color: #000;
+	font-size: 12px;
+}
+div.hsliderLeft {
+	position: absolute;
+	width: 4px;
+	height: 13px;
+	background-image: url("images/sliderLeft.png");
+}
+div.hsliderRight {
+	position: absolute;
+	width: 4px;
+	height: 13px;
+	background-image: url("images/sliderRight.png");
+}
+div.hsliderWell {
+	position: absolute;
+	height: 13px;
+	background-image: url("images/sliderBack.png");
+}
+div.hsliderThumb {
+	position: absolute;
+	width: 11px;
+	height: 23px;
+	background-image: url("images/sliderThumb.png");
+}
 canvas.proxy {
 	z-index: 100000;
 	position: absolute;

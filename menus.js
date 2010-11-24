@@ -107,6 +107,10 @@ function MenuManager(screen)
 		}
 		screen.append(menubar);
 	}
+	this.addDA=function(text)
+	{
+		menus[0].add(new MenuItem(text,0,0,0));
+	}
 	function menudown(event)
 	{
 		if (webventure.isPaused) return;

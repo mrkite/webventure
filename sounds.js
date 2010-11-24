@@ -13,6 +13,9 @@ function Sound(len,freq)
 		var audio=$(document.createElement('audio'));
 		$(document.body).append(audio);
 		audio.attr("src","data:audio/x-wav;base64,"+towav());
+		var vol=webventure.setting('volume');
+		if (vol==null) vol=100;
+		audio.attr("volume",vol/100);
 		audio.bind('ended',function(){
 			audio.remove();
 		});

@@ -14,6 +14,8 @@ function ControlManager()
 				return newText(left,top,width,height,title,vis,refcon);
 			case 0x120: //list box
 				return newList(left,top,width,height,vis,refcon);
+			case 0x130: //hslider
+				return newHSlider(left,top,width,height,value,min,max,vis,refcon);
 			default:
 				console.log("Unknown CDEF:"+cdef);
 				this.die();
@@ -116,6 +118,64 @@ function ControlManager()
 		list.data('refcon',refcon);
 		if (vis==false) list.hide();
 		return list;
+	}
+	function newHSlider(left,top,width,height,value,min,max,vis,refcon)
+	{
+		var hslider=$(document.createElement('div'));
+		hslider.addClass('hslider');
+		hslider.css('top',top+'px');
+		hslider.css('left',left+'px');
+		hslider.css('width',width+'px');
+		hslider.css('height',height+'px');
+		hslider.data('refcon',refcon);
+		if (vis==false) hslider.hide();
+		var hsliderLeft=$(document.createElement('div'));
+		hsliderLeft.addClass('hsliderLeft');
+		hsliderLeft.css('top','0px');
+		hsliderLeft.css('left','0px');
+		hslider.append(hsliderLeft);
+		var hsliderWell=$(document.createElement('div'));
+		hsliderWell.addClass('hsliderWell');
+		hsliderWell.css('top','0px');
+		hsliderWell.css('left','4px');
+		hsliderWell.css('width',(width-8)+'px');
+		hslider.append(hsliderWell);
+		var hsliderRight=$(document.createElement('div'));
+		hsliderRight.addClass('hsliderRight');
+		hsliderRight.css('top','0px');
+		hsliderRight.css('left',(width-4)+'px');
+		hslider.append(hsliderRight);
+		var hsliderThumb=$(document.createElement('div'));
+		hsliderThumb.addClass('hsliderThumb');
+		hsliderThumb.css('top','-4px');
+		var pos=(value-min)*(width-8-11)/max|0;
+		hsliderThumb.css('left',(pos)+'px');
+		hsliderWell.append(hsliderThumb);
+		hslider.data('value',value);
+		hsliderThumb.mousedown(function(ev){
+			var lastX=ev.pageX;
+			var curPos=hsliderThumb.position().left;
+			$(document).mousemove(function(event){
+				curPos+=event.pageX-lastX;
+				lastX=event.pageX;
+				if (curPos>=0 && curPos<=width-8-11)
+					hsliderThumb.css('left',curPos+'px');
+				else if (curPos<0)
+					hsliderThumb.css('left','0px');
+				else
+					hsliderThumb.css('left',(width-8-11)+'px');
+				return false;
+			});
+			$(document).mouseup(function(event){
+				$(document).unbind('mousemove');
+				$(document).unbind('mouseup');
+				var pos=hsliderThumb.position().left;
+				hslider.data('value',min+(pos*(max-min)/(width-8-11)|0));
+				return false;
+			});
+			return false;
+		});
+		return hslider;
 	}
 	function buttonClicked(btn,event)
 	{

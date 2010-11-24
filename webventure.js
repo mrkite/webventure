@@ -113,6 +113,8 @@ function WebVenture()
 		for (var i=0x80;i<=0x85;i++)
 			menus.get(res.get('MENU',i));
 
+		menus.addDA("Adjust Volume...");
+
 		textWin.setTitle(res.getIndStr(0x80,1));
 
 		if (gameparts.length>1)
@@ -1207,8 +1209,12 @@ function WebVenture()
 	{
 		switch (menu)
 		{
-			case 0x80: //about
-				doAbout();
+			case 0x80: //apple
+				switch (item)
+				{
+					case 1: doAbout(); break;
+					case 3: doVolume(); break;
+				}
 				break;
 			case 0x81: //file
 				switch (item)
@@ -1259,6 +1265,24 @@ function WebVenture()
 		self.isPaused=true;
 		dialog.show();
 		self.modalDialog=function(id){
+			wins.close(dialog);
+			self.isPaused=false;
+		}
+	}
+	function doVolume()
+	{
+		var dialog=wins.createDialog('','dBox',true,false,146,96,220,120,undefined);
+		dialog.add(ctls.create(75,90,70,18,0x00,'Ok',true,0,0,0,1));
+		var vol=self.setting('volume');
+		if (vol==null) vol=100;
+		dialog.add(ctls.create(55,55,110,13,0x1300,'',true,vol,0,100,2));
+		dialog.add(ctls.create(20,25,180,20,0x1100,'Sound Volume',true,0,0,0,3));
+		dialog.getItem(3).css('text-align','center');
+		dialog.kind=2;
+		self.isPaused=true;
+		dialog.show();
+		self.modalDialog=function(id){
+			setSetting('volume',dialog.getItem(2).data('value'));
 			wins.close(dialog);
 			self.isPaused=false;
 		}
@@ -1859,6 +1883,24 @@ function WebVenture()
 			}
 		}
 		return newstr;
+	}
+	this.setting=function(key)
+	{
+		var ca=document.cookie.split(';');
+		var keysub="webventure_"+key+'=';
+		for (var i=0;i<ca.length;i++)
+		{
+			var c=ca[i];
+			while (c.charAt(0)==' ') c=c.substring(1,c.length);
+			if (c.indexOf(keysub)==0) return unescape(c.substring(keysub.length,c.length));
+		}
+		return null;
+	}
+	function setSetting(key,value)
+	{
+		var date=new Date();
+		date.setTime(date.getTime()+365*24*60*60*1000);
+		document.cookie = "webventure_"+key+'='+escape(value)+'; expires='+date.toGMTString()+'; path=/';
 	}
 }
 var webventure=new WebVenture();
