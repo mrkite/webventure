@@ -186,6 +186,8 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		pos=this.port.position();
 		pt.h-=pos.left;
 		pt.v-=pos.top;
+		pt.h+=this.refCon.x;
+		pt.v+=this.refCon.y;
 	}
 	this.localToGlobal=function(pt)
 	{
@@ -195,6 +197,8 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		pos=this.port.position();
 		pt.h+=pos.left
 		pt.v+=pos.top;
+		pt.h-=this.refCon.x;
+		pt.v-=this.refCon.y;
 	}
 	function titledown(event)
 	{
@@ -224,6 +228,7 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 	function contentDown(event)
 	{
 		if (webventure.isPaused) return;
+		parent.bringToFront(self);
 		switch (self.kind)
 		{
 			case 0x9: //commands
@@ -347,12 +352,25 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		hscroll.css('left','0px');
 		hscroll.css('width',(width-15)+'px');
 		hscroll.css('height','14px');
+		hscroll.mousedown(function(event){
+			parent.bringToFront(self);
+			var pos=hslider.position().left+win.position().left;
+			if (event.pageX<pos)
+				scroll(self,-20,0);
+			else
+				scroll(self,20,0);
+			return false;
+		});
 		leftarrow=$(document.createElement('div'));
 		leftarrow.addClass('leftarrow');
 		leftarrow.css('top','0px');
 		leftarrow.css('left','0px');
 		leftarrow.css('width','14px');
 		leftarrow.css('height','14px');
+		leftarrow.mousedown(function(){
+			scroll(self,-5,0);
+			return false;
+		});
 		hscroll.append(leftarrow);
 		rightarrow=$(document.createElement('div'));
 		rightarrow.addClass('rightarrow');
@@ -360,6 +378,10 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		rightarrow.css('left',(width-30)+'px');
 		rightarrow.css('width','14px');
 		rightarrow.css('height','14px');
+		rightarrow.mousedown(function(){
+			scroll(self,5,0);
+			return false;
+		});
 		hscroll.append(rightarrow);
 		hslider=$(document.createElement('div'));
 		hslider.addClass('slider');
@@ -367,6 +389,10 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		hslider.css('left','15px');
 		hslider.css('width','30px');
 		hslider.css('height','12px');
+		hslider.mousedown(function(event){
+			dragSlider(event.pageX,true);
+			return false;
+		});
 		hscroll.append(hslider);
 		win.append(hscroll);
 		vscroll=$(document.createElement('div'));
@@ -375,12 +401,25 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		vscroll.css('left',(width-15)+'px');
 		vscroll.css('width','14px');
 		vscroll.css('height',(height-15)+'px');
+		vscroll.mousedown(function(event){
+			parent.bringToFront(self);
+			var pos=vslider.position().top+win.position().top;
+			if (event.pageY<pos)
+				scroll(self,0,-20);
+			else
+				scroll(self,0,20);
+			return false;
+		});
 		uparrow=$(document.createElement('div'));
 		uparrow.addClass('uparrow');
 		uparrow.css('top','0px');
 		uparrow.css('left','0px');
 		uparrow.css('width','14px');
 		uparrow.css('height','14px');
+		uparrow.mousedown(function(){
+			scroll(self,0,-5);
+			return false;
+		});
 		vscroll.append(uparrow);
 		downarrow=$(document.createElement('div'));
 		downarrow.addClass('downarrow');
@@ -388,6 +427,10 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		downarrow.css('left','0px');
 		downarrow.css('width','14px');
 		downarrow.css('height','14px');
+		downarrow.mousedown(function(){
+			scroll(self,0,5);
+			return false;
+		});
 		vscroll.append(downarrow);
 		vslider=$(document.createElement('div'));
 		vslider.addClass('slider');
@@ -395,6 +438,10 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		vslider.css('left','0px');
 		vslider.css('width','12px');
 		vslider.css('height','30px');
+		vslider.mousedown(function(event){
+			dragSlider(event.pageY,false);
+			return false;
+		});
 		vscroll.append(vslider);
 		win.append(vscroll);
 		grow=$(document.createElement('div'));
@@ -443,6 +490,22 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		});
 		win.append(grow);
 	}
+	this.setScrollBounds=function(rect)
+	{
+		if (rect.left>self.refCon.x)
+			rect.left=self.refCon.x;
+		if (rect.right<self.refCon.x+width-15)
+			rect.right=self.refCon.x+width-15;
+		if (rect.top>self.refCon.y)
+			rect.top=self.refCon.y;
+		if (rect.bottom<self.refCon.y+height-15)
+			rect.bottom=self.refCon.y+height-15;
+		hslider.data('min',rect.left);
+		hslider.data('max',rect.right);
+		vslider.data('min',rect.top);
+		vslider.data('max',rect.bottom);
+		redrawScroll();
+	}
 	this.resize=function(w,h)
 	{
 		framewidth=w;
@@ -461,7 +524,105 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		grow.css('left',(width-15)+'px');
 		self.port.attr('width',width);
 		self.port.attr('height',height);
+		self.refCon.updateScroll=true;
 		webventure.updateWindow(self);
+	}
+	function redrawScroll()
+	{
+		var min=hslider.data('min');
+		var max=hslider.data('max');
+		if (min<max)
+		{
+			var left=self.refCon.x-min;
+			var scale=width-15;
+			var start=(left*(width-45)/(max-min))|0;
+			var end=(scale*(width-45)/(max-min))|0;
+			if (end>width-45-start)
+				end=width-45-start;
+			hslider.css('left',(start+15)+'px');
+			hslider.css('width',(end-2)+'px');
+		}
+		else
+		{
+			hslider.css('left','15px');
+			hslider.css('width',(width-47)+'px');
+		}
+		min=vslider.data('min');
+		max=vslider.data('max');
+		if (min<max)
+		{
+			var top=self.refCon.y-min;
+			var scale=height-15;
+			var start=(top*(height-45)/(max-min))|0;
+			var end=(scale*(height-45)/(max-min))|0;
+			if (end>height-45-start)
+				end=height-45-start;
+			vslider.css('top',(start+15)+'px');
+			vslider.css('height',(end-2)+'px');
+		}
+		else
+		{
+			vslider.css('top','15px');
+			vslider.css('height',(height-47)+'px');
+		}
+	}
+	function scroll(win,x,y)
+	{
+		win.refCon.x+=x;
+		win.refCon.y+=y;
+		var min=hslider.data('min');
+		var max=hslider.data('max');
+		if (win.refCon.x<min)
+			win.refCon.x=min;
+		if (win.refCon.x>max-width+15)
+			win.refCon.x=max-width+15;
+		min=vslider.data('min');
+		max=vslider.data('max');
+		if (win.refCon.y<min)
+			win.refCon.y=min;
+		if (win.refCon.y>max-height+15)
+			win.refCon.y=max-height+15;
+		win.refCon.updateScroll=true;
+		webventure.updateWindow(self);
+		var repeat=setTimeout(scroll,50,win,x,y);
+		$(document).mouseup(function(event){
+			$(document).unbind('mouseup');
+			clearTimeout(repeat);
+		});
+	}
+	function dragSlider(start,horiz)
+	{
+		var last=start;
+		$(document).mousemove(function(event){
+			if (horiz)
+			{
+				self.refCon.x+=event.pageX-last;
+				last=event.pageX;
+				var min=hslider.data('min');
+				var max=hslider.data('max');
+				if (self.refCon.x<min)
+					self.refCon.x=min;
+				if (self.refCon.x>max-width+15)
+					self.refCon.x=max-width+15;
+			}
+			else
+			{
+				self.refCon.y+=event.pageY-last;
+				last=event.pageY;
+				var min=vslider.data('min');
+				var max=vslider.data('max');
+				if (self.refCon.y<min)
+					self.refCon.y=min;
+				if (self.refCon.y>max-height+15)
+					self.refCon.y=max-height+15;
+			}
+			self.refCon.updateScroll=true;
+			webventure.updateWindow(self);
+		});
+		$(document).mouseup(function(event){
+			$(document).unbind('mouseup');
+			$(document).unbind('mousemove');
+		});
 	}
 }
 function Dialog(title,type,close,left,top,width,height,items,screen,parent,ctls)

@@ -350,11 +350,53 @@ function WebVenture()
 				win.refCon.children[i].width=bounds.width;
 				win.refCon.children[i].height=bounds.height;
 			}
-			/*if (win.kind==0xe)
-			{
-				//adjust scrollbars
-			}*/
+			if (win.kind==0xe && win.refCon.updateScroll==true)
+				adjustScrolls(win);
 		}
+	}
+	function adjustScrolls(win)
+	{
+		var rect={top:0,left:0,right:0,bottom:0};
+		win.refCon.updateScroll=false;
+		for (var i=0;i<win.refCon.children.length;i++)
+		{
+			var child=win.refCon.children[i];
+			if (rect.right==rect.left || rect.bottom==rect.top)
+			{
+				rect.top=child.top;
+				rect.left=child.left;
+				rect.bottom=child.top+child.height;
+				rect.right=child.left+child.width;
+			}
+			else
+			{
+				rect.top=Math.min(rect.top,child.top);
+				rect.left=Math.min(rect.left,child.left);
+				var bottom=child.top+child.height;
+				var right=child.left+child.width;
+				rect.bottom=Math.max(rect.bottom,bottom);
+				rect.right=Math.max(rect.right,right);
+			}
+		}
+		if (rect.right==rect.left || rect.bottom==rect.top)
+		{
+			rect.top=win.refCon.y;
+			rect.left=win.refCon.x;
+			rect.bottom=win.refCon.y;
+			rect.right=win.refCon.x;
+		}
+		else
+		{
+			if (rect.left>win.refCon.x)
+				rect.left=win.refCon.x;
+			if (rect.right<win.refCon.x)
+				rect.right=win.refCon.x;
+			if (rect.top>win.refCon.y)
+				rect.top=win.refCon.y;
+			if (rect.bottom<win.refCon.y)
+				rect.bottom=win.refCon.y; 
+		}
+		win.setScrollBounds(rect);
 	}
 	this.drawObject=function(obj,win,flag)
 	{
@@ -368,7 +410,10 @@ function WebVenture()
 				mode=0;
 			else if (selectedObjs.indexOf(obj)!=-1)
 				mode=2;
-			return graphics.draw(obj,x,y,win.port,mode);
+			var r=graphics.draw(obj,x-win.refCon.x,y-win.refCon.y,win.port,mode);
+			r.top+=win.refCon.y;
+			r.left+=win.refCon.x;
+			return r;
 		}
 		return {top:0,left:0,width:0,height:0};
 	}
@@ -842,7 +887,7 @@ function WebVenture()
 			iw.kind=0xe;
 			iw.scrollbars();
 			setRefCon(obj,iw);
-			iw.refCon.flag=true;
+			iw.refCon.updateScroll=true;
 
 			var zoom=$(document.createElement('div'));
 			var pos=screen.position();
@@ -995,7 +1040,7 @@ function WebVenture()
 	function setRefCon(obj,w)
 	{
 		var children=getChildren(obj,true);
-		w.refCon={id:obj,x:0,y:0,flag:false,children:[]};
+		w.refCon={id:obj,x:0,y:0,updateScroll:false,children:[]};
 		var originx=0x7fff;
 		var originy=0x7fff;
 		for (var i=0;i<children.length;i++)
@@ -1005,17 +1050,17 @@ function WebVenture()
 				child={id:children[i],top:0,left:0,width:0,height:0};
 				if (w!=mainWin)
 				{
-					var x=self.get(obj,1);
-					var y=self.get(obj,2);
+					var x=self.get(child,1);
+					var y=self.get(child,2);
 					if (originx>x) originx=x;
 					if (originy>y) originy=y;
 				}
 				w.refCon.children.push(child);
 			}
 		}
-		if (originx!=0x7fff) w.refCon.x=originx-8;
-		if (originy!=0x7fff) w.refCon.y=originy-8;
-		if (w!=mainWin) w.refCon.flag=true;
+		if (originx!=0x7fff) w.refCon.x=originx;
+		if (originy!=0x7fff) w.refCon.y=originy;
+		if (w!=mainWin) w.refCon.updateScroll=true;
 	}
 	function drawExits()
 	{
@@ -1150,6 +1195,7 @@ function WebVenture()
 		{
 			var child={id:obj,top:0,left:0,width:0,height:0};
 			win.refCon.children.splice(i,0,child);
+			win.refCon.updateScroll=true;
 			self.updateWindow(win);
 		}
 	}
@@ -1159,7 +1205,7 @@ function WebVenture()
 		var idx=self.getChildIdx(win.refCon.children,obj);
 		if (idx==0) return;
 		win.refCon.children.splice(idx-1,1);
-		win.refCon.flag=true;
+		win.refCon.updateScroll=true;
 		self.updateWindow(win);
 	}
 	this.unselectall=function()
@@ -1742,7 +1788,7 @@ function WebVenture()
 			var str=texts.get(swap.to);
 			win.setTitle(str);
 			setRefCon(swap.to,win);
-			win.refCon.flag=true;
+			win.refCon.updateScroll=true;
 			self.updateWindow(win);
 		}
 	}
