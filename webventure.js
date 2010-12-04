@@ -1320,7 +1320,7 @@ function WebVenture()
 		var dialog=wins.createDialog('','dBox',true,false,146,96,220,120,undefined);
 		dialog.add(ctls.create(75,90,70,18,0x00,'Ok',true,0,0,0,1));
 		var vol=self.setting('volume');
-		if (vol==null) vol=100;
+		if (vol==null) vol=50;
 		dialog.add(ctls.create(55,55,110,13,0x1300,'',true,vol,0,100,2));
 		dialog.add(ctls.create(20,25,180,20,0x1100,'Sound Volume',true,0,0,0,3));
 		dialog.getItem(3).css('text-align','center');
