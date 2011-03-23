@@ -1,5 +1,9 @@
+/**
+ * @constructor
+ */
 function BitMap(width,height,rowBytes)
 {
+	var self=this;
 	this.width=width;
 	this.height=height;
 	this.rowBytes=rowBytes;
@@ -25,7 +29,7 @@ function BitMap(width,height,rowBytes)
 			var pix;
 			for (var x=sx;x<w;x++)
 			{
-				pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
+				pix=self.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
 				pix=pix?0x00:0xff;
 				image.data[imgofs++]=pix;
 				image.data[imgofs++]=pix;
@@ -56,7 +60,7 @@ function BitMap(width,height,rowBytes)
 			var pix;
 			for (var x=sx;x<w;x++)
 			{
-				pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
+				pix=self.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
 				if (pix)
 				{
 					image.data[imgofs++]=0xff;
@@ -89,7 +93,7 @@ function BitMap(width,height,rowBytes)
 			var pix;
 			for (var x=sx;x<w;x++)
 			{
-				pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
+				pix=self.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
 				if (pix)
 				{
 					image.data[imgofs++]=0x00;
@@ -122,7 +126,7 @@ function BitMap(width,height,rowBytes)
 			var pix;
 			for (var x=sx;x<w;x++)
 			{
-				pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
+				pix=self.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
 				if (pix)
 				{
 					image.data[imgofs++]^=0xff;
@@ -137,7 +141,7 @@ function BitMap(width,height,rowBytes)
 	this.hit=function(x,y)
 	{
 		var bmpofs=y*rowBytes;
-		var pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
+		var pix=self.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
 		return pix!=0;
 	}
 	this.intersect=function(rect)
@@ -148,7 +152,7 @@ function BitMap(width,height,rowBytes)
 			var pix;
 			for (var x=rect.left;x<rect.left+rect.width;x++)
 			{
-				pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
+				pix=self.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
 				if (pix) return true;
 			}
 		}
@@ -222,7 +226,7 @@ function decodePPIC0(bitmap,ppic)
 		for (var i=0;i<words;i++)
 		{
 			v=ppic.peek32(); ppic.seek(2,ppic.cur);
-			v>>=16-ppic.bit;
+			v>>>=16-ppic.bit;
 			bitmap.data[p++]=(v>>8)&0xff;
 			bitmap.data[p++]=v&0xff;
 		}
@@ -357,6 +361,7 @@ function decodeHuff(huff,lens,values,bitmap,ppic)
 		p=bitmap.rowBytes-blank;
 		var bits=0;
 		var val=0;
+		var v;
 		for (var y=0;y<bitmap.height;y++)
 		{
 			if (flags&1)
@@ -364,7 +369,7 @@ function decodeHuff(huff,lens,values,bitmap,ppic)
 				if (bits<edge)
 				{
 					v=walkHuff(huff,lens,values,ppic)<<4;
-					val|=v>>bits;
+					val|=v>>>bits;
 					bits+=4;
 				}
 				bits-=edge;
@@ -378,7 +383,7 @@ function decodeHuff(huff,lens,values,bitmap,ppic)
 				v<<=8-edge;
 			}
 			if (odd)
-				v>>=4;
+				v>>>=4;
 			bitmap.data[p]|=v&0xff;
 			p+=bitmap.rowBytes;
 		}
@@ -402,7 +407,7 @@ function decodeHuff(huff,lens,values,bitmap,ppic)
 				for (x=0;x<bitmap.rowBytes;x++)
 				{
 					val=bitmap.data[p]^v;
-					val^=(val>>4)&0xf;
+					val^=(val>>>4)&0xf;
 					bitmap.data[p++]=val;
 					v=val<<4;
 				}
@@ -411,11 +416,11 @@ function decodeHuff(huff,lens,values,bitmap,ppic)
 	}
 	if (flags&4)
 	{
-		delta=bitmap.rowBytes*4;
+		var delta=bitmap.rowBytes*4;
 		if (flags&2) delta*=2;
 		p=0;
-		q=delta;
-		for (i=0;i<bitmap.height*bitmap.rowBytes-delta;i++)
+		var q=delta;
+		for (var i=0;i<bitmap.height*bitmap.rowBytes-delta;i++)
 			bitmap.data[q++]^=bitmap.data[p++];
 	}
 }
@@ -430,7 +435,7 @@ function walkHuff(huff,lens,values,ppic)
 		return walkHuffLast&0xff;
 	}
 	var dw=ppic.peek32();
-	dw>>=16-ppic.bit;
+	dw>>>=16-ppic.bit;
 	dw&=0xffff;
 	var i;
 	for (i=0;i<0x10;i++)
@@ -473,9 +478,12 @@ function walkHuff(huff,lens,values,ppic)
 	}
 	return v;
 }
-
+/**
+ * @constructor
+ */
 function GraphicManager(objects)
 {
+	var self=this;
 	this.get=function(id)
 	{
 		var gfx=objects.get(3,id);
@@ -484,9 +492,9 @@ function GraphicManager(objects)
 		{
 			var next=((gfx.charCodeAt(0)&0xff)<<8)|
 				(gfx.charCodeAt(1)&0xff);
-			return this.get(next);
+			return self.get(next);
 		}
-		return decodePPIC(new File(gfx));
+		return decodePPIC(new GFile(gfx));
 	}
 	this.fill=function(port,color)
 	{
@@ -496,7 +504,7 @@ function GraphicManager(objects)
 	{
 		var rect={top:0,left:0,width:0,height:0};
 		var bmp;
-		if (bmp=this.get(id*2+1))
+		if (bmp=self.get(id*2+1))
 		{
 			rect={top:y,left:x,width:bmp.width,height:bmp.height};
 			switch (mode)
@@ -509,7 +517,7 @@ function GraphicManager(objects)
 					break;
 			}
 		}
-		else if (bmp=this.get(id*2))
+		else if (bmp=self.get(id*2))
 		{
 			rect={top:y,left:x,width:bmp.width,height:bmp.height};
 			switch (mode)
@@ -522,7 +530,7 @@ function GraphicManager(objects)
 					break;
 			}
 		}
-		if (mode>0 && (bmp=this.get(id*2)))
+		if (mode>0 && (bmp=self.get(id*2)))
 			bmp.xor(port,x,y);
 		return rect;
 	}

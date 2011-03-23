@@ -1,3 +1,6 @@
+/**
+ * @constructor
+ */
 function ObjectManager(files)
 {
 	var objFiles=[];
@@ -67,7 +70,7 @@ function ObjectManager(files)
 					data.seek(hdr+(list>>3),data.set);
 				}
 				obj.offsets[i]=offset;
-				var v=(data.r32()>>(16-bits))&0xffff;
+				var v=(data.r32()>>>(16-bits))&0xffff;
 				data.seek(-4,data.cur);
 				var x;
 				for (x=0;x<16;x++)
@@ -86,7 +89,7 @@ function ObjectManager(files)
 					len=data.peek32();
 					size--;
 					if (size==0) len=0;
-					else len>>=(32-size)-bits;
+					else len>>>=(32-size)-bits;
 					len&=(1<<size)-1;
 					len|=1<<size;
 					bits+=size;

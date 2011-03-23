@@ -1,4 +1,7 @@
-function Win(title,type,close,left,top,width,height,screen,parent)
+/**
+ * @constructor
+ */
+function Win(type,close,left,top,width,height,screen,parent)
 {
 	var hscroll=undefined;
 	var vscroll=undefined;
@@ -56,7 +59,7 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 	});
 	this.port.attr('width',width);
 	this.port.attr('height',height);
-	win.append(this.port);
+	win.append(self.port);
 	var frametop=top;
 	var frameheight=height;
 	var frameleft=left;
@@ -79,6 +82,7 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 	win.css('height',frameheight+'px');
 
 	screen.append(win);
+
 
 	this.show=function()
 	{
@@ -118,7 +122,7 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 	}
 	this.setCanvas=function(obj)
 	{
-		this.port.remove();
+		self.port.remove();
 		obj.css('top','0px');
 		obj.css('left','0px');
 		obj.css('width',width+'px');
@@ -141,7 +145,7 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 			ctl.css('top',(t+17)+'px');
 		}
 		win.append(ctl);
-		ctl.data('win',this);
+		ctl.data('win',self);
 		ctls.unshift(ctl);
 	}
 	this.remove=function(ctl)
@@ -183,22 +187,22 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 		var pos=win.position();
 		pt.h-=pos.left;
 		pt.v-=pos.top;
-		pos=this.port.position();
+		pos=self.port.position();
 		pt.h-=pos.left;
 		pt.v-=pos.top;
-		pt.h+=this.refCon.x;
-		pt.v+=this.refCon.y;
+		pt.h+=self.refCon.x;
+		pt.v+=self.refCon.y;
 	}
 	this.localToGlobal=function(pt)
 	{
 		var pos=win.position();
 		pt.h+=pos.left;
 		pt.v+=pos.top;
-		pos=this.port.position();
+		pos=self.port.position();
 		pt.h+=pos.left
 		pt.v+=pos.top;
-		pt.h-=this.refCon.x;
-		pt.v-=this.refCon.y;
+		pt.h-=self.refCon.x;
+		pt.v-=self.refCon.y;
 	}
 	function titledown(event)
 	{
@@ -283,21 +287,21 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 	}
 	this.hit=function(x,y)
 	{
-		pos=win.position();
+		var pos=win.position();
 		if (x>=pos.left && x<pos.left+win.width() &&
 			y>=pos.top && y<pos.top+win.height())
 		{
 			x-=pos.left;
 			y-=pos.top;
-			pos=this.port.position();
-			if (x>=pos.left && x<pos.left+this.port.width() &&
-				y>=pos.top && y<pos.top+this.port.height())
+			pos=self.port.position();
+			if (x>=pos.left && x<pos.left+self.port.width() &&
+				y>=pos.top && y<pos.top+self.port.height())
 			{
 				//in content
-				return {id:3,win:this};
+				return {id:3,win:self};
 			}
 			//in titlebar
-			return {id:4,win:this};
+			return {id:4,win:self};
 		}
 		return undefined;
 	}
@@ -584,7 +588,7 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 			win.refCon.y=max-height+15;
 		win.refCon.updateScroll=true;
 		webventure.updateWindow(self);
-		var repeat=setTimeout(scroll,50,win,x,y);
+		var repeat=setTimeout(function(){scroll(win,x,y)},50);
 		$(document).mouseup(function(event){
 			$(document).unbind('mouseup');
 			clearTimeout(repeat);
@@ -624,11 +628,18 @@ function Win(title,type,close,left,top,width,height,screen,parent)
 			$(document).unbind('mousemove');
 		});
 	}
+	function resizeClicked()
+	{
+		//TODO: resize window
+	}
 }
-function Dialog(title,type,close,left,top,width,height,items,screen,parent,ctls)
+/**
+ * @constructor
+ */
+function Dialog(type,close,left,top,width,height,items,screen,parent,ctls)
 {
 	var self=this;
-	var win=new Win(title,type,close,left,top,width,height,screen,parent);
+	var win=new Win(type,close,left,top,width,height,screen,parent);
 	win.kind=2;
 	this.show=function()
 	{
@@ -698,24 +709,27 @@ function Dialog(title,type,close,left,top,width,height,items,screen,parent,ctls)
 					win.add(ctl);
 					break;
 				default:
-					console.log("Unknown DITL: "+(itype&0x7f));
-					this.die();
+					throw "Unknown DITL: "+(itype&0x7f);
 			}
 		}
 	}
 }
+/**
+ * @constructor
+ */
 function WindowManager(screen,resources,ctls)
 {
+	var self=this;
 	var wins=[];
 	this.create=function(title,type,vis,close,left,top,width,height)
 	{
 		var pos=screen.position();
 		left+=pos.left;
 		top+=pos.top;
-		var win=new Win(title,type,close,left,top,width,height,screen,this);
+		var win=new Win(type,close,left,top,width,height,screen,self);
 		if (vis==false) win.hide();
 		win.setTitle(title);
-		this.bringToFront(win);
+		self.bringToFront(win);
 		return win;
 	}
 	this.createDialog=function(title,type,vis,close,left,top,width,height,items)
@@ -723,10 +737,10 @@ function WindowManager(screen,resources,ctls)
 		var pos=screen.position();
 		left+=pos.left;
 		top+=pos.top;
-		var dlog=new Dialog(title,type,close,left,top,width,height,items,screen,this,ctls);
+		var dlog=new Dialog(type,close,left,top,width,height,items,screen,self,ctls);
 		if (vis==false) dlog.hide();
 		dlog.setTitle(title);
-		this.bringToFront(dlog);
+		self.bringToFront(dlog);
 		return dlog;
 	}
 	this.get=function(res)
@@ -759,7 +773,7 @@ function WindowManager(screen,resources,ctls)
 		var title='';
 		if (titleLen!=1)
 			title=webventure.mac2ascii(res.read(titleLen));
-		return this.create(title,type,vis,close,left,top,width,height);
+		return self.create(title,type,vis,close,left,top,width,height);
 	}
 	this.getDialog=function(res)
 	{
@@ -795,7 +809,7 @@ function WindowManager(screen,resources,ctls)
 		if (titleLen!=1)
 			title=webventure.mac2ascii(res.read(titleLen));
 		var items=resources.get('DITL',itemlist);
-		return this.createDialog(title,type,vis,close,left,top,width,height,items);
+		return self.createDialog(title,type,vis,close,left,top,width,height,items);
 	}
 	this.getAlert=function(res)
 	{
@@ -805,7 +819,7 @@ function WindowManager(screen,resources,ctls)
 		var width=res.r16()-left;
 		var itemlist=res.r16();
 		var items=resources.get('DITL',itemlist);
-		return this.createDialog('','dBox',true,false,left,top,width,height,items);
+		return self.createDialog('','dBox',true,false,left,top,width,height,items);
 	}
 	this.close=function(win)
 	{
@@ -817,15 +831,15 @@ function WindowManager(screen,resources,ctls)
 				break;
 			}
 		if (wins.length)
-			this.bringToFront(wins[0]);
+			self.bringToFront(wins[0]);
 	}
 	this.tryClose=function(win)
 	{
 		if (win==undefined) return undefined;
 		var obj=win.refCon.id;
-		win.refCon={};
 		if (win.kind==0xa)
 		{
+			win.refCon={};
 			win.setTitle('');
 			return undefined;
 		}
@@ -835,7 +849,8 @@ function WindowManager(screen,resources,ctls)
 			var br={v:win.port.height(),h:win.port.width()};
 			win.localToGlobal(tl);
 			win.localToGlobal(br);
-			this.close(win);
+			win.refCon={};
+			self.close(win);
 			return {obj:obj,top:tl.v,left:tl.h,width:br.h-tl.h,height:br.v-tl.v};
 		}
 	}
@@ -889,7 +904,7 @@ function WindowManager(screen,resources,ctls)
 				toClose.push(wins[i]);
 		}
 		for (var i in toClose)
-			this.tryClose(toClose[i]);
+			self.tryClose(toClose[i]);
 	}
 	this.closeAll=function()
 	{
@@ -902,6 +917,6 @@ function WindowManager(screen,resources,ctls)
 				wins[i].hide();
 		}
 		for (var i in toClose)
-			this.tryClose(toClose[i]);
+			self.tryClose(toClose[i]);
 	}
 }

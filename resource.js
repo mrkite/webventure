@@ -1,5 +1,9 @@
+/**
+ * @constructor
+ */
 function ResourceManager(files)
 {
+	var self=this;
 	var resources=[];
 	this.open=function(res)
 	{
@@ -42,7 +46,7 @@ function ResourceManager(files)
 							dataOfs+=res.r32()&0xffffff;
 							res.seek(dataOfs,res.set);
 							var len=res.r32();
-							return new File(res.read(len));
+							return new GFile(res.read(len));
 						}
 						res.seek(10,res.cur);
 					}
@@ -55,7 +59,7 @@ function ResourceManager(files)
 	}
 	this.getString=function(resid)
 	{
-		var res=this.get('STR ',resid);
+		var res=self.get('STR ',resid);
 		if (res==undefined) return '';
 		var len=res.r8();
 		return res.read(len);
@@ -63,7 +67,7 @@ function ResourceManager(files)
 	this.getIndStr=function(resid,index)
 	{
 		if (index==0) return '';
-		var res=this.get('STR#',resid);
+		var res=self.get('STR#',resid);
 		if (res==undefined) return '';
 		var num=res.r16();
 		if (index>num) return '';

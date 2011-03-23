@@ -1,5 +1,9 @@
+/**
+ * @constructor
+ */
 function Menu(id,title)
 {
+	var self=this;
 	this.id=id;
 	this.title=title;
 	this.el=undefined;
@@ -14,7 +18,7 @@ function Menu(id,title)
 		active.addClass('menu');
 		var tbody=$(document.createElement('tbody'));
 		active.append(tbody);
-		var pos=this.el.position();
+		var pos=self.el.position();
 		active.css('top',(pos.top+19)+'px');
 		active.css('left',pos.left+'px');
 		for (var i=0;i<items.length;i++)
@@ -25,6 +29,9 @@ function Menu(id,title)
 		return active;
 	}
 }
+/**
+ * @constructor
+ */
 function MenuItem(text,key,mark,style)
 {
 	this.draw=function()
@@ -55,6 +62,9 @@ function MenuItem(text,key,mark,style)
 		return tr;
 	}
 }
+/**
+ * @constructor
+ */
 function MenuManager(screen)
 {
 	var menus=[];

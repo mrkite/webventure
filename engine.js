@@ -1,6 +1,8 @@
+/**
+ * @constructor
+ */
 function EngineState()
 {
-	var fib=0;
 	var stack=new Array(0x80);
 	var sp=0x80;
 	this.push=function(val)
@@ -35,8 +37,12 @@ function EngineState()
 		return 0x80-sp;
 	}
 }
+/**
+ * @constructor
+ */
 function Engine(objects,text,res,graphics)
 {
+	var self=this;
 	var frames=[];
 	this.reset=function()
 	{
@@ -51,7 +57,7 @@ function Engine(objects,text,res,graphics)
 		frames.unshift({curCtl:curCtl,curObj:curObj,
 			target:target,ptx:pt.h,pty:pt.v,
 			state:new EngineState(),saves:[],p:[]});
-		return this.resume(true);
+		return self.resume(true);
 	}
 	this.resume=function(doAll)
 	{
@@ -135,9 +141,10 @@ function Engine(objects,text,res,graphics)
 	}
 	function loadFunc(id)
 	{
+		var func;
 		if ((func=objects.get(1,id)))
 		{
-			frames[0].p[0]=new File(func);
+			frames[0].p[0]=new GFile(func);
 			return runFunc();
 		}
 		return false;
@@ -162,6 +169,7 @@ function Engine(objects,text,res,graphics)
 			val=-((val^0xffff)+1);
 		return val;
 	}
+	var fib=0;
 	function runFunc()
 	{
 		var p=frames[0].p[0];
@@ -555,7 +563,7 @@ function Engine(objects,text,res,graphics)
 				webventure.textQueue.push({id:1,val:id});
 				break;
 			case 0xc6: //push 2
-				push(2);
+				state.push(2);
 				break;
 			case 0xc7: //play sound in background
 				var obj=state.pop();
@@ -689,7 +697,6 @@ function Engine(objects,text,res,graphics)
 				state.push(0);
 				break;
 			case 0xe5: //wait for event to finish
-				console.log("wait for event");
 				break;
 			case 0xe6: //get fibonacci.. I swear this is a joke
 				state.push(fib);
@@ -705,8 +712,7 @@ function Engine(objects,text,res,graphics)
 				}
 				break;
 			default:
-				console.log("func: "+ch.toString(16));
-				this.die();
+				throw "func: "+ch.toString(16);
 			}
 		}
 		return false;
@@ -755,6 +761,7 @@ function Engine(objects,text,res,graphics)
 		}
 		else
 		{
+			var bmp;
 			if ((bmp=graphics.get(obj*2))!=undefined)
 			{
 				rect.top=webventure.get(obj,2);

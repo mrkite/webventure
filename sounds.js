@@ -1,3 +1,6 @@
+/**
+ * @constructor
+ */
 function Sound(len,freq)
 {
 	var self=this;
@@ -79,8 +82,12 @@ function Sound(len,freq)
 		return encode64(wave);
 	}
 }
+/**
+ * @constructor
+ */
 function SoundManager(objects)
 {
+	var self=this;
 	var support=false;
 	try {
 		var type=document.createElement('audio').canPlayType('audio/wav');
@@ -91,7 +98,7 @@ function SoundManager(objects)
 	this.play=function(id)
 	{
 		var snd=objects.get(4,id);
-		var f=new File(snd);
+		var f=new GFile(snd);
 		var sound=undefined;
 		switch (snd.charCodeAt(5)&0xff)
 		{
@@ -120,7 +127,7 @@ function SoundManager(objects)
 		if (sound==undefined) return 0;
 		else
 		{
-			if (support && !this.muted)
+			if (support && !self.muted)
 				sound.play();
 			return sound.time();
 		}

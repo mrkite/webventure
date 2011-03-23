@@ -1,3 +1,6 @@
+/**
+ * @constructor
+ */
 function TextManager(objects,res)
 {
 	var self=this;
@@ -24,8 +27,8 @@ function TextManager(objects,res)
 	{
 		if (oldVersion) return getOld(id);
 		if (id&0x8000)
-			return this.input;
-		var p=new File(objects.get(2,id));
+			return self.input;
+		var p=new GFile(objects.get(2,id));
 		var len;
 		var out='';
 		if (p.bits(1))
@@ -57,7 +60,7 @@ function TextManager(objects,res)
 				if (p.bits(1))
 				{
 					var subval=p.bits(0xf);
-					child=this.get(subval);
+					child=self.get(subval);
 				}
 				else
 				{
@@ -74,7 +77,7 @@ function TextManager(objects,res)
 	{
 		if (id&0x8000)
 			return self.input;
-		var p=new File(objects.get(2,id));
+		var p=new GFile(objects.get(2,id));
 		var lower=false;
 		var out='';
 		var len=p.r16();
@@ -143,7 +146,7 @@ function TextManager(objects,res)
 		{
 			name=self.get(obj);
 			if (name=='')
-				fail();
+				throw "String error";
 			switch (subval&3)
 			{
 				case 2:

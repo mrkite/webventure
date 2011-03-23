@@ -1,3 +1,6 @@
+/**
+ * @constructor
+ */
 function WebVenture()
 {
 	var self=this;
@@ -5,7 +8,7 @@ function WebVenture()
 	var wins,files,objects,texts,res,menu,engine,ctls,menus,graphics,sounds;
 	var startImage;
 	var titleWin,diplomaWin;
-	var mainWin,controlsWin,textWin,selfWin,exitWin;
+	var mainWin,commandsWin,textWin,selfWin,exitWin;
 	var textEdit;
 	this.gameState=0;
 	this.gameChanged=false;
@@ -120,7 +123,7 @@ function WebVenture()
 		if (gameparts.length>1)
 		{
 			saveName=gameparts[1];
-			var g=JSON.parse(localStorage.getItem(saveName));
+			var g=window.JSON.parse(window.localStorage.getItem(saveName).toString());
 			game=g.gamedata;
 			self.globals=g.globals;
 			textEdit.html(g.text);
@@ -259,7 +262,7 @@ function WebVenture()
 			setParent(obj,val);
 		if (attr<0xc)
 			queueObject(obj);
-		idx=attrIdxs[attr];
+		var idx=attrIdxs[attr];
 		val<<=attrShifts[attr];
 		val&=attrMasks[attr];
 		var oldval=game[idx][obj]&~attrMasks[attr];
@@ -291,7 +294,7 @@ function WebVenture()
 	this.updateObject=function(obj)
 	{
 		var w;
-		if (this.get(1,0)==obj)
+		if (self.get(1,0)==obj)
 			w=mainWin;
 		else
 			w=getWindow(obj);
@@ -572,10 +575,11 @@ function WebVenture()
 		dialog.show();
 		var list=dialog.getItem(8);
 		var selectedItem=undefined;
-		for (var i=0;i<localStorage.length;i++)
+		for (var i=0;i<window.localStorage.length;i++)
 		{
-			var title=localStorage.key(i);
-			var game=JSON.parse(localStorage.getItem(title));
+			var title=window.localStorage.key(i);
+			if (title==null) continue;
+			var game=window.JSON.parse(window.localStorage.getItem(title).toString());
 			if (game.game!=gamename) continue;
 			var item=$(document.createElement('div'));
 			item.addClass('listitem');
@@ -585,7 +589,7 @@ function WebVenture()
 				selectedItem.addClass('active');
 				dialog.getItem(7).val(selectedItem.text());
 			});
-			item.text(title);
+			item.text(title.toString());
 			list.append(item);
 		}
 		self.modalDialog=function(id){
@@ -607,7 +611,7 @@ function WebVenture()
 	}
 	function save()
 	{
-		localStorage.setItem(saveName,JSON.stringify({game:gamename,gamedata:game,globals:self.globals,text:textEdit.html()}));
+		window.localStorage.setItem(saveName,window.JSON.stringify({game:gamename,gamedata:game,globals:self.globals,text:textEdit.html()}));
 		textWin.setTitle(saveName);
 		self.gameChanged=false;
 		afterSave();
@@ -654,9 +658,9 @@ function WebVenture()
 	}
 	this.updateScreen=function(pause)
 	{
-		this.runQueue();
-		this.printTexts();
-		return this.playSounds(pause);
+		self.runQueue();
+		self.printTexts();
+		return self.playSounds(pause);
 	}
 	this.runQueue=function()
 	{
@@ -718,7 +722,6 @@ function WebVenture()
 					delay=sounds.play(item.val);
 					break;
 				case 3:
-					console.log("wait?");
 					//wait for sound to finish?
 					break;
 			}
@@ -902,7 +905,7 @@ function WebVenture()
 				left:(rect.left+pos.left)+'px',
 				width:rect.width+'px',
 				height:rect.height+'px'
-			},500,function () {
+			},500,'swing',function () {
 				zoom.remove();
 				iw.show();
 				self.updateWindow(iw);
@@ -929,7 +932,7 @@ function WebVenture()
 			left:p.h+'px',
 			width:'0px',
 			height:'0px'
-			},500,function () {
+			},500,'swing',function () {
 				zoom.remove();
 				inventory.num--;
 			}
@@ -1047,7 +1050,7 @@ function WebVenture()
 		{
 			if (children[i]!=1)
 			{
-				child={id:children[i],top:0,left:0,width:0,height:0};
+				var child={id:children[i],top:0,left:0,width:0,height:0};
 				if (w!=mainWin)
 				{
 					var x=self.get(child,1);
@@ -1077,7 +1080,7 @@ function WebVenture()
 			exitWin.remove(ctl);
 		if (!self.get(obj,0xb) && self.get(obj,0)==self.get(1,0))
 		{
-			var ctl=ctls.get(res.get('CNTL',0x80));
+			ctl=ctls.get(res.get('CNTL',0x80));
 			ctl.data('refcon',obj);
 			ctls.move(ctl,self.get(obj,9),self.get(obj,0xa));
 			exitWin.add(ctl);
@@ -1333,6 +1336,22 @@ function WebVenture()
 			self.isPaused=false;
 		}
 	}
+	function doFont(item)
+	{
+		//TODO: adjust font
+	}
+	function doFontSize(item)
+	{
+		//TODO: adjust font size
+	}
+	function cleanup()
+	{
+		//TODO: clean up icons
+	}
+	function messup()
+	{
+		//TODO: mess up icons
+	}
 	function checkNew()
 	{
 		if (!self.gameChanged)
@@ -1402,10 +1421,11 @@ function WebVenture()
 		dialog.show();
 		var list=dialog.getItem(7);
 		var selectedItem=undefined;
-		for (var i=0;i<localStorage.length;i++)
+		for (var i=0;i<window.localStorage.length;i++)
 		{
-			var title=localStorage.key(i);
-			var g=JSON.parse(localStorage.getItem(title));
+			var title=window.localStorage.key(i);
+			if (title==null) continue;
+			var g=window.JSON.parse(window.localStorage.getItem(title).toString());
 			if (g.game!=gamename) continue;
 			var item=$(document.createElement('div'));
 			item.addClass('listitem');
@@ -1414,7 +1434,7 @@ function WebVenture()
 				selectedItem=$(event.target);
 				selectedItem.addClass('active');
 			});
-			item.text(title);
+			item.text(title.toString());
 			list.append(item);
 		}
 		self.modalDialog=function(id){
@@ -1436,7 +1456,7 @@ function WebVenture()
 	}
 	function doOpen()
 	{
-		var g=JSON.parse(localStorage.getItem(saveName));
+		var g=window.JSON.parse(window.localStorage.getItem(saveName).toString());
 		game=g.gamedata;
 		self.globals=g.globals;
 		resetWindows();
@@ -1492,7 +1512,7 @@ function WebVenture()
 	{
 		var win=btn.data('win');
 		if (win.kind==2)
-			return this.modalDialog(btn.data('refcon'));
+			return self.modalDialog(btn.data('refcon'));
 		if (win==exitWin)
 			exitClicked(btn,event);
 		else
@@ -1800,7 +1820,7 @@ function WebVenture()
 		dragObject.animate({
 			top:pt.v+'px',
 			left:pt.h+'px'
-			},300,function () {
+			},300,'swing',function () {
 				dragObject.remove();
 			}
 		);
@@ -1860,9 +1880,10 @@ function WebVenture()
 	this.objHit=function(pt,child)
 	{
 		var obj=0;
-		if (!this.get(child.id,4) &&
+		if (!self.get(child.id,4) &&
 			inRect(pt,child))
 		{
+			var bmp;
 			if (bmp=graphics.get(child.id*2+1))
 			{
 				if (bmp.hit(pt.h-child.left,pt.v-child.top))

@@ -1,5 +1,9 @@
+/**
+ * @constructor
+ */
 function ControlManager()
 {
+	var self=this;
 	this.create=function(left,top,width,height,cdef,title,vis,value,min,max,refcon)
 	{
 		switch (cdef>>4)
@@ -17,8 +21,7 @@ function ControlManager()
 			case 0x130: //hslider
 				return newHSlider(left,top,width,height,value,min,max,vis,refcon);
 			default:
-				console.log("Unknown CDEF:"+cdef);
-				this.die();
+				throw "Unknown CDEF:"+cdef;
 		}
 	}
 	this.get=function(res)
@@ -38,7 +41,7 @@ function ControlManager()
 		var title='';
 		if (titleLen!=0)
 			title=res.read(titleLen);
-		return this.create(left,top,width,height,cdef,title,vis,value,min,max,refcon);
+		return self.create(left,top,width,height,cdef,title,vis,value,min,max,refcon);
 	}
 	this.move=function(ctl,x,y)
 	{

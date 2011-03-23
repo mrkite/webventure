@@ -1,5 +1,9 @@
-function File(data)
+/**
+ * @constructor
+ */
+function GFile(data)
 {
+	var self=this;
 	this.set=0;
 	this.cur=1;
 	this.end=2;
@@ -8,7 +12,7 @@ function File(data)
 	this.bit=0;
 	this.eof=function()
 	{
-		return pos>=this.length;
+		return pos>=self.length;
 	}
 	this.r8=function()
 	{
@@ -47,13 +51,13 @@ function File(data)
 	{
 		switch (rel)
 		{
-			case this.set:
+			case self.set:
 				break;
-			case this.cur:
+			case self.cur:
 				newpos+=pos;
 				break;
-			case this.end:
-				newpos+=this.length;
+			case self.end:
+				newpos+=self.length;
 				break;
 		}
 		pos=newpos;
@@ -66,18 +70,21 @@ function File(data)
 	}
 	this.bits=function(num)
 	{
-		var v=this.peek32();
-		v>>=(32-this.bit)-num;
+		var v=self.peek32();
+		v>>>=(32-self.bit)-num;
 		v&=(1<<num)-1;
-		this.bit+=num;
-		if (this.bit&0x10)
+		self.bit+=num;
+		if (self.bit&0x10)
 		{
-			this.bit&=0xf;
+			self.bit&=0xf;
 			pos+=2;
 		}
 		return v;
 	}
 }
+/**
+ * @constructor
+ */
 function MacFile(parent,name,type,creator,dataStart,dataLen,resStart,resLen)
 {
 	this.parent=parent;
@@ -89,6 +96,9 @@ function MacFile(parent,name,type,creator,dataStart,dataLen,resStart,resLen)
 	this.resStart=resStart;
 	this.resLen=resLen;
 }
+/**
+ * @constructor
+ */
 function FileManager(root)
 {
 	var files=[];
@@ -101,7 +111,7 @@ function FileManager(root)
 			xhr.overrideMimeType('text/html; charset=x-user-defined');
 		},
 		complete: function(xhr) {
-			mainfile=new File(xhr.responseText);
+			mainfile=new GFile(xhr.responseText);
 			mainfile.seek(0x414,mainfile.set);
 			allocSize=mainfile.r32();
 			mainfile.seek(0x41c,mainfile.set);
@@ -129,7 +139,7 @@ function FileManager(root)
 				files[i].creator==creatorid)
 			{
 				mainfile.seek((files[i].resStart+allocStart)*allocSize,mainfile.set);
-				return new File(mainfile.read(files[i].resLen));
+				return new GFile(mainfile.read(files[i].resLen));
 			}
 		}
 		return undefined;
@@ -142,7 +152,7 @@ function FileManager(root)
 			{
 				if (files[i].resLen==0) return undefined;
 				mainfile.seek((files[i].resStart+allocStart)*allocSize,mainfile.set);
-				return new File(mainfile.read(files[i].resLen));
+				return new GFile(mainfile.read(files[i].resLen));
 			}
 		}
 		return undefined;
@@ -155,7 +165,7 @@ function FileManager(root)
 			{
 				if (files[i].dataLen==0) return undefined;
 				mainfile.seek((files[i].dataStart+allocStart)*allocSize,mainfile.set);
-				return new File(mainfile.read(files[i].dataLen));
+				return new GFile(mainfile.read(files[i].dataLen));
 			}
 		}
 		return undefined;
@@ -205,8 +215,7 @@ function FileManager(root)
 				}
 				break;
 			default:
-				console.log("Bad node!");
-				this.die();
+				throw "Bad node";
 		}
 	}
 	function handleLeaf(record)
