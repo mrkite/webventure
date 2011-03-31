@@ -7,6 +7,9 @@ div.menubar {
 div.dBox {
 	display: none !important;
 }
+div.alert.active {
+	display: none !important;
+}
 input.textinput {
 	border: 0px solid #fff !important;
 }

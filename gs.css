@@ -1,0 +1,357 @@
+div.screen {
+	font-family: sans-serif;
+	background: #444;
+	width: 640px;
+	height: 400px;
+}
+div.menubar {
+	background: #fff;
+	padding-left: 10px;
+	border-bottom: 2px solid #000;
+	height: 24px;
+}
+div.menubar div {
+	float: left;
+	font-size: 14px;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	cursor: pointer;
+	height: 26px;
+}
+div.apple {
+	background-image: url("images/gs/apple.png");
+	background-repeat: no-repeat;
+	background-position: center 3px;
+	width: 20px;
+}
+div.menubar div.active {
+	background: #000;
+	color: #fff;
+}
+div.menubar div.active.apple {
+	background-image: url("images/gs/apple.png");
+	background-repeat: no-repeat;
+	background-position: center 3px;
+	width: 20px;
+}
+table.menu {
+	position: absolute;
+	font-size: 14px;
+	background: #fff;
+	padding: 0px;
+	z-index: 100000;
+	border: 2px solid #000;
+	-moz-box-shadow: 4px 4px 0px #000;
+	-webkit-box-shadow: 4px 4px 0px #000;
+	box-shadow: 4px 4px 0px #000;
+	cursor: pointer;
+	border-collapse: collapse;
+}
+table.menu hr {
+	padding: 0px;
+	margin: 0px;
+	border: 2px dotted #000;
+	border-style: none none dotted;
+}
+table.menu tr.menuitem.disabled {
+	color: #aaa;
+}
+table.menu tr.menuitem.disabled td.shortcut {
+	background-image: url("images/gs/dclover.png");
+	background-repeat: no-repeat;
+	background-position: 7px 2px;
+}
+table.menu tr.menuitem.active {
+	background: #000;
+	color: #fff;
+}
+table.menu tr.menuitem.active td.shortcut {
+	background-image: url("images/gs/iclover.png");
+	background-repeat: no-repeat;
+	background-position: 7px 2px;
+}
+table.menu td {
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+table.menu td.divider {
+	padding: 0px;
+}
+table.menu td.shortcut {
+	width: 30px;
+	text-align: right;
+	background-image: url("images/gs/clover.png");
+	background-repeat: no-repeat;
+	background-position: 7px 2px;
+}
+div.document {
+	background: #fff;
+	border: 2px solid #000;
+	position: absolute;
+}
+div.document div.title {
+	cursor: move;
+	background: #fff;
+	height: 22px;
+	font-size: 15px;
+	line-height: 22px;
+	border-left: 2px solid #fff;
+	border-right: 2px solid #fff;
+	text-align: center;
+}
+div.document div.info {
+	cursor: move;
+	background: #fff;
+	background-image: url('images/gs/info.png');
+	background-repeat: repeat-x;
+	height: 18px;
+	font-size: 14px;
+	line-height: 18px;
+	border-left: 2px solid #fff;
+	border-right: 2px solid #fff;
+	text-align: center;
+}
+div.document.active {
+	z-index: 50000;
+}
+div.document.active div.title {
+	background-image: url('images/gs/activeTitle.png');
+	background-repeat: repeat-x;
+}
+div.document canvas {
+	border-top: 2px solid #000;
+}
+div.document div.textEdit {
+	border-top: 2px solid #000;
+	line-height: 15px;
+	overflow: hidden;
+	font-size: 12px;
+}
+div.document div.title span {
+	background: #fff;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+div.document div.info span {
+	background: #fff;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+div.document div.close {
+	visibility: hidden;
+	display; inline;
+	float: left;
+	width: 26px;
+	height: 22px;
+	margin-top: 0px;
+	margin-left: 12px;
+}
+div.document.active div.close {
+	cursor: pointer;
+	visibility: visible;
+	background-image: url('images/gs/closeBox.png');
+}
+div.document div.grow {
+	position: absolute;
+	border-top: 2px solid #000;
+	border-left: 2px solid #000;
+	background: #fff;
+}
+div.document.active div.grow {
+	background-image: url('images/gs/grow.png');
+	cursor: pointer;
+}
+div.document div.resize {
+	visibility: hidden;
+	display: inline;
+	float: right;
+	width: 26px;
+	height: 22px;
+	margin-top: 0px;
+	margin-right: 12px;
+}
+div.document.active div.resize {
+	cursor: pointer;
+	visibility: visible;
+	background-image: url('images/gs/resizeBox.png');
+}
+div.document div.hscroll {
+	position: absolute;
+	border-top: 2px solid #000;
+	background: #fff;
+}
+div.document div.vscroll {
+	position: absolute;
+	border-top: 2px solid #000;
+	border-left: 2px solid #000;
+	background: #fff;
+}
+div.document div.leftarrow,
+div.document div.rightarrow,
+div.document div.uparrow,
+div.document div.downarrow,
+div.document div.slider {
+	display: none;
+}
+div.document.active div.hscroll {
+	background-image: url('images/gs/scrollback.png');
+	cursor: pointer;
+}
+div.document.active div.vscroll {
+	background-image: url('images/gs/scrollback.png');
+	cursor: pointer;
+}
+div.document.active div.leftarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/gs/scrollleft.png');
+	border-right: 2px solid #000;
+}
+div.document.active div.rightarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/gs/scrollright.png');
+	border-left: 2px solid #000;
+}
+div.document.active div.uparrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/gs/scrollup.png');
+	border-bottom: 2px solid #000;
+}
+div.document.active div.downarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/gs/scrolldown.png');
+	border-top: 2px solid #000;
+}
+div.document.active div.slider {
+	display: block;
+	position: absolute;
+	background: #fff;
+	border: 2px solid #000;
+}
+div.dbox {
+	background: #fff;
+	position: absolute;
+	border: 2px solid #000;
+}
+div.alert {
+	background: #fff;
+	position: absolute;
+	border: 8px double #000;
+}
+div.alert canvas {
+	border: 2px solid #000 !important;
+}
+div.alert.active {
+	z-index: 50000;
+}
+div.alert div.hscroll {
+	position: absolute;
+	border: 2px solid #000;
+	background-image: url('images/gs/scrollback.png');
+	cursor: pointer;
+}
+div.alert div.leftarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/gs/scrollleft.png');
+	border-right: 2px solid #000;
+}
+div.alert div.rightarrow {
+	display: block;
+	position: absolute;
+	background-image: url('images/gs/scrollright.png');
+	border-left: 2px solid #000;
+}
+div.alert div.slider {
+	display: block;
+	position: absolute;
+	background: #fff;
+	border: 2px solid #000;
+}
+div.dbox {
+	background: #fff;
+	position: absolute;
+}
+div.dbox.active {
+	z-index: 50000;
+}
+canvas.cbutton {
+	cursor: pointer;
+	position: absolute;
+	border: none !important;
+}
+div.button {
+	cursor: pointer;
+	background: #fff;
+	color: #000;
+	border: 1px solid #000;
+	position: absolute;
+	font-size: 14px;
+	text-align: center;
+	overflow: hidden;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+}
+div.textblock {
+	background: #fff;
+	color: #000;
+	position: absolute;
+	font-size: 14px;
+}
+div.list {
+	position: absolute;
+	background: #fff;
+	color: #000;
+	font-size: 14px;
+	border: 2px solid #000;
+	overflow: auto;
+}
+div.listitem {
+	background: #fff;
+	color: #000;
+	cursor: pointer;
+}
+div.listitem.active {
+	background: #000;
+	color: #fff;
+}
+input.textinput {
+	position: absolute;
+	background: #fff;
+	color: #000;
+	border: 2px solid #000;
+	font-size: 14px;
+}
+div.commands {
+	background: #000;
+}
+canvas.proxy {
+	z-index: 100000;
+	position: absolute;
+}
+div.lasso {
+	z-index: 100000;
+	position: absolute;
+	border: 1px dashed #000;
+}
+div.zoom {
+	z-index: 100000;
+	position: absolute;
+	background: #fff;
+	opacity: 0.7;
+	border: 1px solid #000;
+}
+div.resizeProxy {
+	position: absolute;
+	background: #fff;
+	opacity: 0.5;
+	border: 1px dotted #000;
+	z-index: 1000000;
+}
