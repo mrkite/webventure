@@ -1,4 +1,6 @@
-var startImage;
+/********************** public functions *********************/
+var startImage;	//the icom splash img object
+var textLH=15; //line height of text window
 function initialize()
 {
 	var link=document.createElement('link');
@@ -10,5 +12,9 @@ function initialize()
 	startImage.attr('src','images/mac/start.png');
 	startImage.css('width','100%');
 	startImage.css('height','100%');
-	screen.append(startImage);
+	desktop.append(startImage);
+
+	setTimeout(waitForLoad,10);
 }
+
+/********************** private functions *********************/

@@ -1,1 +1,1 @@
-webventure.init();
+initialize();
