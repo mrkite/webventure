@@ -17,7 +17,7 @@ $.getJSON("games.js",function(games){
 	for (var i=0;i<games.length;i++)
 	{
 		var link=document.createElement('a');
-		link.href="game_example.html#"+escape(games[i].game);
+		link.href="game.html#"+escape(games[i].game);
 		var img=document.createElement('img');
 		img.src=games[i].icon;
 		$(link).append(img);
@@ -35,7 +35,7 @@ $.getJSON("games.js",function(games){
 		var title=localStorage.key(i);
 		var game=JSON.parse(localStorage.getItem(title));
 		var link=document.createElement('a');
-		link.href="game_example.html#"+game.game+"?"+escape(title);
+		link.href="game.html#"+game.game+"?"+escape(title);
 		var img=document.createElement('img');
 		img.src='icons/'+game.game+'.png';
 		$(link).append(img);

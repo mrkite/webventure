@@ -35,12 +35,12 @@ function WebVenture()
 		var link=document.createElement('link');
 		link.type="text/css";
 		link.rel="stylesheet";
-		link.href="game.css";
+		link.href="mac/game.css";
 		$('head').append(link);
 		screen=$(document.createElement('div'));
 		screen.addClass("screen");
 		startImage=$(document.createElement('img'));
-		startImage.attr("src","images/start.png");
+		startImage.attr("src","images/mac/start.png");
 		startImage.css("width","100%");
 		startImage.css("height","100%");
 		screen.append(startImage);
@@ -497,7 +497,7 @@ function WebVenture()
 		var link=document.createElement('link');
 		link.type="text/css";
 		link.rel="stylesheet";
-		link.href="print.css";
+		link.href="mac/print.css";
 		link.media="print";
 		$('head').append(link);
 		var d=res.get('GNRL',0x81);

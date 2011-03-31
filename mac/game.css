@@ -1,7 +1,7 @@
 div.screen {
 	font-family: sans-serif;
 	background: #ccc;
-	background-image: url("images/gray.png");
+	background-image: url("images/mac/gray.png");
 	width: 512;
 	height: 342;
 }
@@ -21,7 +21,7 @@ div.menu {
 	height: 19px;
 }
 div.menu.apple {
-	background-image: url("images/apple.png");
+	background-image: url("images/mac/apple.png");
 	background-repeat: no-repeat;
 	background-position: center 3px;
 	
@@ -32,7 +32,7 @@ div.menu.active {
 	color: #fff;
 }
 div.menu.apple.active {
-	background-image: url("images/iapple.png");
+	background-image: url("images/mac/iapple.png");
 	background-repeat: no-repeat;
 	background-position: center 3px;
 }
@@ -60,7 +60,7 @@ table.menu tr.menuitem.active {
 	color: #fff;
 }
 table.menu tr.menuitem.active td.shortcut{
-	background-image: url("images/iclover.png");
+	background-image: url("images/mac/iclover.png");
 	background-repeat: no-repeat;
 	background-position: 15px 4px;
 }
@@ -76,7 +76,7 @@ table.menu td.divider {
 table.menu td.shortcut {
 	width: 30px;
 	text-align: right;
-	background-image: url("images/clover.png");
+	background-image: url("images/mac/clover.png");
 	background-repeat: no-repeat;
 	background-position: 15px 4px;
 }
@@ -98,7 +98,7 @@ div.document.active {
 	z-index: 50000;
 }
 div.document.active div.title {
-	background-image: url('images/activeTitle.png');
+	background-image: url('images/mac/activeTitle.png');
 	background-repeat: repeat-x;
 }
 div.document.canvas {
@@ -126,7 +126,7 @@ div.document div.close {
 div.document.active div.close {
 	cursor: pointer;
 	visibility: visible;
-	background-image: url('images/closeBox.png');
+	background-image: url('images/mac/closeBox.png');
 }
 div.dBox {
 	background: #fff;
@@ -174,7 +174,7 @@ div.noGrowDoc.active {
 	z-index: 50000;
 }
 div.noGrowDoc.active div.title {
-	background-image: url('images/activeTitle.png');
+	background-image: url('images/mac/activeTitle.png');
 	background-repeat: repeat-x;
 }
 div.noGrowDoc canvas {
@@ -210,7 +210,7 @@ div.zoomDoc.active {
 	z-index: 50000;
 }
 div.zoomDoc.active div.title {
-	background-image: url('images/activeTitle.png');
+	background-image: url('images/mac/activeTitle.png');
 	background-repeat: repeat-x;
 }
 div.zoomDoc canvas {
@@ -223,7 +223,7 @@ div.zoomDoc div.grow {
 	background: #fff;
 }
 div.zoomDoc.active div.grow {
-	background-image: url('images/grow.png');
+	background-image: url('images/mac/grow.png');
 	cursor: pointer;
 }
 div.zoomDoc div.hscroll {
@@ -245,35 +245,35 @@ div.zoomDoc div.slider {
 	display: none;
 }
 div.zoomDoc.active div.hscroll {
-	background-image: url('images/ltGray.png');
+	background-image: url('images/mac/ltGray.png');
 	cursor: pointer;
 }
 div.zoomDoc.active div.vscroll {
-	background-image: url('images/ltGray.png');
+	background-image: url('images/mac/ltGray.png');
 	cursor: pointer;
 }
 div.zoomDoc.active div.leftarrow {
 	display: block;
 	position: absolute;
-	background-image: url('images/scrollleft.png');
+	background-image: url('images/mac/scrollleft.png');
 	border-right: 1px solid #000;
 }
 div.zoomDoc.active div.rightarrow {
 	display: block;
 	position: absolute;
-	background-image: url('images/scrollright.png');
+	background-image: url('images/mac/scrollright.png');
 	border-left: 1px solid #000;
 }
 div.zoomDoc.active div.uparrow {
 	display: block;
 	position: absolute;
-	background-image: url('images/scrollup.png');
+	background-image: url('images/mac/scrollup.png');
 	border-bottom: 1px solid #000;
 }
 div.zoomDoc.active div.downarrow {
 	display: block;
 	position: absolute;
-	background-image: url('images/scrolldown.png');
+	background-image: url('images/mac/scrolldown.png');
 	border-top: 1px solid #000;
 }
 div.zoomDoc.active div.slider {
@@ -304,7 +304,7 @@ div.zoomDoc div.close {
 div.zoomDoc.active div.close {
 	cursor: pointer;
 	visibility: visible;
-	background-image: url('images/closeBox.png');
+	background-image: url('images/mac/closeBox.png');
 }
 div.zoomDoc div.resize {
 	visibility: hidden;
@@ -318,7 +318,7 @@ div.zoomDoc div.resize {
 div.zoomDoc.active div.resize {
 	cursor: pointer;
 	visibility: visible;
-	background-image: url('images/resizeBox.png');
+	background-image: url('images/mac/resizeBox.png');
 }
 div.zoomNoGrow {
 	background: #fff;
@@ -507,24 +507,24 @@ div.hsliderLeft {
 	position: absolute;
 	width: 4px;
 	height: 13px;
-	background-image: url("images/sliderLeft.png");
+	background-image: url("images/mac/sliderLeft.png");
 }
 div.hsliderRight {
 	position: absolute;
 	width: 4px;
 	height: 13px;
-	background-image: url("images/sliderRight.png");
+	background-image: url("images/mac/sliderRight.png");
 }
 div.hsliderWell {
 	position: absolute;
 	height: 13px;
-	background-image: url("images/sliderBack.png");
+	background-image: url("images/mac/sliderBack.png");
 }
 div.hsliderThumb {
 	position: absolute;
 	width: 11px;
 	height: 23px;
-	background-image: url("images/sliderThumb.png");
+	background-image: url("images/mac/sliderThumb.png");
 }
 canvas.proxy {
 	z-index: 100000;
@@ -546,10 +546,10 @@ div.commands {
 	background: #000;
 }
 div.exits {
-	background-image: url("images/ltGray.png");
+	background-image: url("images/mac/ltGray.png");
 }
 div.exits.selected {
-	background-image: url("images/dkGray.png");
+	background-image: url("images/mac/dkGray.png");
 }
 div.resizeProxy {
 	position: absolute;
