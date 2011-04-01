@@ -58,16 +58,18 @@ CButtonCtl.prototype.show=function()
 CButtonCtl.prototype.draw=function()
 {
 	var ctx=this.obj.get(0).getContext('2d');
-	var image=ctx.getImageData(0,0,this.obj.width(),this.obj.height());
+	var w=this.obj.width();
+	var h=this.obj.height();
+	var image=ctx.getImageData(0,0,w,h);
 	var data=this.selected?this.selbits:this.bits;
 	if (data)
 	{
-		for (var y=0;y<this.height;y++)
+		for (var y=0;y<h;y++)
 		{
 			var bmpofs=(y>>1)*this.bpr;
 			var imgofs=y*image.width*4;
 			var pix;
-			for (var x=0;x<this.width;x++)
+			for (var x=0;x<w;x++)
 			{
 				pix=data.charCodeAt(bmpofs+(x>>2));
 				pix=((pix>>((x&2)?0:4))&0xf)*3;
@@ -80,14 +82,14 @@ CButtonCtl.prototype.draw=function()
 	}
 	else
 	{
-		for (var y=0;y<this.height;y++)
+		for (var y=0;y<h;y++)
 		{
 			var imgofs=y*image.width*4;
 			var pix;
-			for (var x=0;x<this.width;x++)
+			for (var x=0;x<w;x++)
 			{
 				pix=this.selected?0:0xff;
-				if (y<2 || x<4 || y>this.height-3 || x>this.width-5)
+				if (y<2 || x<4 || y>h-3 || x>w-5)
 					pix=0;
 				image.data[imgofs++]=pix;
 				image.data[imgofs++]=pix;
