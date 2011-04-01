@@ -3,9 +3,13 @@ var Modules=[
 	"gs/files.js",
 	"gs/graphics.js",
 	"gs/resources.js",
+	"gs/menus.js",
 	"files.js",
 	"init.js",
-	"main.js"
+	"main.js",
+	"graphics.js",
+	"menus.js",
+	"windows.js"
 ];
 var loadedModules=0;
 for (var i in Modules)

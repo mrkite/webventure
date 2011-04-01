@@ -34,4 +34,23 @@ function draw(id,x,y,port,mode)
 	return rect;
 }
 
+function fillRect(port,left,top,width,height,color)
+{
+	var ctx=port.get(0).getContext('2d');
+	var image=ctx.getImageData(left,top,width,height);
+	for (var y=0;y<height;y++)
+	{
+		var imgofs=y*image.width*4;
+		var pix=color?0x00:0xff;
+		for (var x=0;x<width;x++)
+		{
+			image.data[imgofs++]=pix;
+			image.data[imgofs++]=pix;
+			image.data[imgofs++]=pix;
+			image.data[imgofs++]=0xff;
+		}
+	}
+	ctx.putImageData(image,left,top);
+}
+
 /********************** private functions *********************/

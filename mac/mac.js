@@ -17,4 +17,24 @@ function initialize()
 	setTimeout(waitForLoad,10);
 }
 
+//convert mac string to valid string
+function toascii(str)
+{
+	var newstr='';
+	for (var c=0;c<str.length;c++)
+	{
+		switch (str.charCodeAt(c))
+		{
+			case 13: newstr+='<br />'; break;
+			case 63368: newstr+='&#224;'; break;
+			case 63374: newstr+='&#233;'; break;
+			case 63401: newstr+='&#169;'; break;
+			case 63433: newstr+='...'; break;
+			case 63441: newstr+='&#8212;'; break;
+			default: newstr+=str.charAt(c); break;
+		}
+	}
+	return newstr;
+}
+
 /********************** private functions *********************/

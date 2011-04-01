@@ -16,9 +16,9 @@ function waitForLoad()
 	loadFiles();
 	createWindows();
 	createMenus();
-	addDeskAccessory("Adjust Volume...",0x800);
+	addDeskAccessory("Adjust Volume...",0x900);
 
-	textWin.setTitle(resGetTitle());
+	textWin.setTitle(resGetUntitled());
 
 	if (gameparts.length>1) //save game to load
 	{
@@ -53,7 +53,24 @@ function waitForLoad()
 	setTimeout(finishLoading,500);
 }
 
+//calculate the children for each object and save in list
+function calculateRelations()
+{
+	var val,next;
+	for (var i=0;i<numObjects*2;i++)
+		relations[i]=0;
+	for (var i=numObjects-1;i;i--)
+	{
+		val=game[0][i];
+		next=relations[val*2];
+		if (next) relations[i*2+1]=next;
+		relations[val*2]=i;
+	}
+}
+
 /********************** private functions *********************/
+var relations;
+
 function finishLoading()
 {
 	showWindows();

@@ -5,9 +5,19 @@ var gameChanged=false;	//save prompt
 var lastViewed=0;	//last line viewed in text window
 
 var selectedObjs,curSelection;
+var selectedCtl=undefined;
+var cmdReady=false;
 
+var titleWin;
 var mainWin,commandsWin,textWin,selfWin,exitWin;
 var textEdit;
+
+var numObjects,numGlobals,numCmds,numAttrs,numGroups;
+var game;
+var globals;
+
+var saveName='';
+var afterSave=function(){}
 
 
 function runMain()
@@ -49,6 +59,28 @@ function updateWindow(win)
 		}
 		if (win.kind==0xe && win.refCon.updateScroll)
 			adjustScrolls(win);
+	}
+}
+
+function menuSelect(item)
+{
+	switch (item)
+	{
+		case 0x100: doAbout(); break;
+		case 0x101: checkNew(); break;
+		case 0x102: checkOpen(); break;
+		case 0x103:
+			afterSave=function(){}
+			doSave();
+			break
+		case 0x104:
+			afterSave=function(){}
+			saveDialog();
+			break;
+		case 0x105: checkQuit(); break;
+		case 0x900: doVolume(); break;
+		default:
+			fatal("Unknown menuitem: "+item.toString(16));
 	}
 }
 
@@ -116,4 +148,228 @@ function adjustScrolls(win)
 			rect.bottom=win.refCon.y;
 	}
 	win.setScrollBounds(rect);
+}
+
+
+function doVolume()
+{
+	var dialog=getVolumeWin();
+	var vol=getSetting('volume');
+	if (vol==null) vol=50;
+	dialog.getItem(2).setValue(vol);
+	isPaused=true;
+	dialog.show(function(id){
+		setSetting('volume',dialog.getItem(2).value);
+		closeWindow(dialog);
+		isPaused=false;
+	});
+}
+function checkOpen()
+{
+	if (!gameChanged)
+		openDialog();
+	else
+	{
+		var dialog=getAskSave(1); //1=open
+		isPaused=true;
+		dialog.show(function(id){
+			closeWindow(dialog);
+			switch (id)
+			{
+				case 1: //yes
+					afterSave=checkOpen;
+					doSave();
+					break;
+				case 2: //no
+					openDialog();
+					break;
+				case 3: //cancel
+					isPaused=false;
+					break;
+			}
+		});
+	}
+}
+function openDialog()
+{
+	var dialog=getOpenDialog();
+	isPaused=true;
+	var list=dialog.getItem(3);
+	var selectedItem=undefined;
+	for (var i=0;i<window.localStorage.length;i++)
+	{
+		var title=window.localStorage.key(i);
+		if (title==null) continue;
+		var g=window.JSON.parse(window.localStorage.getItem(title).toString());
+		if (g.game!=gamename) continue;
+		var item=$(document.createElement('div'));
+		item.addClass('listitem');
+		item.mousedown(function(event){return false;});
+		item.click(function(event){
+			if (selectedItem) selectedItem.removeClass('active');
+			selectedItem=$(event.target);
+			selectedItem.addClass('active');
+		});
+		item.dblclick(function(event){
+			dialog.getItem(1).obj.click();
+		});
+		item.text(title.toString());
+		list.obj.append(item);
+	}
+	dialog.show(function(id){
+		switch (id)
+		{
+			case 1: //open
+				if (selectedItem==undefined) break;
+				saveName=selectedItem.text();
+				closeWindow(dialog);
+				isPaused=false;
+				doOpen();
+				break;
+			case 2: //cancel
+				closeWindow(dialog);
+				isPaused=false;
+				break;
+		}
+	});
+}
+function doOpen()
+{
+	var g=window.JSON.parse(window.localStorage.getItem(saveName).toString());
+	game=g.gamedata;
+	globals=g.globals;
+	resetWindows();
+	calculateRelations();
+	textWin.setTitle(saveName);
+	textEdit.html(g.text);
+	lastViewed=textEdit.get(0).scrollHeight;
+	textEdit.scrollTop(lastViewed);
+	gameState=1;
+	halted=false;
+	haltedAtEnd=false;
+	haltedInSelection=false;
+	curSelection=[];
+	selectedCtl=0;
+	resetEngine();
+	set(get(1,0),6,1);
+	gameChanged=false;
+	runMain();
+}
+function doSave()
+{
+	if (saveName=='')
+		saveDialog();
+	else
+		save();
+}
+function saveDialog()
+{
+	var dialog=getSaveDialog();
+	isPaused=true;
+	var el=dialog.getItem(3);
+	el.obj.focus();
+	el.obj.keypress(function(event){
+		if (event.which==13)
+		{
+			dialog.getItem(1).obj.click();
+			return false;
+		}
+		return true;
+	});
+	var list=dialog.getItem(4);
+	var selectedItem=undefined;
+	for (var i=0;i<window.localStorage.length;i++)
+	{
+		var title=window.localStorage.key(i);
+		if (title==null) continue;
+		var game=window.JSON.parse(window.localStorage.getItem(title).toString());
+		if (game.game!=gamename) continue;
+		var item=$(document.createElement('div'));
+		item.addClass('listitem');
+		item.mousedown(function(event){return false;});
+		item.click(function(event){
+			if (selectedItem) selectedItem.removeClass('active');
+			selectedItem=$(event.target);
+			selectedItem.addClass('active');
+			dialog.getItem(3).obj.val(selectedItem.text());
+		});
+		item.dblclick(function(event){
+			dialog.getItem(1).obj.click();
+		});
+		item.text(title.toString());
+		list.obj.append(item);
+	}
+	dialog.show(function(id){
+		switch (id)
+		{
+			case 1: //save
+				saveName=dialog.getItem(3).obj.val();
+				closeWindow(dialog);
+				isPaused=false;
+				doSave();
+				break;
+			case 2: //cancel
+				closeWindow(dialog);
+				isPaused=false;
+				afterSave();
+				break;
+		}
+	});
+}
+function save()
+{
+	window.localStorage.setItem(saveName,window.JSON.stringify({game:gamename,gamedata:game,globals:globals,text:textEdit.html()}));
+	textWin.setTitle(saveName);
+	gameChanged=false;
+	afterSave();
+}
+function checkQuit()
+{
+	if (!gameChanged)
+	{
+		gameState=4;
+		runMain();
+	}
+	else
+	{
+		var dialog=getAskSave(2);	//2=quit
+		isPaused=true;
+		dialog.show(function(id){
+			closeWindow(dialog);
+			switch (id)
+			{
+				case 1: //yes
+					afterSave=checkQuit;
+					doSave();
+					break;
+				case 2: //no
+					gameState=4;
+					runMain();
+					break;
+				case 3: //cancel
+					isPaused=false;
+					break;
+			}
+		});
+	}
+}
+
+
+function getSetting(key)
+{
+	var ca=document.cookie.split(';');
+	var keysub='webventure_'+key+'=';
+	for (var i=0;i<ca.length;i++)
+	{
+		var c=ca[i];
+		while (c.charAt(0)==' ') c=c.substring(1,c.length);
+		if (c.indexOf(keysub)==0) return unescape(c.substring(keysub.length,c.length));
+	}
+	return null;
+}
+function setSetting(key,value)
+{
+	var date=new Date();
+	date.setTime(date.getTime()+365*24*60*60*1000);
+	document.cookie="webventure_"+key+"="+escape(value)+"; expires="+date.toGMTString()+"; path=/";
 }

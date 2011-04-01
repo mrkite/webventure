@@ -3,9 +3,13 @@ var Modules=[
 	"mac/files.js",
 	"mac/graphics.js",
 	"mac/resources.js",
+	"mac/menus.js",
 	"files.js",
 	"init.js",
-	"main.js"
+	"main.js",
+	"graphics.js",
+	"menus.js",
+	"windows.js"
 ];
 var loadedModules=0;
 for (var i in Modules)
