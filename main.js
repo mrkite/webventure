@@ -7,18 +7,28 @@ var lastViewed=0;	//last line viewed in text window
 var selectedObjs,curSelection;
 var selectedCtl=undefined;
 var cmdReady=false;
+var lastClick;
+var cmdNumObjs,cmds,inQueue;
+var queue,soundQueue,textQueue;
 
 var titleWin;
 var mainWin,commandsWin,textWin,selfWin,exitWin;
 var textEdit;
 
 var numObjects,numGlobals,numCmds,numAttrs,numGroups;
+var attrShifts,attrMasks,attrIdxs;
+var inventory;
 var game;
 var globals;
+
+var activeCmd,destObject,deltaPt;
 
 var saveName='';
 var afterSave=function(){}
 
+var halted=false;
+var haltedAtEnd=false,haltedInSelection=false;
+var isPaused=false;
 
 function runMain()
 {
@@ -150,7 +160,15 @@ function adjustScrolls(win)
 	win.setScrollBounds(rect);
 }
 
-
+function doAbout()
+{
+	var dialog=getAboutWin();
+	isPaused=true;
+	dialog.show(function(){
+		closeWindow(dialog);
+		isPaused=false;
+	});
+}
 function doVolume()
 {
 	var dialog=getVolumeWin();
@@ -163,6 +181,60 @@ function doVolume()
 		closeWindow(dialog);
 		isPaused=false;
 	});
+}
+
+function checkNew()
+{
+	if (!gameChanged)
+		doNew();
+	else
+	{
+		var dialog=getAskSave(0); //0=new
+		isPaused=true;
+		dialog.show(function(id){
+			closeWindow(dialog);
+			switch (id)
+			{
+				case 1: //yes
+					afterSave=checkNew;
+					doSave();
+					break;
+				case 2: //no
+					doNew();
+					break;
+				case 3: //cancel
+					isPaused=false;
+					break;
+			}
+		});
+	}
+}
+function doNew()
+{
+	saveName='';
+	var g=getFile(resGetDefault());
+	for (var i=0;i<numGroups;i++)
+	{
+		for (var o=0;o<numObjects;o++)
+			game[i][o]=g.r16();
+	}
+	for (var i=0;i<numGlobals;i++)
+		globals[i]=g.r16();
+	reset();
+	calculateRelations();
+	textWin.setTitle(resGetUntitled());
+	textEdit.html('');
+	selectedCtl=1;
+	curSelection=[get(1,0)];
+	gameState=1;
+	set(get(1,0),6,1);
+	gameChanged=false;
+	halted=false;
+	haltedAtEnd=false;
+	haltedInSelection=false;
+	resetEngine();
+	cmdReady=true;
+	runMain();
 }
 function checkOpen()
 {
@@ -238,7 +310,7 @@ function doOpen()
 	var g=window.JSON.parse(window.localStorage.getItem(saveName).toString());
 	game=g.gamedata;
 	globals=g.globals;
-	resetWindows();
+	reset();
 	calculateRelations();
 	textWin.setTitle(saveName);
 	textEdit.html(g.text);
@@ -372,4 +444,16 @@ function setSetting(key,value)
 	var date=new Date();
 	date.setTime(date.getTime()+365*24*60*60*1000);
 	document.cookie="webventure_"+key+"="+escape(value)+"; expires="+date.toGMTString()+"; path=/";
+}
+
+function initVars()
+{
+	selectedCtl=0;
+	activeCmd=undefined;
+	curSelection=[];
+	destObject=0;
+	deltaPt={h:0,v:0};
+	userInput='';
+	cmdReady=false;
+	lastClick=0;
 }

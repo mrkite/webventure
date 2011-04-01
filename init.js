@@ -68,6 +68,16 @@ function calculateRelations()
 	}
 }
 
+function reset()
+{
+	resetWindows();
+	inventory.num=0;
+	queue=[];
+	soundQueue=[];
+	textQueue=[];
+	inQueue=[];
+}
+
 /********************** private functions *********************/
 var relations;
 

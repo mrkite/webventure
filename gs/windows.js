@@ -1,5 +1,30 @@
 /********************** public functions *********************/
+var WinBorder=2;
+var WinTitleHeight=24;
+var WinInfoHeight=20;
+var WinAlertBorder=4;
+var VScrollWidth=32;
+var HScrollHeight=24;
 
+var HScrollArrowRight=34;
+var HScrollBucket=68;
+var HScrollBucketStart=32;
+
+
+var winbg,exitbg,exitbga;
+
+
+function getAboutWin()
+{
+	var dialog=createAlert(10,36,620,354);
+	dialog.add(createCtl([240,318,120,22],1,0xa,["OK"]));
+	dialog.add(createCtl([10,18,600,146],2,0x8016,["\x01\x4a\x01\x00Apple IIGS ^0\r\x01\x4a\x01\x00Written by:\r\x01\x4a\x01\x00\x01\x53\x01\x00Fred Allen\x01\x53\x00\x00\r\r\x01\x4a\x01\x00Artwork by:\r^1\r\r\x01\x4a\x01\x00\x01\x53\x04\x00MacVenture Team\x01\x53\x00\x00"]));
+	dialog.add(createCtl([10,164,300,136],3,0x8016,["^2"]));
+	dialog.add(createCtl([310,164,300,136],4,0x8016,["^3"]));
+	dialog.add(createCtl([10,294,600,22],5,0x8016,["\x01\x4a\x01\x00WebVenture by Sean Kasun"]));
+	dialog.param([resGetGameName(),resGetCredits(0),resGetCredits(1),resGetCredits(2)]);
+	return dialog;
+}
 function getVolumeWin()
 {
 	var dialog=createAlert(80,80,480,200);
@@ -22,6 +47,15 @@ function getAskSave(why)
 		case 1: dialog.param(["opening another game?"]); break;
 		case 2: dialog.param(["quitting?"]); break;
 	}
+	return dialog;
+}
+function getOpenDialog()
+{
+	var dialog=createAlert(50,70,520,228);
+	dialog.add(createCtl([12,8,298,30],4,0x16,["Load which game:"]));
+	dialog.add(createCtl([12,50,298,164],3,0x17));
+	dialog.add(createCtl([320,158,190,24],1,0xa,["Open"]));
+	dialog.add(createCtl([320,194,190,24],2,0xa,["Cancel"]));
 	return dialog;
 }
 function getSaveDialog()

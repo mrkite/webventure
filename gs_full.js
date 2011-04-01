@@ -9,7 +9,11 @@ var Modules=[
 	"main.js",
 	"graphics.js",
 	"menus.js",
-	"windows.js"
+	"windows.js",
+	"engine.js",
+	"controls.js",
+	"text.js",
+	"objects.js"
 ];
 var loadedModules=0;
 for (var i in Modules)

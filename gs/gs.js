@@ -2,6 +2,7 @@
 var startImage; //icom splash img object
 var textLH=15; //line height of text window
 var MBHeight=24; //height of menubar
+
 function initialize()
 {
 	var link=document.createElement('link');
@@ -39,6 +40,35 @@ function loadFiles()
 	setPalettes();
 }
 
+function loadGNRL()
+{
+	var gnrl=resGetGNRL();
+	numObjects=gnrl.numObjects;
+	numGlobals=gnrl.numGlobals;
+	numAttrs=gnrl.numAttributes;
+	numGroups=gnrl.numGroups;
+	attrIdxs=gnrl.attrIdxs;
+	attrMasks=gnrl.attrMasks;
+	attrShifts=gnrl.attrShifts;
+	cmdNumObjs=gnrl.cmdNumObjs;
+	inventory=resGetWindow(5);
+	inventory.top*=2;
+	inventory.left*=2;
+	inventory.width=inventory.right*2-inventory.left;
+	inventory.height=inventory.bottom*2-inventory.top;
+	inventory.stepy=20;
+	inventory.stepx=20;
+	inventory.num=0;
+
+	inQueue=[];
+	initVars();
+	selectedObjs=[];
+	queue=[];
+	soundQueue=[];
+	textQueue=[];
+	relations=new Array(numObjects*2);
+}
+
 function createWindows()
 {
 	commandsWin=getWindow(3);
@@ -59,6 +89,63 @@ function createWindows()
 	exitWin.setTitle("Exits");
 	exitWin.kind=0xd;
 	exitWin.addClass('exits');
+}
+function loadControls()
+{
+	var locs=[
+		{name:"3/SHADOWGATE",start:0xc0ee,diff:-0xcc8},
+		{name:"3/DEJAVU",start:0xc0ee,diff:-0xcc8},
+		{name:"3/DEJAVUII",start:0xfae,diff:0x42},
+		{name:"3/UNINVITED",start:0xc0ee,diff:-0xcc8}
+	];
+	for (var i=0;i<locs.length;i++)
+	{
+		var f=getFile(locs[i].name);
+		if (f)
+		{
+			for (var c=0;c<9;c++)
+			{
+				f.seek(locs[i].start+c*0xb,f.set);
+				var top=f.r16le()*2;
+				var left=f.r16le()*2;
+				var height=f.r16le()*2-top;
+				var width=f.r16le()*2-left;
+				var refcon=f.r8();
+				var flags=f.r16le();
+				flags=(flags&0xf)|(flags&0xf0<<8);
+				f.seek(locs[i].start+0x73+c*4,f.set);
+				var ofs=f.r16le();
+				f.seek(ofs+locs[i].diff);
+				var bpr=f.r16le();
+				var bits=f.read(bpr*height);
+				f.seek(locs[i].start+0x97+c*4,f.set);
+				ofs=f.r16le();
+				f.seek(ofs+locs[i].diff);
+				f.r16le();
+				var selbits=f.read(bpr*height);
+				commandsWin.add(createCtl([left,top,width,height],refcon,flags,[bpr,bits,selbits]));
+			}
+			break;
+		}
+	}
+}
+function setPalettes()
+{
+	var p=resGetPalette();
+	palette=[];
+	for (var i=0;i<16;i++)
+	{
+		var r=(p[i]>>8)&0xf;
+		var g=(p[i]>>4)&0xf;
+		var b=p[i]&0xf;
+		palette.push(r*0x11);
+		palette.push(g*0x11);
+		palette.push(b*0x11);
+	}
+	paletteMap=resGetPaletteMap();
+	winbg=resGetWindowColor();
+	exitbg=resGetExitBG();
+	exitbga=resGetExitBGA();
 }
 
 function createMenus()
@@ -107,5 +194,20 @@ function toascii(str)
 function getWindow(id)
 {
 	var w=resGetWindow(id);
-	return createWindow(w.wFrame&~0x20,w.left,w.top,w.right-w.left,w.bottom-w.top);
+	var zoom=w.wFrame&0x100;
+	var close=w.wFrame&0x4000;
+	var klass="dbox";
+	var vs=false;
+	var hs=false;
+	if (w.wFrame&0x8000)
+		klass="document";
+	if (w.wFrame&0x0010)
+		klass="info";
+	if (w.wFrame&0x2000)
+		klass="alert";
+	if (w.wFrame&0x1000)
+		vs=true;
+	if (w.wFrame&0x0800)
+		hs=true;
+	return createWindow(klass,close,zoom,vs,hs,w.left*2,w.top*2,w.right*2-w.left,w.bottom*2-w.top);
 }
