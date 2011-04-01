@@ -32,8 +32,350 @@ var isPaused=false;
 
 function runMain()
 {
-	fatal("runmain");
-	//TODO: runmain
+	if (gameState==4) //quit
+	{
+		window.location="index.html";
+		return;
+	}
+	if (!halted)
+		updateScreen(false);
+	if (cmdReady || halted)
+	{
+		halted=false;
+		if (runEngine())
+		{
+			halted=true;
+			isPaused=true;
+			return;
+		}
+		isPaused=false;
+		if (updateScreen(true))
+			return;
+		updateCtls();
+	}
+	if (gameState==2 || gameState==3)
+		endGame();
+}
+function updateScreen(pause)
+{
+	runQueue();
+	var wait=printTexts();
+	if (playSounds(pause)) wait=true;
+	return wait;
+}
+function runQueue()
+{
+	while (queue.length)
+	{
+		var index;
+		var biggest=0;
+		for (var i=0;i<queue.length;i++)
+		{
+			if (queue[i].id>biggest)
+			{
+				biggest=queue[i].id;
+				index=i;
+			}
+		}
+		var item=queue.splice(index,1)[0];
+		switch (item.id)
+		{
+			case 0x2:
+				focusObjWin(item.val);
+				break;
+			case 0x3:
+				openObject(item.val);
+				break;
+			case 0x4:
+				closeObject(item.val);
+				break;
+			case 0x7:
+				checkObject(item.val);
+				break;
+			case 0x8:
+				reflectSwap(item.val);
+				break;
+			case 0xc:
+				set(mainWin.refCon.id,6,0);
+				set(get(1,0),6,1);
+				break;
+			case 0xd:
+				toggleExits();
+				break;
+			case 0xe:
+				zoomObject(item.val);
+				break;
+		}
+	}
+}
+function focusObjWin(obj)
+{
+	if (obj)
+	{
+		var win=getObjectWindow(obj);
+		if (win)
+			bringToFront(win);
+	}
+}
+function openObject(obj)
+{
+	if (getObjectWindow(obj)) return;
+	if (obj==get(1,0))
+	{
+		setRefCon(obj,mainWin);
+		updateWindow(mainWin);
+		drawExits();
+		var title=getText(obj);
+		mainWin.setTitle(capitalize(title));
+	}
+	else
+	{
+		var p={h:get(obj,1),v:get(obj,2)};
+		getParentWin(obj).localToGlobal(p);
+		var title=getText(obj);
+		var iw=getInventoryWindow();
+		iw.setTitle(title);
+		setRefCon(obj,iw);
+		iw.refCon.updateScroll=true;
+		var zoom=$(document.createElement('div'));
+		zoom.addClass('zoom');
+		desktop.append(zoom);
+		zoom.css('top',p.v+'px');
+		zoom.css('left',p.h+'px');
+		zoom.css('width','0px');
+		zoom.css('height','0px');
+		zoom.animate({
+			top:iw.top+'px',
+			left:iw.left+'px',
+			width:iw.width+'px',
+			height:iw.height+'px'
+			},500,"swing",function() {
+				zoom.remove();
+				iw.show();
+				updateWindow(iw);
+			}
+		);
+	}
+}
+function closeObject(obj)
+{
+	var info=tryClose(getObjectWindow(obj));
+	if (info==undefined) return;
+	var w=getParentWin(info.obj);
+	if (w==undefined) return;
+	var zoom=$(document.createElement('div'));
+	zoom.addClass('zoom');
+	desktop.append(zoom);
+	zoom.css('top',info.top+'px');
+	zoom.css('left',info.left+'px');
+	zoom.css('width',info.width+'px');
+	zoom.css('height',info.height+'px');
+	var p={h:get(info.obj,1),v:get(info.obj,2)};
+	w.localToGlobal(p);
+	zoom.animate({
+		top:p.v+'px',
+		left:p.h+'px',
+		width:'0px',
+		height:'0px'
+		},500,"swing",function() {
+			zoom.remove();
+			inventory.num--;
+		}
+	);
+}
+function checkObject(old)
+{
+	var changed=false;
+	var id=old.obj;
+	var i=inQueue.indexOf(id);
+	if (i!=-1) inQueue.splice(i,1);
+	if (id==1)
+	{
+		if (old.parent!=get(id,0))
+			queue.push({id:0xc});
+		if (old.offscreen!=get(id,3) ||
+			old.invisible!=get(id,4))
+			updateWindow(getParentWin(id));
+	}
+	else if (old.parent!=get(id,0) ||
+		old.x!=get(id,1) ||
+		old.y!=get(id,2))
+	{
+		var oldwin=getObjectWindow(old.parent);
+		if (oldwin)
+		{
+			removeChild(oldwin,id);
+			changed=true;
+		}
+		var newwin=getParentWin(id);
+		if (newwin)
+		{
+			addChild(newwin,id);
+			changed=true;
+		}
+	}
+	else if (old.offscreen!=get(id,3) ||
+		old.invisible!=get(id,4))
+		updateWindow(getParentWin(id));
+	if (get(id,8))
+	{
+		if (changed ||
+			old.hidden!=get(id,0xb) ||
+			old.exitx!=get(id,9) ||
+			old.exity!=get(id,0xa))
+			drawExit(id);
+	}
+	var win=getObjectWindow(id);
+	var cur=id;
+	var root=get(1,0);
+	while (cur!=root)
+	{
+		if (cur==0 || !get(cur,6)) break;
+		cur=get(cur,0);
+	}
+	if (cur==root)
+	{
+		if (win) return;
+		queue.push({id:0x3,val:id}); //open
+	}
+	else
+	{
+		if (!win) return;
+		queue.push({id:0x4,val:id}); //close
+	}
+	var children=getChildren(id,true);
+	for (i=0;i<children.length;i++)
+		queueObject(children[i]);
+}
+function reflectSwap()
+{
+	var from=getObjectWindow(swap.from);
+	var to=getObjectWindow(swap.to);
+	var win=to;
+	if (!to) win=from;
+	if (win)
+	{
+		var str=getText(swap.to);
+		win.setTitle(str);
+		setRefCon(swap.to,win);
+		win.refCon.updateScroll=true;
+		updateWindow(win);
+	}
+}
+function toggleExits()
+{
+	while (selectedObjs.length)
+		hiliteExit(selectedObjs.pop());
+}
+function hiliteExit(obj)
+{
+	var ctl=exitWin.find(obj);
+	if (ctl)
+	{
+		if (selectedObjs.indexOf(obj)!=-1)
+			ctl.select();
+		else
+			ctl.deselect();
+	}
+	if (obj==get(1,0))
+	{
+		if (selectedObjs.indexOf(obj)!=-1)
+			exitWin.addClass('selected');
+		else
+			exitWin.removeClass('selected');
+	}
+	updateWindow(getParentWin(obj));
+}
+function zoomObject(obj)
+{
+	desktop.append(dragObject);
+	var pt={h:get(obj,1),v:get(obj,2)};
+	getParentWin(obj).localToGlobal(pt);
+	dragObject.animate({
+		top:pt.v+'px',
+		left:pt.h+'px'
+		},300,"swing",function(){
+			dragObject.remove();
+		}
+	);
+}
+function printTexts()
+{
+	if (textEdit.get(0).scrollheight==textEdit.innerHeight())
+		calculatePartialHeight();
+	while (textQueue.length)
+	{
+		var item=textQueue.splice(0,1)[0];
+		switch (item.id)
+		{
+			case 1: //print number
+				textEdit.append(item.val);
+				gameChanged=true;
+				break;
+			case 2:
+				textEdit.append('<br/>');
+				gameChanged=true;
+				break;
+			case 3:
+				sourceObject=item.val[1];
+				targetObject=item.val[0];
+				textEdit.append(getText(item.val[2]));
+				gameChanged=true;
+				break;
+		}
+	}
+	return checkScroll();
+}
+function checkScroll()
+{
+	var toView=textEdit.get(0).scrollHeight;
+	var canView=textEdit.innerHeight();
+	textEdit.scrollTop(lastViewed-(lastViewed%textLH));
+	var y=textEdit.scrollTop();
+	lastViewed=y+canView;
+	textWin.setScrollBounds({left:0,right:0,top:0,bottom:toView});
+	if (lastViewed<toView)
+	{
+		clickToContinue();
+		return true;
+	}
+	return false;
+}
+function calculatePartialHeight()
+{
+	var el=textEdit.clone();
+	el.css('height','');
+	el.css('visibility','hidden');
+	$('body').append(el);
+	lastViewed=el.innerHeight();
+	el.remove();
+	delete el;
+}
+function playSounds(pause)
+{
+	var delay=0;
+	while (soundQueue.length)
+	{
+		var item=soundQueue.splice(0,1)[0];
+		switch (item.id)
+		{
+			case 1:
+				playSound(item.val);
+				break;
+			case 2:
+				delay=playSound(item.val);
+				break;
+			case 3:
+				//wait for sound to finish?
+				break;
+		}
+	}
+	if (pause && delay)
+	{
+		setTimeout(runMain,delay*1000);
+		return true;
+	}
+	return false;
 }
 
 function set(obj,attr,val)
@@ -530,4 +872,15 @@ function neg16(v)
 	if (v&0x8000)
 		v=-((v^0xffff)+1);
 	return v;
+}
+function getObjectWindow(obj)
+{
+	switch (obj)
+	{
+		case 0xfffc: return exitWin;
+		case 0xfffd: return selfWin;
+		case 0xfffe: return textWin;
+		case 0xffff: return commandsWin;
+	}
+	return findObjectWindow(obj);
 }

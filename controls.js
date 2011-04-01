@@ -354,4 +354,12 @@ SButtonCtl.prototype.show=function()
 {
 	this.obj.show();
 }
+SButtonCtl.prototype.select=function()
+{
+	this.obj.addClass('active');
+}
+SButtonCtl.prototype.deselect=function()
+{
+	this.obj.removeClass('active');
+}
 SButtonCtl.prototype.draw=function(){}

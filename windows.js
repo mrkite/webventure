@@ -472,6 +472,19 @@ function createAlert(left,top,width,height)
 	return win;
 }
 
+function findObjectWindow(obj)
+{
+	for (var i=0;i<wins.length;i++)
+	{
+		if (wins[i].kind==0xa || wins[i].kind==0xe)
+		{
+			if (wins[i].refCon!=undefined && wins[i].refCon.id==obj)
+				return wins[i];
+		}
+	}
+	return undefined;
+}
+
 /********************** private functions *********************/
 var wins=[];
 
