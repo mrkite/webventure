@@ -92,7 +92,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 	this.win.css('height',this.height+'px');
 	desktop.append(this.win);
 	if (this.vScroll || this.hScroll)
-		initScrollbars(this);
+		this.initScrollbars();
 }
 Win.prototype.show=function()
 {
@@ -115,7 +115,7 @@ Win.prototype.setTitle=function(str)
 		var washidden=this.win.css('display')=='none';
 		this.win.show();
 		el.css({position:'absolute',visibility:'hidden',display:'block'});
-		var availSpace=this.port.width;
+		var availSpace=this.port.width();
 		if (this.close) availSpace-=30;
 		if (this.zoom) availSpace-=30;
 		for (var i=0;i<str.length;i++)
@@ -231,7 +231,171 @@ Win.prototype.localToGlobal=function(pt)
 		pt.v-=this.refCon.y;
 	}
 }
-
+Win.prototype.initScrollbars=function()
+{
+	if (this.hScroll)
+	{
+		this.hscroll=$(document.createElement('div'));
+		this.hscroll.addClass('hscroll');
+		this.hscroll.css('top',(this.height-HScrollHeight)+'px');
+		this.hscroll.css('width',(this.width-HScrollBucket)+'px');
+		this.hscroll.mousedown(function(event){
+			fatal("scroll");
+		});
+		var leftarrow=$(document.createElement('div'));
+		leftarrow.addClass('leftarrow');
+		leftarrow.mousedown(function(){
+			fatal("scroll");
+		});
+		this.hscroll.append(leftarrow);
+		this.rightarrow=$(document.createElement('div'));
+		this.rightarrow.addClass('rightarrow');
+		this.rightarrow.css('left',(this.width-HScrollArrowRight-GrowWidth)+'px');
+		this.rightarrow.mousedown(function(){
+			fatal("scroll");
+		});
+		this.hscroll.append(this.rightarrow);
+		this.hslider=$(document.createElement('div'));
+		this.hslider.addClass('slider');
+		this.hslider.mousedown(function(event){
+			fatal("drag");
+		});
+		this.hscroll.append(this.hslider);
+		this.win.append(this.hscroll);
+	}
+	if (this.vScroll)
+	{
+		this.vscroll=$(document.createElement('div'));
+		this.vscroll.addClass('vscroll');
+		this.vscroll.css('left',(this.width-VScrollWidth)+'px');
+		this.vscroll.css('height',(this.height-VScrollBucket)+'px');
+		this.vscroll.mousedown(function(event){
+			fatal("scroll");
+		});
+		var uparrow=$(document.createElement('div'));
+		uparrow.addClass('uparrow');
+		uparrow.mousedown(function(event){
+			fatal("scroll");
+		});
+		this.vscroll.append(uparrow);
+		this.downarrow=$(document.createElement('div'));
+		this.downarrow.addClass('downarrow');
+		this.downarrow.css('top',(this.height-VScrollArrowDown-GrowHeight-WinTitleHeight)+'px');
+		this.downarrow.mousedown(function(event){
+			fatal("scroll");
+		});
+		this.vscroll.append(this.downarrow);
+		this.vslider=$(document.createElement('div'));
+		this.vslider.addClass('slider');
+		this.vslider.mousedown(function(event){
+			fatal("drag");
+		});
+		this.vscroll.append(this.vslider);
+		this.win.append(this.vscroll);
+	}
+	this.grow=$(document.createElement('div'));
+	this.grow.addClass('grow');
+	this.grow.css('top',(this.height-GrowHeight)+'px');
+	this.grow.css('left',(this.width-GrowWidth)+'px');
+	this.grow.mousedown(function(event){
+		fatal("grow");
+	});
+	this.win.append(this.grow);
+}
+Win.prototype.setScrollBounds=function(rect)
+{
+	if (this.kind==0xb) //text
+	{
+		this.vslider.data('min',rect.top);
+		this.vslider.data('max',rect.bottom);
+		this.redrawTextScroll();
+		return;
+	}
+	if (rect.left>this.refCon.x)
+		rect.left=this.refCon.x;
+	if (rect.right<this.refCon.x+this.port.width())
+		rect.right=this.refCon.x+this.port.width();
+	if (rect.top>this.refCon.y)
+		rect.top=this.refCon.y;
+	if (rect.bottom<this.refCon.y+this.port.height())
+		rect.bottom=this.refCon.y+this.port.height();
+	if (this.hScroll)
+	{
+		this.hslider.data('min',rect.left);
+		this.hslider.data('max',rect.right);
+	}
+	if (this.vScroll)
+	{
+		this.vslider.data('min',rect.top);
+		this.vslider.data('max',rect.bottom);
+	}
+	this.redrawScroll();
+}
+Win.prototype.redrawScroll=function()
+{
+	if (this.hScroll)
+	{
+		var min=this.hslider.data('min');
+		var max=this.hslider.data('max');
+		if (min<max)
+		{
+			var left=this.refCon.x-min;
+			var scale=this.port.width();
+			var start=(left*(this.port.width()-HScrollBucket)/(max-min))|0;
+			var end=(scale*(this.port.width()-HScrollBucket)/(max-min))|0;
+			if (end>this.port.width()-HScrollBucket-start)
+				end=this.port.width()-HScrollBucket-start;
+			this.hslider.css('left',(start+HScrollBucketStart)+'px');
+			this.hslider.css('width',end+'px');
+		}
+		else
+		{
+			this.hslider.css('left',HScrollBucketStart+'px');
+			this.hslider.css('width',(this.port.width()-HScrollBucket)+'px');
+		}
+	}
+	if (this.vScroll)
+	{
+		var min=this.vslider.data('min');
+		var max=this.vslider.data('max');
+		if (min<max)
+		{
+			var top=this.refCon.y-min;
+			var scale=this.port.height();
+			var start=(top*(this.port.height()-VScrollBucket)/(max-min))|0;
+			var end=(scale*(this.port.height()-VScrollBucket)/(max-min))|0;
+			if (end>this.port.height()-VScrollBucket-start)
+				end=this.port.height()-VScrollBucket-start;
+			this.vslider.css('top',(start+VScrollBucketStart)+'px');
+			this.vslider.css('height',end+'px');
+		}
+		else
+		{
+			this.vslider.css('top',VScrollBucketStart+'px');
+			this.vslider.css('height',(this.port.height()-VScrollBucket)+'px');
+		}
+	}
+}
+Win.prototype.redrawTextScroll=function()
+{
+	var y=this.port.scrollTop();
+	var min=this.vslider.data('min');
+	var max=this.vslider.data('max');
+	if (min<max)
+	{
+		var top=y-min;
+		var bottom=y+this.port.height();
+		var start=(top*(this.height-VScrollBucket-WinTitleHeight-VScrollArrowDown)/(max-min))|0;
+		var end=(bottom*(this.height-VScrollBucket-WinTitleHeight-VScrollArrowDown)/(max-min))|0;
+		this.vslider.css('top',(start+VScrollBucketStart)+'px');
+		this.vslider.css('height',(end-start)+'px');
+	}
+	else
+	{
+		this.vslider.css('top',VScrollBucketStart+'px');
+		this.vslider.css('height',(this.height-VScrollBucket-WinTitleHeight-VScrollArrowDown)+'px');
+	}
+}
 function resetWindows()
 {
 	var toClose=[];
@@ -330,8 +494,4 @@ function resizeClicked(event)
 {
 	if (isPaused) return;
 	fatal(event);
-}
-function initScrollbars(win)
-{
-	fatal("initscroll");
 }

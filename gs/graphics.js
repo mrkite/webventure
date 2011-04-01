@@ -49,7 +49,7 @@ BitMap.prototype.draw=function(port,ox,oy)
 			} else imgofs+=4;
 		}
 	}
-	ctx.putImage(image,ox,oy);
+	ctx.putImageData(image,ox,oy);
 }
 BitMap.prototype.inv=function(port,ox,oy)
 {
@@ -86,7 +86,7 @@ BitMap.prototype.inv=function(port,ox,oy)
 			} else imgofs+=4;
 		}
 	}
-	ctx.putImage(image,ox,oy);
+	ctx.putImageData(image,ox,oy);
 }
 BitMap.prototype.hit=function(x,y)
 {

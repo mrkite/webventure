@@ -25,6 +25,12 @@ GFile.prototype.r16=function()
 	v|=this.data.charCodeAt(this.pos++)&0xff;
 	return v;
 }
+GFile.prototype.r16le=function()
+{
+	var v=this.data.charCodeAt(this.pos++)&0xff;
+	v|=(this.data.charCodeAt(this.pos++)&0xff)<<8;
+	return v;
+}
 GFile.prototype.r24=function()
 {
 	var v=(this.data.charCodeAt(this.pos++)&0xff)<<16;

@@ -10,6 +10,12 @@ var HScrollArrowRight=34;
 var HScrollBucket=68;
 var HScrollBucketStart=32;
 
+var VScrollArrowDown=24;
+var VScrollBucket=48;
+var VScrollBucketStart=22;
+
+var GrowWidth=32;
+var GrowHeight=24;
 
 var winbg,exitbg,exitbga;
 
@@ -53,7 +59,7 @@ function getOpenDialog()
 {
 	var dialog=createAlert(50,70,520,228);
 	dialog.add(createCtl([12,8,298,30],4,0x16,["Load which game:"]));
-	dialog.add(createCtl([12,50,298,164],3,0x17));
+	dialog.add(createCtl([12,50,298,164],3,0x17,[]));
 	dialog.add(createCtl([320,158,190,24],1,0xa,["Open"]));
 	dialog.add(createCtl([320,194,190,24],2,0xa,["Cancel"]));
 	return dialog;
@@ -61,7 +67,7 @@ function getOpenDialog()
 function getSaveDialog()
 {
 	var dialog=createAlert(50,70,540,256);
-	dialog.add(createCtl([22,50,298,124],4,0x17));
+	dialog.add(createCtl([22,50,298,124],4,0x17,[]));
 	dialog.add(createCtl([22,182,298,30],5,0x16,["Save game as:"]));
 	dialog.add(createCtl([22,200,290,36],3,0x11,[""]));
 	dialog.add(createCtl([330,186,200,22],1,0xa,["Save"]));

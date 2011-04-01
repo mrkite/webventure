@@ -43,6 +43,7 @@ function set(a,b,c)
 function get(a,b)
 {
 	fatal("get");
+	return 0;
 }
 
 
@@ -133,7 +134,7 @@ function adjustScrolls(win)
 		}
 		else
 		{
-			rect.top=Math.mn(rect.top,child.top);
+			rect.top=Math.min(rect.top,child.top);
 			rect.left=Math.min(rect.left,child.left);
 			rect.bottom=Math.max(rect.bottom,child.top+child.height);
 			rect.right=Math.max(rect.right,child.left+child.width);

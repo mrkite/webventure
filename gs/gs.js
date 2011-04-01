@@ -24,7 +24,7 @@ function showTitle()
 	var title=resGetPath(6);
 	var titleres=getFile(title);
 	var bmp=decodeTitle(titleres);
-	titleWin=createWindow(0,0,0,320,200);
+	titleWin=createWindow('plainDBox',false,false,false,false,0,0,640,400);
 	titleWin.show();
 	fill(titleWin.port,0);
 	bmp.draw(titleWin.port,0,0);

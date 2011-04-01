@@ -135,7 +135,7 @@ var curMenu=undefined;
 
 $('body').keydown(function(event){
 	if (event.target.type=='text') return false; //no hotkeys in inputfields
-	if (!event.altkey) return false; //no non-alt keys
+	if (!event.altKey) return false; //no non-alt keys
 	if (isPaused) return false; //do nothing if we're paused
 	for (var i=0;i<hotkeys.length;i++)
 	{
