@@ -36,14 +36,40 @@ function runMain()
 	//TODO: runmain
 }
 
-function set(a,b,c)
+function set(obj,attr,val)
 {
-	fatal("set");
+	if (attr==1 || attr==2) //x,y
+		val=Math.round(val/XYScale);
+	if (attr==0)
+		setParent(obj,val);
+	if (attr<0xc)
+		queueObject(obj);
+	var idx=attrIdxs[attr];
+	val<<=attrShifts[attr];
+	val&=attrMasks[attr];
+	var oldval=game[idx][obj]&~attrMasks[attr];
+	game[idx][obj]=val|oldval;
+	gameChanged=true;
 }
-function get(a,b)
+function get(obj,attr)
 {
-	fatal("get");
-	return 0;
+	var val;
+	var idx=attrIdxs[attr];
+	if (!(idx&0x80))
+		val=game[idx][obj];
+	else
+	{
+		var p=getObject(0,obj);
+		if (p.length==0) return 0;
+		idx&=0x7f;
+		val=(p.charCodeAt(idx*2)&0xff)<<8;
+		val|=p.charCodeAt(idx*2+1)&0xff;
+	}
+	val&=attrMasks[attr];
+	var r=neg16(val>>attrShifts[attr]);
+	if (attr==1 || attr==2) //x,y
+		r*=XYScale;
+	return r;
 }
 
 
@@ -457,4 +483,51 @@ function initVars()
 	userInput='';
 	cmdReady=false;
 	lastClick=0;
+}
+
+function queueObject(obj)
+{
+	if (inQueue.indexOf(obj)==-1)
+	{
+		inQueue.push(obj);
+		var item={obj:obj};
+		item.parent=get(obj,0);
+		item.x=get(obj,1);
+		item.y=get(obj,2);
+		item.exitx=get(obj,9);
+		item.exity=get(obj,0xa);
+		item.hidden=get(obj,0xb);
+		item.offscreen=get(obj,3);
+		item.invisible=get(obj,4);
+		queue.push({id:0x7,val:item});
+	}
+}
+function setParent(obj,val)
+{
+	var o=game[0][obj];
+	if (val==obj) return;
+	var p=o*2;
+	o=relations[p];
+	while (o!=obj)
+	{
+		p=o*2+1;
+		o=relations[p];
+	}
+	relations[p]=relations[o*2+1];
+	p=val*2;
+	o=relations[p];
+	while (o && o<=obj)
+	{
+		p=o*2+1;
+		o=relations[p];
+	}
+	relations[obj*2+1]=o;
+	relations[p]=obj;
+}
+
+function neg16(v)
+{
+	if (v&0x8000)
+		v=-((v^0xffff)+1);
+	return v;
 }

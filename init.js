@@ -15,6 +15,7 @@ function waitForLoad()
 	showTitle();
 	loadFiles();
 	createWindows();
+	initMenus();
 	createMenus();
 	addDeskAccessory("Adjust Volume...",0x900);
 

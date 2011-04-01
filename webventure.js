@@ -15,6 +15,6 @@ $(document).ready(function(){
 
 function fatal(err)
 {
-	desktop.html('<h3>'+err+'</h3>');
+//	desktop.html('<h3>'+err+'</h3>');
 	throw err;
 }

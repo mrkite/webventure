@@ -2,6 +2,7 @@
 var startImage; //icom splash img object
 var textLH=15; //line height of text window
 var MBHeight=24; //height of menubar
+var XYScale=2; //scale x,y objects by 2
 
 function initialize()
 {
@@ -16,6 +17,7 @@ function initialize()
 	startImage.css('height','100%');
 	desktop.append(startImage);
 
+	loadGame(gamename);
 	setTimeout(waitForLoad,10);
 }
 
@@ -209,5 +211,5 @@ function getWindow(id)
 		vs=true;
 	if (w.wFrame&0x0800)
 		hs=true;
-	return createWindow(klass,close,zoom,vs,hs,w.left*2,w.top*2,w.right*2-w.left,w.bottom*2-w.top);
+	return createWindow(klass,close,zoom,vs,hs,w.left*2,w.top*2,(w.right-w.left)*2,(w.bottom-w.top)*2);
 }

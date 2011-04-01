@@ -46,10 +46,19 @@ function CButtonCtl(bounds,refcon,opts)
 		fatal("cbutton");
 	});
 }
+CButtonCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+CButtonCtl.prototype.show=function()
+{
+	this.obj.show();
+	this.draw();
+}
 CButtonCtl.prototype.draw=function()
 {
 	var ctx=this.obj.get(0).getContext('2d');
-	var image=ctx.getImageData(0,0,this.width,this.height);
+	var image=ctx.getImageData(0,0,this.obj.width(),this.obj.height());
 	var data=this.selected?this.selbits:this.bits;
 	if (data)
 	{
@@ -117,6 +126,14 @@ function ButtonCtl(bounds,refcon,opts)
 		fatal("button");
 	});
 }
+ButtonCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+ButtonCtl.prototype.show=function()
+{
+	this.obj.show();
+}
 ButtonCtl.prototype.draw=function(){}
 
 /**
@@ -141,6 +158,14 @@ TextLineCtl.prototype.setText=function(text)
 {
 	this.obj.html(text);
 }
+TextLineCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+TextLineCtl.prototype.show=function()
+{
+	this.obj.show();
+}
 TextLineCtl.prototype.draw=function(){}
 
 /**
@@ -157,6 +182,14 @@ function InputCtl(bounds,refcon,opts)
 	this.obj.val(opts[0]);
 	this.refcon=refcon;
 }
+InputCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+InputCtl.prototype.show=function()
+{
+	this.obj.show();
+}
 InputCtl.prototype.draw=function(){}
 
 /**
@@ -172,6 +205,14 @@ function TextBlockCtl(bounds,refcon,opts)
 	this.obj.css('height',bounds[3]+'px');
 	this.refcon=refcon;
 	this.setText(opts[0]);
+}
+TextBlockCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+TextBlockCtl.prototype.show=function()
+{
+	this.obj.show();
 }
 TextBlockCtl.prototype.draw=function(){}
 TextBlockCtl.prototype.getText=function()
@@ -209,6 +250,14 @@ function ListCtl(bounds,refcon)
 	this.obj.css('width',bounds[2]+'px');
 	this.obj.css('height',bounds[3]+'px');
 	this.refcon=refcon;
+}
+ListCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+ListCtl.prototype.show=function()
+{
+	this.obj.show();
 }
 ListCtl.prototype.draw=function(){}
 
@@ -257,6 +306,15 @@ function SliderCtl(bounds,refcon,opts)
 	});
 	this.obj.append(this.slider);
 }
+SliderCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+SliderCtl.prototype.show=function()
+{
+	this.obj.show();
+	this.draw();
+}
 SliderCtl.prototype.draw=function()
 {
 	var range=this.width-(HScrollBucket+20);
@@ -285,5 +343,13 @@ function SButtonCtl(bounds,refcon,opts)
 	this.obj.mousedown(function(event){
 		fatal("button");
 	});
+}
+SButtonCtl.prototype.hide=function()
+{
+	this.obj.hide();
+}
+SButtonCtl.prototype.show=function()
+{
+	this.obj.show();
 }
 SButtonCtl.prototype.draw=function(){}

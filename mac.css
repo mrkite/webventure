@@ -2,8 +2,9 @@ div.screen {
 	font-family: sans-serif;
 	background: #ccc;
 	background-image: url("images/mac/gray.png");
-	width: 512;
-	height: 342;
+	width: 512px;
+	height: 342px;
+	position: absolute;
 }
 div.menubar {
 	background: #fff;
@@ -11,7 +12,7 @@ div.menubar {
 	border-bottom: 1px solid #000;
 	height: 19px;
 }
-div.menu {
+div.menubar div {
 	float: left;
 	font-size: 12px;
 	padding-top: 3px;
@@ -20,21 +21,21 @@ div.menu {
 	cursor: pointer;
 	height: 19px;
 }
-div.menu.apple {
+div.apple {
 	background-image: url("images/mac/apple.png");
 	background-repeat: no-repeat;
 	background-position: center 3px;
-	
 	width: 11px;
 }
-div.menu.active {
+div.menubar div.active {
 	background: #000;
 	color: #fff;
 }
-div.menu.apple.active {
+div.menubar div.apple.active {
 	background-image: url("images/mac/iapple.png");
 	background-repeat: no-repeat;
 	background-position: center 3px;
+	width: 11px;
 }
 table.menu {
 	position: absolute;
@@ -54,6 +55,14 @@ table.menu hr {
 	margin: 0px;
 	border: 1px dotted #000;
 	border-style: none none dotted;
+}
+table.menu tr.menuitem.disabled {
+	color: #aaa;
+}
+table.menu tr.menuitem.disabled td.shortcut {
+	background-image: url("images/dclover.png");
+	background-repeat: no-repeat;
+	background-position: 15px 4px;
 }
 table.menu tr.menuitem.active {
 	background: #000;
@@ -139,9 +148,21 @@ div.dBox canvas {
 div.dBox.active {
 	z-index: 50000;
 }
+div.alert {
+	background: #fff;
+	position: absolute;
+	border: 4px double #000;
+}
+div.alert canvas {
+	border: 1px solid #000;
+}
+div.alert.active {
+	z-index: 50000;
+}
 div.plainDBox {
 	background: #fff;
 	position: absolute;
+	border: 1px solid #000;
 }
 div.plainDBox.active {
 	z-index: 50000;
@@ -435,7 +456,7 @@ div.rDoc10 div.title {
 div.rDoc10.active {
 	z-index: 50000;
 }
-div.cbutton {
+div.sbutton {
 	cursor: pointer;
 	background: #fff;
 	color: #000;
@@ -445,11 +466,11 @@ div.cbutton {
 	text-align: center;
 	overflow: hidden;
 }
-div.cbutton.active {
+div.sbutton.active {
 	background: #000;
 	color: #fff;
 }
-div.cbutton.ctc {
+div.sbutton.ctc {
 	line-height: 30px;
 	font-weight: bold;
 }

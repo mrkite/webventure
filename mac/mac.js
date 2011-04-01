@@ -2,6 +2,7 @@
 var startImage;	//the icom splash img object
 var textLH=15; //line height of text window
 var MBHeight=19; //height of menubar
+var XYScale=1; //don't scale
 
 function initialize()
 {
@@ -16,6 +17,7 @@ function initialize()
 	startImage.css('height','100%');
 	desktop.append(startImage);
 
+	loadGame(gamename);
 	setTimeout(waitForLoad,10);
 }
 

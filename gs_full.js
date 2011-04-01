@@ -3,6 +3,7 @@ var Modules=[
 	"gs/files.js",
 	"gs/graphics.js",
 	"gs/resources.js",
+	"gs/windows.js",
 	"gs/menus.js",
 	"files.js",
 	"init.js",

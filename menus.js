@@ -1,4 +1,9 @@
 /********************** public functions *********************/
+function initMenus()
+{
+	menubar=$(document.createElement('div'));
+	menubar.addClass('menubar');
+}
 function showMenus()
 {
 	desktop.append(menubar);

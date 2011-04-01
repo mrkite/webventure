@@ -3,6 +3,7 @@ div.screen {
 	background: #444;
 	width: 640px;
 	height: 400px;
+	position: absolute;
 }
 div.menubar {
 	background: #fff;
@@ -87,6 +88,7 @@ table.menu td.shortcut {
 	background-repeat: no-repeat;
 	background-position: 7px 2px;
 }
+div.info,
 div.document {
 	background: #fff;
 	border: 2px solid #000;
@@ -102,7 +104,7 @@ div.document div.title {
 	border-right: 2px solid #fff;
 	text-align: center;
 }
-div.document div.info {
+div.info div.title {
 	cursor: move;
 	background: #fff;
 	background-image: url('images/gs/info.png');
@@ -113,7 +115,9 @@ div.document div.info {
 	border-left: 2px solid #fff;
 	border-right: 2px solid #fff;
 	text-align: center;
+	
 }
+div.info.active,
 div.document.active {
 	z-index: 50000;
 }
@@ -121,6 +125,7 @@ div.document.active div.title {
 	background-image: url('images/gs/activeTitle.png');
 	background-repeat: repeat-x;
 }
+div.info canvas,
 div.document canvas {
 	border-top: 2px solid #000;
 }
@@ -130,12 +135,8 @@ div.document div.textEdit {
 	overflow: hidden;
 	font-size: 12px;
 }
+div.info div.title span,
 div.document div.title span {
-	background: #fff;
-	padding-left: 5px;
-	padding-right: 5px;
-}
-div.document div.info span {
 	background: #fff;
 	padding-left: 5px;
 	padding-right: 5px;
@@ -156,6 +157,8 @@ div.document.active div.close {
 }
 div.document div.grow {
 	position: absolute;
+	width: 30px;
+	height: 22px;
 	border-top: 2px solid #000;
 	border-left: 2px solid #000;
 	background: #fff;
@@ -185,6 +188,8 @@ div.document div.hscroll {
 }
 div.document div.vscroll {
 	position: absolute;
+	top: 22px;
+	width: 30px;
 	border-top: 2px solid #000;
 	border-left: 2px solid #000;
 	background: #fff;
@@ -219,12 +224,19 @@ div.document.active div.rightarrow {
 div.document.active div.uparrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 30px;
+	height: 22px;
 	background-image: url('images/gs/scrollup.png');
 	border-bottom: 2px solid #000;
 }
 div.document.active div.downarrow {
 	display: block;
 	position: absolute;
+	left: 0px;
+	width: 26px;
+	height: 10px;
 	background-image: url('images/gs/scrolldown.png');
 	border-top: 2px solid #000;
 }
@@ -239,6 +251,14 @@ div.dbox {
 	position: absolute;
 	border: 2px solid #000;
 }
+div.plainDBox {
+	background: #fff;
+	position: absolute;
+	border: 1px solid #000;
+}
+div.plainDBox.active {
+	z-index: 50000;
+}
 div.alert {
 	background: #fff;
 	position: absolute;
@@ -252,6 +272,8 @@ div.alert.active {
 }
 div.alert div.hscroll {
 	position: absolute;
+	left: 0px;
+	height: 22px;
 	border: 2px solid #000;
 	background-image: url('images/gs/scrollback.png');
 	cursor: pointer;
@@ -259,12 +281,19 @@ div.alert div.hscroll {
 div.alert div.leftarrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 32px;
+	height: 22px;
 	background-image: url('images/gs/scrollleft.png');
 	border-right: 2px solid #000;
 }
 div.alert div.rightarrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	width: 10px;
+	height: 18px;
 	background-image: url('images/gs/scrollright.png');
 	border-left: 2px solid #000;
 }
@@ -272,14 +301,9 @@ div.alert div.slider {
 	display: block;
 	position: absolute;
 	background: #fff;
+	width: 26px;
+	height: 18px;
 	border: 2px solid #000;
-}
-div.dbox {
-	background: #fff;
-	position: absolute;
-}
-div.dbox.active {
-	z-index: 50000;
 }
 canvas.cbutton {
 	cursor: pointer;

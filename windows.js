@@ -6,8 +6,8 @@
 function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 {
 	this.ctls=[];
-	this.zoom=hasZoom;
-	this.close=hasClose;
+	this.hasZoom=hasZoom;
+	this.hasClose=hasClose;
 	this.vScroll=vScroll;
 	this.hScroll=hScroll;
 	this.win=$(document.createElement('div'));
@@ -21,12 +21,12 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 			titleDown(event);
 			return false;
 		});
-		if (this.close)
+		if (this.hasClose)
 			txt='<div class="close"></div>'+txt;
-		if (this.zoom)
+		if (this.hasZoom)
 			txt+='<div class="resize"></div>';
 		this.title.html(txt);
-		if (this.close)
+		if (this.hasClose)
 		{
 			var el=this.title.children('div.close');
 			el.mousedown(function(){return false;});
@@ -35,7 +35,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 				return false;
 			});
 		}
-		if (this.zoom)
+		if (this.hasZoom)
 		{
 			var el=this.title.children('div.resize');
 			el.mousedown(function(){return false;});
@@ -116,8 +116,8 @@ Win.prototype.setTitle=function(str)
 		this.win.show();
 		el.css({position:'absolute',visibility:'hidden',display:'block'});
 		var availSpace=this.port.width();
-		if (this.close) availSpace-=30;
-		if (this.zoom) availSpace-=30;
+		if (this.hasClose) availSpace-=30;
+		if (this.hasZoom) availSpace-=30;
 		for (var i=0;i<str.length;i++)
 		{
 			el.append(str.substring(i,i+1));
@@ -133,8 +133,8 @@ Win.prototype.setTitle=function(str)
 }
 Win.prototype.setCanvas=function(obj)
 {
-	var w=this.port.width();
-	var h=this.port.height();
+	var w=this.port.attr('width');
+	var h=this.port.attr('height');
 	this.port.remove();
 	obj.css('top','0px');
 	obj.css('left','0px');
@@ -443,16 +443,16 @@ function bringToFront(win)
 {
 	if (wins[0]==win)
 	{
-		win.obj.addClass('active');
+		win.win.addClass('active');
 		return;
 	}
 	if (wins[0]!=undefined)
-		wins[0].obj.removeClass('active');
+		wins[0].win.removeClass('active');
 	for (var i=0;i<wins.length;i++)
 		if (wins[i]==win)
 			wins.splice(i,1);
 	wins.unshift(win);
-	win.obj.addClass('active');
+	win.win.addClass('active');
 }
 
 function createWindow(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)

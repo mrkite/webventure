@@ -39,7 +39,7 @@ BitMap.prototype.draw=function(port,ox,oy)
 			pix=this.data[bmpofs+(x>>2)];
 			if (paletteMap)
 				pix=paletteMap[pix];
-			pix=(pix>>((x&2)?0:4))&0xf;
+			pix=((pix>>((x&2)?0:4))&0xf)*3;
 			if (pix)
 			{
 				image.data[imgofs++]=palette[pix++];
@@ -79,6 +79,7 @@ BitMap.prototype.inv=function(port,ox,oy)
 			if (pix)
 			{
 				pix^=0xf;
+				pix*=3;
 				image.data[imgofs++]=palette[pix++];
 				image.data[imgofs++]=palette[pix++];
 				image.data[imgofs++]=palette[pix++];

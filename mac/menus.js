@@ -10,7 +10,7 @@ function getMenu(res)
 	if (titleLen==1) title='';
 	curMenu={id:id};
 	curMenu.obj=$(document.createElement('div'));
-	if (title=='@')
+	if (title=='')
 		curMenu.obj.addClass('apple');
 	else
 		curMenu.obj.html(title);

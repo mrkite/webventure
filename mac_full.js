@@ -3,6 +3,7 @@ var Modules=[
 	"mac/files.js",
 	"mac/graphics.js",
 	"mac/resources.js",
+	"mac/windows.js",
 	"mac/menus.js",
 	"files.js",
 	"init.js",
