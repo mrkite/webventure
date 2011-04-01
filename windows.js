@@ -12,7 +12,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 	this.hScroll=hScroll;
 	this.win=$(document.createElement('div'));
 	this.win.addClass(klass);
-	if (klass=="document" || klass=="info")
+	if (klass=="document" || klass=="info" || klass=="noGrowDoc" || klass=="zoomDoc" || klass=="rDoc4")
 	{
 		var txt='<span></span>';
 		this.title=$(document.createElement('div'));
@@ -58,7 +58,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 	this.height=height;
 	this.left=left;
 	this.width=width;
-	if (klass=="document")
+	if (klass=="document" || klass=="noGrowDoc" || klass=="zoomDoc" || klass=="rDoc4")
 	{
 		this.top-=WinTitleHeight+WinBorder;
 		this.height+=WinTitleHeight;
