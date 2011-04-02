@@ -11,7 +11,7 @@ var lastClick;
 var cmdNumObjs,cmds,inQueue;
 var queue,soundQueue,textQueue;
 
-var titleWin;
+var titleWin,diplomaWin;
 var mainWin,commandsWin,textWin,selfWin,exitWin;
 var textEdit;
 
@@ -29,6 +29,8 @@ var afterSave=function(){}
 var halted=false;
 var haltedAtEnd=false,haltedInSelection=false;
 var isPaused=false;
+
+var dragObject=undefined;
 
 function runMain()
 {
@@ -62,6 +64,67 @@ function updateScreen(pause)
 	var wait=printTexts();
 	if (playSounds(pause)) wait=true;
 	return wait;
+}
+function endGame()
+{
+	if (gameState==2) //win
+	{
+		closeAllWindows();
+		var diploma=getDiploma();
+		diplomaWin=getDiplomaWin();
+		diplomaWin.show();
+		diploma.draw(diplomaWin.port,0,0);
+		doDiploma();
+		gameState=4;
+	}
+	else if (gameState==3) //lose
+	{
+		updateCtls();
+		var dialog=getLoseDialog();
+		dialog.show(function(id) {
+			closeWindow(dialog);
+			switch (id)
+			{
+				case 1: //restart
+					doNew();
+					break;
+				case 2: //quit
+					gameState=4;
+					runMain();
+					break;
+				case 3: //load
+					openDialog();
+					break;
+			}
+		});
+	}
+}
+function doDiploma()
+{
+	var link=document.createElement('link');
+	link.type="text/css";
+	link.rel="stylesheet";
+	link.href="print.css";
+	link.media="print";
+	$('head').append(link);
+
+	var dialog=getDiplomaDialog();
+	isPaused=true;
+	var te=getDiplomaSignature();
+	diplomaWin.add(te);
+	te.obj.focus();
+	dialog.show(function(id){
+		switch (id)
+		{
+			case 1: //print
+				te.obj.blur();
+				window.print();
+				break;
+			case 2: //quit
+				runMain();
+				break;
+		}
+	});
 }
 function runQueue()
 {
@@ -247,7 +310,7 @@ function checkObject(old)
 	for (i=0;i<children.length;i++)
 		queueObject(children[i]);
 }
-function reflectSwap()
+function reflectSwap(swap)
 {
 	var from=getObjectWindow(swap.from);
 	var to=getObjectWindow(swap.to);
@@ -483,6 +546,26 @@ function drawObject(obj,win,flag)
 		return r;
 	}
 	return {top:0,left:0,width:0,height:0};
+}
+function drawExits()
+{
+	exitWin.killControls();
+	var exits=getChildren(get(1,0),true);
+	for (var i=0;i<exits.length;i++)
+		drawExit(exits[i]);
+}
+function drawExit(obj)
+{
+	if (!get(obj,8)) return;
+	var ctl=exitWin.find(obj);
+	if (ctl)
+		exitWin.remove(ctl);
+	if (!get(obj,0xb) && get(obj,0)==get(1,0))
+	{
+		var left=get(obj,9);
+		var top=get(obj,0xa);
+		exitWin.add(getExit(left,top,obj));
+	}
 }
 
 // calculates the bounds of the objects in the window, sends bounds to window
@@ -883,4 +966,95 @@ function getObjectWindow(obj)
 		case 0xffff: return commandsWin;
 	}
 	return findObjectWindow(obj);
+}
+
+function getChildren(obj,recurs)
+{
+	var rels=[];
+	var v=relations[obj*2];
+	while (v)
+	{
+		rels.push(v);
+		if (!recurs)
+			rels=rels.concat(getChildren(v,false));
+		v=relations[v*2+1];
+	}
+	return rels;
+}
+function getChildIdx(children,obj)
+{
+	var i;
+	for (i=0;i<children.length && children[i].id!=obj;i++) {}
+	if (i==children.length) return 0;
+	return i+1;
+}
+function addChild(win,obj)
+{
+	if (win.refCon==undefined) return;
+	var i;
+	for (i=0;i<win.refCon.children.length && obj>win.refCon.children[i].id;i++) {}
+	if (i==win.refCon.children.length || obj!=win.refCon.children[i].id)
+	{
+		var child={id:obj,top:0,left:0,width:0,height:0}
+		win.refCon.children.splice(i,0,child);
+		win.refCon.updateScroll=true;
+		updateWindow(win);
+	}
+}
+function removeChild(win,obj)
+{
+	if (win.refCon==undefined) return;
+	var idx=getChildIdx(win.refCon.children,obj);
+	if (idx==0) return;
+	win.refCon.children.splice(idx-1,1);
+	win.refCon.updateScroll=true;
+	updateWindow(win);
+}
+function getParentWin(obj)
+{
+	if (obj==1) return selfWin;
+	var parent=get(obj,0);
+	if (!parent) return undefined;
+	return getObjectWindow(parent);
+}
+function getInventoryRect()
+{
+	var x=inventory.left;
+	var y=inventory.top;
+	for (var i=0;i<inventory.num;i++)
+	{
+		x+=inventory.stepx;
+		y+=inventory.stepy;
+		if (y>=400-12)
+			y=inventory.top;
+		if (x>=640-12)
+			x=inventory.left;
+	}
+	inventory.num++;
+	return {top:y,left:x,width:inventory.width,height:inventory.height};
+}
+function setRefCon(obj,w)
+{
+	var children=getChildren(obj,true);
+	w.refCon={id:obj,x:0,y:0,updateScroll:false,children:[]};
+	var originx=0x7fff;
+	var originy=0x7fff;
+	for (var i=0;i<children.length;i++)
+	{
+		if (children[i]!=1)
+		{
+			var child={id:children[i],top:0,left:0,width:0,height:0};
+			if (w!=mainWin)
+			{
+				var x=get(child,1);
+				var y=get(child,2);
+				if (originx>x) originx=x;
+				if (originy>y) originy=y;
+			}
+			w.refCon.children.push(child);
+		}
+	}
+	if (originx!=0x7fff) w.refCon.x=originx;
+	if (originy!=0x7fff) w.refCon.y=originy;
+	if (w!=mainWin) w.refCon.updateScroll=true;
 }

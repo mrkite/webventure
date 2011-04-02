@@ -24,6 +24,13 @@ function createCtl(bounds,refcon,type,opts)
 	}
 }
 
+function moveControl(ctl,x,y)
+{
+	var pos=ctl.obj.position();
+	ctl.obj.css('left',(pos.left+x)+'px');
+	ctl.obj.css('top',(pos.top+y)+'px');
+}
+
 /********************** private functions *********************/
 
 /**

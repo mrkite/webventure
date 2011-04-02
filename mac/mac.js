@@ -121,6 +121,26 @@ function createMenus()
 		getMenu(getRes('MENU',i));
 }
 
+var continueButton;
+function clickToContinue()
+{
+	var w=commandsWin.port.width();
+	var h=commandsWin.port.height();
+	continueButton=createCtl([4,4,w-8,h-8],0xff,0x19,['Click to continue']);
+	continueButton.addClass('ctc');
+	commandsWin.hideControls();
+	commandsWin.add(continueButton);
+	isPaused=true;
+}
+
+function getExit(left,top,obj)
+{
+	var ctl=getCtl(getRes('CNTL',0x80));
+	ctl.refcon=obj;
+	moveControl(ctl,left,top);
+	return ctl;
+}
+
 //convert mac string to valid string
 function toascii(str)
 {
@@ -139,6 +159,16 @@ function toascii(str)
 		}
 	}
 	return newstr;
+}
+
+function getNouns(idx)
+{
+	return resGetIndStr(0x84,idx);
+}
+
+function getPrefixes(attr)
+{
+	return resGetIndStr(0x83,attr);
 }
 
 /********************** private functions *********************/

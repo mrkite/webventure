@@ -174,6 +174,19 @@ function createMenus()
 		addMenu(stock[i]);
 }
 
+function clickToContinue()
+{
+	commandsWin.hideControls();
+	commandsWin.showControl(0xff);
+	isPaused=true;
+}
+
+function getExit(left,top,obj)
+{
+	var ctl=createCtl([left,top,7,6],obj,2,[]);
+	return ctl;
+}
+
 
 // convert IIgs string to valid string
 function toascii(str)
@@ -192,24 +205,19 @@ function toascii(str)
 	return newstr;
 }
 
+function getNouns(idx)
+{
+	return ["he","she","it"][idx-1];
+}
+
+function getPrefixes(attr)
+{
+	return ["the ","a ","an "][attr-1];
+}
+
 /********************** private functions *********************/
 function getWindow(id)
 {
 	var w=resGetWindow(id);
-	var zoom=w.wFrame&0x100;
-	var close=w.wFrame&0x4000;
-	var klass="dbox";
-	var vs=false;
-	var hs=false;
-	if (w.wFrame&0x8000)
-		klass="document";
-	if (w.wFrame&0x0010)
-		klass="info";
-	if (w.wFrame&0x2000)
-		klass="alert";
-	if (w.wFrame&0x1000)
-		vs=true;
-	if (w.wFrame&0x0800)
-		hs=true;
-	return createWindow(klass,close,zoom,vs,hs,w.left*2,w.top*2,(w.right-w.left)*2,(w.bottom-w.top)*2);
+	return gsWindow(w.wFrame,w.left*2,w.top*2,(w.right-w.left)*2,(w.bottom-w.top)*2);
 }

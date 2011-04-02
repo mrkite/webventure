@@ -75,5 +75,65 @@ function getSaveDialog()
 	return dialog;
 }
 
+function getInventoryWindow()
+{
+	var rect=getInventoryRect();
+	
+	var iw=gsWindow(inventory.wFrame,rect.left*2,rect.top*2,rect.width*2,rect.height*2);
+	iw.kind=0xe;
+	return iw;
+}
+
+function getDiplomaWin()
+{
+	return getWindow(6);
+}
+function getDiplomaDialog()
+{
+	var dialog=createAlert(10,352,620,40);
+	dialog.add(createCtl([5,8,30,24],1,0xa,['Print']));
+	dialog.add(createCtl([272,8,32,24],2,0xa,['Quit']));
+	dialog.add(createCtl([42,2,225,36],3,0x8016,['^0']));
+	dialog.param([resGetCertPrompt()]);
+	return dialog;
+}
+function getDiplomaSignature()
+{
+	var sig=resGetSignature();
+	var te=createCtl([sig.left,sig.bottom*2-20,sig.width,20],5,0x11,['']);
+	te.obj.css('text-align','center');
+	return te;
+}
+
+function getLoseDialog()
+{
+	var dialog=createAlert(140,136,430,128);
+	dialog.add(createCtl([14,56,122,26],1,0xa,['YES']));
+	dialog.add(createCtl([260,56,152,26],2,0xa,['NO']));
+	dialog.add(createCtl([14,92,398,26],3,0xa,["Yes, I'll use a saved game."]));
+	dialog.add(createCtl([14,10,398,38],4,0xf,["You have lost ... Would you\nlike to have another try?"]));
+	return dialog;
+}
+
+function gsWindow(wFrame,left,top,width,height)
+{
+	var zoom=wFrame&0x100;
+	var close=wFrame&0x4000;
+	var klass="dbox";
+	var vs=false;
+	var hs=false;
+	if (wFrame&0x8000)
+		klass="document";
+	if (wFrame&0x0010)
+		klass="info";
+	if (wFrame&0x2000)
+		klass="alert";
+	if (wFrame&0x1000)
+		vs=true;
+	if (wFrame&0x0800)
+		hs=true;
+	return createWindow(klass,close,zoom,vs,hs,left,top,width,height);
+}
+
 
 /********************** private functions *********************/
