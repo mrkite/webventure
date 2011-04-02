@@ -5,6 +5,7 @@ var Modules=[
 	"gs/resources.js",
 	"gs/windows.js",
 	"gs/menus.js",
+	"gs/sound.js",
 	"files.js",
 	"init.js",
 	"main.js",
@@ -14,7 +15,8 @@ var Modules=[
 	"engine.js",
 	"controls.js",
 	"text.js",
-	"objects.js"
+	"objects.js",
+	"sound.js"
 ];
 var loadedModules=0;
 for (var i in Modules)
