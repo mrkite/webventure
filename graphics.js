@@ -18,6 +18,29 @@ function fill(port,color)
 	fillRect(port,0,0,port.width(),port.height(),color);
 }
 
+function sectRect(src1,src2,dst)
+{
+	var top=src2.top;
+	var left=src2.left;
+	var right=left+src2.width;
+	var bottom=top+src2.height;
+	if (top<src1.top) top=src1.top;
+	if (left<src1.left) left=src1.left;
+	if (bottom>src1.top+src1.height)
+		bottom=src1.top+src1.height;
+	if (right>src1.left+src1.width)
+		right=src1.left+src1.width;
+	if (right<=left || bottom<=top)
+	{
+		top=bottom=left=right=0;
+	}
+	dst.top=top;
+	dst.left=left;
+	dst.width=right-left;
+	dst.height=bottom-top;
+	return dst.height!=0;
+}
+
 /********************** private functions *********************/
 function decodePPIC(ppic)
 {

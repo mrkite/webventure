@@ -126,16 +126,16 @@ HiresBMP.prototype.draw=function(port,ox,oy)
 	var image=ctx.getImageData(ox,oy,w,h);
 	for (var y=sy;y<h;y++)
 	{
-		var bmpofs=(y>>1)*rowBytes;
+		var bmpofs=(y>>1)*this.rowBytes;
 		var imgofs=(y-sy)*image.width*4;
 		var pix;
 		for (var x=sx;x<w;x++)
 		{
 			pix=this.data[bmpofs+(x>>2)];
 			pix=((pix>>(6-(x&3)*2))&0x3)*3;
-			image.data[imgofs++]=pal[pix++];
-			image.data[imgofs++]=pal[pix++];
-			image.data[imgofs++]=pal[pix++];
+			image.data[imgofs++]=this.pal[pix++];
+			image.data[imgofs++]=this.pal[pix++];
+			image.data[imgofs++]=this.pal[pix++];
 			image.data[imgofs++]=0xff;
 		}
 	}

@@ -405,6 +405,19 @@ function resetWindows()
 	for (var i in toClose)
 		tryClose(toClose[i]);
 }
+function closeAllWindows()
+{
+	var toClose=[];
+	for (var i=0;i<wins.length;i++)
+	{
+		if (wins[i].kind==0xe)
+			toClose.push(wins[i]);
+		else
+			wins[i].hide();
+	}
+	for (var i in toClose)
+		tryClose(toClose[i]);
+}
 function closeWindow(win)
 {
 	for (var i=0;i<wins.length;i++)
@@ -484,6 +497,7 @@ function findObjectWindow(obj)
 	}
 	return undefined;
 }
+
 
 /********************** private functions *********************/
 var wins=[];

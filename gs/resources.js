@@ -111,6 +111,23 @@ function resGetExitBGA()
 	return p;
 }
 
+function resGetSignature()
+{
+	var sig={};
+	res.seek(0x46,res.set);
+	sig.bottom=res.r16le();
+	sig.left=res.r16le();
+	sig.width=res.r16le();
+	return sig;
+}
+
+function resGetCertPrompt()
+{
+	res.seek(0x5b8,res.set);
+	var len=res.r8();
+	return res.read(len);
+}
+
 function resGetGameName()
 {
 	res.seek(0x3f0,res.set);

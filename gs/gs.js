@@ -215,6 +215,25 @@ function getPrefixes(attr)
 	return ["the ","a ","an "][attr-1];
 }
 
+function intersectObj(obj,rect)
+{
+	var scrap={top:0,left:0,width:0,height:0};
+	var bmp;
+	if (bmp=getGraphic(obj*2))
+	{
+		scrap.width=bmp.width;
+		scrap.height=bmp.height;
+		return sectRect(scrap,rect,scrap);
+	}
+	return false;
+}
+
+function numCmdObjs()
+{
+	if (!selectedCtl) return 3000;
+	return cmdNumObjs[selectedCtl];
+}
+
 /********************** private functions *********************/
 function getWindow(id)
 {

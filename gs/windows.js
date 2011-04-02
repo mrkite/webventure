@@ -115,6 +115,16 @@ function getLoseDialog()
 	return dialog;
 }
 
+function getTextDialog()
+{
+	var dialog=createAlert(20,92,600,140);
+	dialog.add(createCtl([10,94,50,30],1,0xa,['OK']));
+	dialog.add(createCtl([96,94,120,30],2,0xa,['CANCEL']));
+	dialog.add(createCtl([10,10,580,36],3,0x16,['^0']));
+	dialog.add(createCtl([10,56,580,28],4,0x11,['']));
+	return dialog;
+}
+
 function gsWindow(wFrame,left,top,width,height)
 {
 	var zoom=wFrame&0x100;

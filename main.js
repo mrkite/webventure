@@ -58,6 +58,79 @@ function runMain()
 	if (gameState==2 || gameState==3)
 		endGame();
 }
+function runEngine()
+{
+	if (haltedAtEnd)
+	{
+		haltedAtEnd=false;
+		if (resume())
+		{
+			haltedAtEnd=true;
+			return true;
+		}
+		return false;
+	}
+	if (haltedInSelection)
+	{
+		haltedInSelection=false;
+		if (resume())
+		{
+			haltedInSelection=true;
+			return true;
+		}
+		if (updateScreen(true))
+			return true;
+	}
+	while (curSelection.length)
+	{
+		var obj=curSelection.shift();
+		if ((gameState==0 || gameState==1) && isActiveObject(obj))
+		{
+			if (run(selectedCtl,obj,destObject,deltaPt))
+			{
+				haltedInSelection=true;
+				return true;
+			}
+			if (updateScreen(true))
+				return true;
+		}
+	}
+	if (selectedCtl==1)
+		gameChanged=false;
+	else if (gameState==0 || gameState==1)
+		if (run(3,selectedCtl,destObject,deltaPt))
+		{
+			haltedAtEnd=true;
+			return true;
+		}
+	return false;
+}
+function isActiveObject(obj)
+{
+	if (!getAncestor(obj)) return false;
+	if (numCmdObjs()>=2 && destObject>0 && !getAncestor(destObject))
+		return false;
+	if (selectedCtl!=5) return true;
+	if (!isDraggable(obj)) return false;
+	if (get(1,0)!=destObject) return true;
+	var rect={top:0,left:0,width:mainWin.port.width(),height:mainWin.port.height()};
+	rect.top-=get(obj,2)+deltaPt.v;
+	rect.left-=get(obj,1)+deltaPt.h;
+	return intersectObj(obj,rect);
+}
+function isDraggable(obj)
+{
+	return (get(obj,3)==0 &&
+		get(obj,4)==0 &&
+		get(obj,5)==0);
+}
+function getAncestor(obj)
+{
+	var root=get(1,0);
+	while (obj!=0 && obj!=1 && obj!=root)
+		obj=get(obj,0);
+	return obj;
+}
 function updateScreen(pause)
 {
 	runQueue();
@@ -502,6 +575,46 @@ function updateWindow(win)
 		if (win.kind==0xe && win.refCon.updateScroll)
 			adjustScrolls(win);
 	}
+}
+
+function activateCommand(val)
+{
+	var cmd=commandsWin.find(val);
+	if (cmd!=activeCmd)
+	{
+		if (activeCmd)
+			activeCmd.deselect();
+		activeCmd=cmd;
+		if (cmd)
+			cmd.select();
+	}
+}
+
+function textEntry(txt,obj,target)
+{
+	targetObject=target;
+	sourceObject=obj;
+	var dialog=getTextDialog();
+	dialog.param([getText(txt)]);
+	var el=dialog.getItem(4);
+	el.obj.focus();
+	el.obj.keypress(function(event){
+		if (event.which==13)
+		{
+			dialog.getItem(1).obj.click();
+			return false;
+		}
+		return true;
+	});
+	dialog.show(function(id){
+		userInput=dialog.getItem(4).obj.val();
+		if (id==1) //OK
+			frames[0].state.push(0xffff);
+		else
+			frames[0].state.push(0);
+		closeWindow(dialog);
+		runMain();
+	});
 }
 
 function menuSelect(item)
@@ -1057,4 +1170,11 @@ function setRefCon(obj,w)
 	if (originx!=0x7fff) w.refCon.x=originx;
 	if (originy!=0x7fff) w.refCon.y=originy;
 	if (w!=mainWin) w.refCon.updateScroll=true;
+}
+function updateCtls()
+{
+	if (activeCmd!=undefined)
+		activeCmd.deselect();
+	toggleExits();
+	initVars();
 }
