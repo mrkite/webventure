@@ -79,7 +79,7 @@ function getInventoryWindow()
 {
 	var rect=getInventoryRect();
 	
-	var iw=gsWindow(inventory.wFrame,rect.left*2,rect.top*2,rect.width*2,rect.height*2);
+	var iw=gsWindow(inventory.wFrame,rect.left,rect.top,rect.width,rect.height);
 	iw.kind=0xe;
 	return iw;
 }

@@ -44,7 +44,23 @@ function loadFiles()
 	for (var i=0;i<5;i++)
 		loadFile(i,resGetIndStr(0x81,i+4));
 	loadGNRL(getRes('GNRL',0x80));
-	setHuff(getRes('GNRL',0x83));
+	var res=getRes('GNRL',0x83);
+	if (res!=undefined)
+	{
+		var huff={};
+		huff.length=res.r16();
+		res.r16();
+		huff.masks=new Array(huff.length);
+		for (var i=0;i<huff.length-1;i++)
+			huff.masks[i]=res.r16();
+		huff.lens=new Array(huff.length);
+		for (var i=0;i<huff.length;i++)
+			huff.lens[i]=res.r8();
+		huff.values=new Array(huff.length);
+		for (var i=0;i<huff.length;i++)
+			huff.values[i]=res.r8();
+		setHuff(huff);
+	}
 }
 
 function loadGNRL(data)

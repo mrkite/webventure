@@ -183,7 +183,7 @@ function clickToContinue()
 
 function getExit(left,top,obj)
 {
-	var ctl=createCtl([left,top,7,6],obj,2,[]);
+	var ctl=createCtl([left*2,top*2,14,12],obj,2,[]);
 	return ctl;
 }
 

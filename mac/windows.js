@@ -104,7 +104,9 @@ function getWindow(res)
 	var title='';
 	if (titleLen!=1)
 		title=toascii(res.read(titleLen));
-	return createWindow(type,close,zoom,false,false,left,top,width,height);
+	var w=createWindow(type,close,zoom,false,false,left,top,width,height);
+	w.setTitle(title);
+	return w;
 }
 
 function getAlert(res)
