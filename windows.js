@@ -5,6 +5,7 @@
  */
 function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 {
+	var self=this;
 	this.ctls=[];
 	this.hasZoom=hasZoom;
 	this.hasClose=hasClose;
@@ -18,7 +19,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 		this.title=$(document.createElement('div'));
 		this.title.addClass('title');
 		this.title.mousedown(function(event){
-			titleDown(event);
+			titleDown(event,self);
 			return false;
 		});
 		if (this.hasClose)
@@ -343,7 +344,7 @@ Win.prototype.redrawScroll=function()
 			var left=this.refCon.x-min;
 			var scale=this.port.width();
 			var start=(left*(this.port.width()-HScrollBucketStart-HScrollArrowRight)/(max-min))|0;
-			var end=(scale*(this.port.width()-HScrollBucketStart-HScrollArrowRight)/(max-min))|0;
+			var end=(scale*(this.port.width()-HScrollBucketStart-HScrollArrowRight-HScrollPadding)/(max-min))|0;
 			this.hslider.css('left',(start+HScrollBucketStart)+'px');
 			this.hslider.css('width',end+'px');
 		}
@@ -362,7 +363,7 @@ Win.prototype.redrawScroll=function()
 			var top=this.refCon.y-min;
 			var scale=this.port.height();
 			var start=(top*(this.port.height()-VScrollBucketStart-VScrollArrowDown)/(max-min))|0;
-			var end=(scale*(this.port.height()-VScrollBucketStart-VScrollArrowDown)/(max-min))|0;
+			var end=(scale*(this.port.height()-VScrollBucketStart-VScrollArrowDown-VScrollPadding)/(max-min))|0;
 			this.vslider.css('top',(start+VScrollBucketStart)+'px');
 			this.vslider.css('height',end+'px');
 		}
@@ -382,8 +383,8 @@ Win.prototype.redrawTextScroll=function()
 	{
 		var top=y-min;
 		var bottom=y+this.port.height();
-		var start=(top*(this.height-VScrollBucket-WinTitleHeight-VScrollArrowDown)/(max-min))|0;
-		var end=(bottom*(this.height-VScrollBucket-WinTitleHeight-VScrollArrowDown)/(max-min))|0;
+		var start=(top*(this.height-WinTitleHeight-GrowHeight-VScrollBucketStart-VScrollArrowDown)/(max-min))|0;
+		var end=(bottom*(this.height-WinTitleHeight-GrowHeight-VScrollBucketStart-VScrollArrowDown-VScrollPadding)/(max-min))|0;
 		this.vslider.css('top',(start+VScrollBucketStart)+'px');
 		this.vslider.css('height',(end-start)+'px');
 	}
@@ -532,10 +533,30 @@ function findWindow(x,y)
 /********************** private functions *********************/
 var wins=[];
 
-function titleDown(event)
+function titleDown(event,win)
 {
 	if (isPaused) return;
-	fatal(event);
+	dragWindow(event.pageX,event.pageY,win);
+}
+function dragWindow(x,y,win)
+{
+	var lastX=x;
+	var lastY=y;
+	bringToFront(win);
+	$(document).mousemove(function(event){
+		var pos=win.win.position();
+		win.win.css('top',(pos.top+(event.pageY-lastY))+'px');
+		win.win.css('left',(pos.left+(event.pageX-lastX))+'px');
+		lastX=event.pageX;
+		lastY=event.pageY;
+	});
+	$(document).mouseup(function(event){
+		$(document).unbind('mousemove');
+		$(document).unbind('mouseup');
+		var pos=win.win.position();
+		win.win.css('top',(pos.top+(event.pageY-lastY))+'px');
+		win.win.css('left',(pos.left+(event.pageX-lastX))+'px');
+	});
 }
 function contentDown(event)
 {

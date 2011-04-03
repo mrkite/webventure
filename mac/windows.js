@@ -9,10 +9,12 @@ var HScrollHeight=15;
 var HScrollArrowRight=15;
 var HScrollBucket=15;
 var HScrollBucketStart=15;
+var HScrollPadding=2;
 
 var VScrollArrowDown=15;
 var VScrollBucket=15;
 var VScrollBucketStart=15;
+var VScrollPadding=2;
 
 var GrowWidth=15;
 var GrowHeight=15;
