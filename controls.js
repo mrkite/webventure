@@ -288,6 +288,7 @@ ListCtl.prototype.draw=function(){}
  */
 function SliderCtl(bounds,refcon,opts)
 {
+	var self=this;
 	this.value=parseInt(opts[0],10);
 	this.refcon=refcon;
 	this.min=parseInt(opts[1],10);
@@ -318,16 +319,24 @@ function SliderCtl(bounds,refcon,opts)
 	obj.append(slider);
 	this.slider=slider;
 	obj.mousedown(function(event){
-		fatal("mousedown");
+		var pos=slider.offset().left;
+		if (event.pageX<pos)
+			scrollCtl(self,-20);
+		else
+			scrollCtl(self,20);
+		return false;
 	});
 	leftarrow.mousedown(function(event){
-		fatal("left");
+		scrollCtl(self,-5);
+		return false;
 	});
 	rightarrow.mousedown(function(event){
-		fatal("right");
+		scrollCtl(self,5);
+		return false;
 	});
 	slider.mousedown(function(event){
-		fatal("slider");
+		dragCtl(self,event.pageX);
+		return false;
 	});
 }
 SliderCtl.prototype.hide=function()
@@ -341,14 +350,46 @@ SliderCtl.prototype.show=function()
 }
 SliderCtl.prototype.draw=function()
 {
-	var range=this.width-(HScrollBucket+20);
+	var range=this.width-HScrollBucketStart-HScrollArrowRight-20-HScrollPadding;
 	var x=(this.value*range/(this.max-this.min))|0;
 	this.slider.css('left',(x+HScrollBucketStart)+'px');
 }
 SliderCtl.prototype.setValue=function(val)
 {
-	this.value=val;
+	this.value=parseInt(val,10);
 	this.draw();
+}
+function scrollCtl(ctl,x)
+{
+	ctl.value+=x;
+	if (ctl.value<ctl.min)
+		ctl.value=ctl.min;
+	if (ctl.value>ctl.max)
+		ctl.value=ctl.max;
+	ctl.draw();
+	var repeat=setTimeout(function(){scrollCtl(ctl,x)},50);
+	$(document).mouseup(function(event){
+		$(document).unbind('mouseup');
+		clearTimeout(repeat);
+	});
+}
+function dragCtl(ctl,x)
+{
+	var last=x;
+	$(document).mousemove(function(event){
+		var delta=(event.pageX-last)*(ctl.max-ctl.min)/(ctl.width-HScrollBucketStart-HScrollArrowRight-20-HScrollPadding)|0;
+		last=event.pageX;
+		ctl.value+=delta;
+		if (ctl.value<ctl.min)
+			ctl.value=ctl.min;
+		if (ctl.value>ctl.max)
+			ctl.value=ctl.max;
+		ctl.draw();
+	});
+	$(document).mouseup(function(event){
+		$(document).unbind('mouseup');
+		$(document).unbind('mousemove');
+	});
 }
 
 /**
