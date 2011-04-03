@@ -228,7 +228,8 @@ function intersectObj(obj,rect)
 	{
 		scrap.width=bmp.width;
 		scrap.height=bmp.height;
-		return sectRect(scrap,rect,scrap);
+		if (sectRect(scrap,rect,scrap))
+			return bmp.intersect(scrap);
 	}
 	return false;
 }

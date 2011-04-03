@@ -98,6 +98,23 @@ BitMap.prototype.hit=function(x,y)
 	pix=(pix>>((x&2)?0:4))&0xf;
 	return pix!=0;
 }
+BitMap.prototype.intersect=function(rect)
+{
+	for (var y=rect.top;y<rect.top+rect.height;y++)
+	{
+		var bmpofs=(y>>1)*this.rowBytes;
+		var pix;
+		for (var x=rect.left;x<rect.left+rect.width;x++)
+		{
+			pix=this.data[bmpofs+(x>>2)];
+			if (paletteMap)
+				pix=paletteMap[pix];
+			pix=(pix>>((x&2)?0:4))&0xf;
+			if (pix) return true;
+		}
+	}
+	return false;
+}
 
 /**
  * @constructor

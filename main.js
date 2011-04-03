@@ -781,15 +781,19 @@ function doLasso(win,start,canDrag)
 	var lasso=$(document.createElement('div'));
 	lasso.addClass('lasso');
 	desktop.append(lasso);
-	lasso.css('top',start.pageY+'px');
-	lasso.css('left',start.pageX+'px');
+	var stpt={h:start.pageX,v:start.pageY};
+	globalToDesktop(stpt);
+	lasso.css('top',stpt.v+'px');
+	lasso.css('left',stpt.h+'px');
 	lasso.css('width','0px');
 	lasso.css('height','0px');
 	$(document).mousemove(function(event){
-		var sx=Math.max(Math.min(start.pageX,event.pageX),bounds.minx);
-		var sy=Math.max(Math.min(start.pageY,event.pageY),bounds.miny);
-		var ex=Math.min(Math.max(start.pageX,event.pageX),bounds.maxx);
-		var ey=Math.min(Math.max(start.pageY,event.pageY),bounds.maxy);
+		var evpt={h:event.pageX,v:event.pageY};
+		globalToDesktop(evpt);
+		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
+		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
+		var ex=Math.min(Math.max(stpt.h,evpt.h),bounds.maxx);
+		var ey=Math.min(Math.max(stpt.v,evpt.v),bounds.maxy);
 		lasso.css('top',sy+'px');
 		lasso.css('left',sx+'px');
 		lasso.css('width',(ex-sx)+'px');
@@ -798,12 +802,15 @@ function doLasso(win,start,canDrag)
 	$(document).mouseup(function(event){
 		$(document).unbind('mousemove');
 		$(document).unbind('mouseup');
-		var sx=Math.max(Math.min(start.pageX,event.pageX),bounds.minx);
-		var sy=Math.max(Math.min(start.pageY,event.pageY),bounds.miny);
-		var ex=Math.min(Math.max(start.pageX,event.pageX),bounds.maxx);
-		var ey=Math.min(Math.max(start.pageY,event.pageY),bounds.maxy);
+		var evpt={h:event.pageX,v:event.pageY};
+		globalToDesktop(evpt);
+		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
+		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
+		var ex=Math.min(Math.max(stpt.h,evpt.h),bounds.maxx);
+		var ey=Math.min(Math.max(stpt.v,evpt.v),bounds.maxy);
 		lasso.remove();
 		var pt={h:sx,v:sy};
+		desktopToGlobal(pt);
 		win.globalToLocal(pt);
 		var select={top:pt.v,left:pt.h,width:ex-sx,height:ey-sy};
 		var h=[];
@@ -1641,6 +1648,12 @@ function getWindowLocation(x,y)
 			break;
 	}
 	return info;
+}
+function desktopToGlobal(pt)
+{
+	var pos=desktop.offset();
+	pt.v+=pos.top;
+	pt.h+=pos.left;
 }
 function globalToDesktop(pt)
 {
