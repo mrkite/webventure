@@ -7,11 +7,11 @@ var VScrollWidth=32;
 var HScrollHeight=24;
 
 var HScrollArrowRight=34;
-var HScrollBucket=68;
+var HScrollBucket=32;
 var HScrollBucketStart=32;
 
 var VScrollArrowDown=24;
-var VScrollBucket=48;
+var VScrollBucket=24;
 var VScrollBucketStart=22;
 
 var GrowWidth=32;

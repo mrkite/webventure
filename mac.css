@@ -239,6 +239,8 @@ div.zoomDoc canvas {
 }
 div.zoomDoc div.grow {
 	position: absolute;
+	width: 14px;
+	height: 14px;
 	border-top: 1px solid #000;
 	border-left: 1px solid #000;
 	background: #fff;
@@ -249,11 +251,15 @@ div.zoomDoc.active div.grow {
 }
 div.zoomDoc div.hscroll {
 	position: absolute;
+	left: 0px;
+	height: 14px;
 	border-top: 1px solid #000;
 	background: #fff;
 }
 div.zoomDoc div.vscroll {
 	position: absolute;
+	top: 17px;
+	width: 14px;
 	border-top: 1px solid #000;
 	border-left: 1px solid #000;
 	background: #fff;
@@ -276,30 +282,46 @@ div.zoomDoc.active div.vscroll {
 div.zoomDoc.active div.leftarrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 14px;
+	height: 14px;
 	background-image: url('images/mac/scrollleft.png');
 	border-right: 1px solid #000;
 }
 div.zoomDoc.active div.rightarrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	width: 14px;
+	height: 14px;
 	background-image: url('images/mac/scrollright.png');
 	border-left: 1px solid #000;
 }
 div.zoomDoc.active div.uparrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 14px;
+	height: 14px;
 	background-image: url('images/mac/scrollup.png');
 	border-bottom: 1px solid #000;
 }
 div.zoomDoc.active div.downarrow {
 	display: block;
 	position: absolute;
+	left: 0px;
+	width: 14px;
+	height: 14px;
 	background-image: url('images/mac/scrolldown.png');
 	border-top: 1px solid #000;
 }
 div.zoomDoc.active div.slider {
 	display: block;
 	position: absolute;
+	width: 12px;
+	height: 12px;
 	background: #fff;
 	border: 1px solid #000;
 }

@@ -123,6 +123,8 @@ function createWindows()
 	textEdit=$(document.createElement('div'));
 	textEdit.addClass('textEdit');
 	textWin.setCanvas(textEdit);
+	textWin.vScroll=true;
+	textWin.initScrollbars();
 	selfWin=getWindow(getRes('WIND',0x83));
 	selfWin.kind=0xc;
 	selfWin.refCon={id:0,x:0,y:0,children:[{id:1,top:0,left:0,width:0,height:0}]};
@@ -143,10 +145,18 @@ function clickToContinue()
 	var w=commandsWin.port.width();
 	var h=commandsWin.port.height();
 	continueButton=createCtl([4,4,w-8,h-8],0xff,0x19,['Click to continue']);
-	continueButton.addClass('ctc');
+	continueButton.obj.addClass('ctc');
 	commandsWin.hideControls();
 	commandsWin.add(continueButton);
 	isPaused=true;
+}
+function continueClicked()
+{
+	commandsWin.remove(continueButton);
+	commandsWin.showControls();
+	delete continueButton;
+	if (!checkScroll()) //are we still CtC?
+		runMain();
 }
 
 function getExit(left,top,obj)
@@ -185,6 +195,108 @@ function getNouns(idx)
 function getPrefixes(attr)
 {
 	return resGetIndStr(0x83,attr);
+}
+
+function numCmdObjs()
+{
+	if (!selectedCtl) return 3000;
+	return cmdNumObjs[selectedCtl-1];
+}
+
+function intersectObj(obj,rect)
+{
+	var scrap={top:0,left:0,width:0,height:0};
+	var bmp;
+	if (bmp=getGraphic(obj*2+1))
+	{
+		scrap.width=bmp.width;
+		scrap.height=bmp.height;
+		if (sectRect(scrap,rect,scrap))
+			return bmp.intersect(scrap);
+		return false;
+	}
+	if (bmp=getGraphic(obj*2))
+	{
+		scrap.width=bmp.width;
+		scrap.height=bmp.height;
+		return sectRect(scrap,rect,scrap);
+	}
+	return false;
+}
+
+function getObjBounds(obj)
+{
+	var rect={top:0,left:0,width:0,height:0};
+	var win=getParentWin(obj);
+	var child=0;
+	if (win && win.refCon)
+		child=getChildIdx(win.refCon.children,obj);
+	if (child)
+	{
+		child--;
+		if (emptyRect(win.refCon.children[child]))
+		{
+			var r=drawObject(obj,win,true);
+			win.refCon.children[child].top=r.top;
+			win.refCon.children[child].left=r.left;
+			win.refCon.children[child].width=r.width;
+			win.refCon.children[child].height=r.height;
+		}
+		rect.top=win.refCon.children[child].top;
+		rect.left=win.refCon.children[child].left;
+		rect.width=win.refCon.children[child].width;
+		rect.height=win.refCon.children[child].height;
+	}
+	else
+	{
+		var bmp;
+		if (bmp=getGraphic(obj*2))
+		{
+			rect.top=get(obj,2);
+			rect.left=get(obj,1);
+			rect.width=bmp.width;
+			rect.height=bmp.height;
+		}
+		else if (bmp=getGraphic(obj*2+1))
+		{
+			rect.top=get(obj,2);
+			rect.left=get(obj,1);
+			rect.width=bmp.width;
+			rect.height=bmp.height;
+		}
+		else
+		{
+			rect.top=0;
+			rect.left=0;
+			rect.width=0;
+			rect.height=0;
+		}
+	}
+	return rect;
+}
+
+function createProxy(obj)
+{
+	var img=getGraphic(obj*2);
+	var mask=getGraphic(obj*2+1);
+	var w=img.width;
+	var h=img.height;
+	if (mask)
+	{
+		if (w<mask.width) w=mask.width;
+		if (h<mask.height) h=mask.height;
+	}
+	var drag=$(document.createElement('canvas'));
+	drag.addClass('proxy');
+	drag.attr('width',w);
+	drag.attr('height',h);
+	desktop.append(drag);
+	if (mask)
+		mask.bic(drag,0,0);
+	else
+		fill(drag,0);
+	img.xor(drag,0,0);
+	return drag;
 }
 
 /********************** private functions *********************/

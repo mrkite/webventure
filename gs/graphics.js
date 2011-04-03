@@ -206,6 +206,7 @@ function getDiploma()
 	return bmp;
 }
 
+
 /********************** private functions *********************/
 
 function decodeDiploma(f,w,h)

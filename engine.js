@@ -14,10 +14,9 @@ function run(curCtl,curObj,target,pt)
 }
 function resume(doAll)
 {
-	var initial=typeof(doAll)!='undefined'?doAll:false;
 	while (frames.length)
 	{
-		var fail=resumeOne(initial);
+		var fail=resumeOne(doAll);
 		if (fail) return true;
 	}
 	return false;
@@ -67,7 +66,7 @@ function unneg16(val)
 
 function resumeOne(doAll)
 {
-	var doFirst=typeof(doAll)!='undefined'?doAll:false;
+	var doFirst=doAll;
 	var doFamily=false;
 	var fail;
 	if (frames[0].haltedInFirst || doFirst)
@@ -157,7 +156,7 @@ var fib;
 function runFunc()
 {
 	var ch,obj,attr,val,recurs,idx,max;
-	var x,y,len,txt,pt,fam,time,swap,id,newstate,hi,lo,func,rank,delta;
+	var x,y,len,txt,pt,children,time,swap,id,newstate,hi,lo,func,rank,delta;
 	var search,haystack,needle,i,start,end,step,a,b,c,ofs,num;
 
 	var p=frames[0].p[0];
@@ -183,11 +182,11 @@ function runFunc()
 			val=neg16(state.pop());
 			set(obj,attr,val);
 			break;
-		case 0x82: //sum family attribute
+		case 0x82: //sum children attribute
 			obj=state.pop();
 			attr=state.pop();
 			recurs=state.pop()!=0;
-			state.push(sumFamilyAttr(obj,attr,recurs));
+			state.push(sumChildrenAttr(obj,attr,recurs));
 			break;
 		case 0x83: //push selected control
 			state.push(frames[0].curCtl);
@@ -552,30 +551,31 @@ function runFunc()
 			soundQueue.push({id:3});
 			break;
 		case 0xca: //get current time
-			time=getTime();
-			state.push(time[0]);
-			state.push(time[1]);
-			state.push(time[2]);
-			state.push(time[3]);
-			state.push(time[4]);
-			state.push(time[5]);
+			time=new Date();
+			state.push(time.getFullYear());
+			state.push(time.getMonth()+1);
+			state.push(time.getDate());
+			state.push(time.getHours());
+			state.push(time.getMinutes());
+			state.push(time.getSeconds());
 			break;
 		case 0xcb: //get current day
-			state.push(getDOTW());
+			time=new Date();
+			state.push(time.getDay()+1);
 			break;
 		case 0xcc: //get children
 			recurs=state.pop()!=0;
 			obj=state.pop();
-			fam=getFamily(obj,recurs);
-			for (i=1;i<fam.length;i++)
-				state.push(fam[i]);
-			state.push(fam.length-1);
+			children=getChildren(obj,recurs);
+			for (i=0;i<children.length;i++)
+				state.push(children[i]);
+			state.push(children.length);
 			break;
 		case 0xcd: //get num children
 			recurs=state.pop()!=0;
 			obj=state.pop();
-			fam=getFamily(obj,recurs);
-			state.push(fam.length-1);
+			children=getChildren(obj,recurs);
+			state.push(children.length);
 			break;
 		case 0xce: //get engine version
 			state.push(86);
@@ -588,9 +588,9 @@ function runFunc()
 			break;
 		case 0xd1: //get object dimensions
 			obj=state.pop();
-			pt=getObjDims(obj);
-			state.push(pt.h);
-			state.push(pt.v);
+			pt=getObjBounds(obj);
+			state.push(pt.width);
+			state.push(pt.height);
 			break;
 		case 0xd2: //get overlap percent
 			b=state.pop();
@@ -708,4 +708,55 @@ function revertmain()
 {
 	mainWin.invert();
 	runMain();
+}
+function sumChildrenAttr(obj,attr,recurs)
+{
+	var sum=0;
+	var children=getChildren(obj,recurs);
+	for (var i=0;i<children.length;i++)
+		sum+=get(children[i],attr);
+	return sum;
+}
+function swapObjects(p)
+{
+	set(p.to,6,get(p.from,6));
+	set(p.from,6,0);
+	var children=getChildren(p.from,true);
+	for (var i=0;i<children.length;i++)
+		set(children[i],0,p.to);
+}
+function captureChildren(obj)
+{
+	var captured=[];
+	var children=getChildren(get(obj,0),1);
+	for (var i=0;i<children.length;i++)
+		if (obj<children[i] && getOverlap(children[i],obj)>=40)
+			captured.push(children[i]);
+	while (captured.length)
+		set(captured.pop(),0,obj);
+}
+function releaseChildren(obj)
+{
+	var children=getChildren(obj,1);
+	var parent=get(obj,0);
+	for (var i=0;i<children.length;i++)
+		set(children[i],0,parent);
+}
+function getOverlap(obj1,obj2)
+{
+	if (get(obj1,0)!=get(obj2,0))  //not the same parent? 0 overlap
+		return 0;
+	var bounds1=getObjBounds(obj1);
+	var bounds2=getObjBounds(obj2);
+	if (sectRect(bounds2,bounds1,bounds2))
+	{
+		var area=bounds1.width*bounds1.height;
+		var area2=bounds2.width*bounds2.height;
+		return (area2*100/area)|0;
+	}
+	return 0;
+}
+function emptyRect(r)
+{
+	return (r.width==0 || r.height==0);
 }

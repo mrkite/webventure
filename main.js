@@ -8,6 +8,7 @@ var selectedObjs,curSelection;
 var selectedCtl=undefined;
 var cmdReady=false;
 var lastClick;
+var lastClickTarget;
 var cmdNumObjs,cmds,inQueue;
 var queue,soundQueue,textQueue;
 
@@ -63,7 +64,7 @@ function runEngine()
 	if (haltedAtEnd)
 	{
 		haltedAtEnd=false;
-		if (resume())
+		if (resume(false))
 		{
 			haltedAtEnd=true;
 			return true;
@@ -73,7 +74,7 @@ function runEngine()
 	if (haltedInSelection)
 	{
 		haltedInSelection=false;
-		if (resume())
+		if (resume(false))
 		{
 			haltedInSelection=true;
 			return true;
@@ -437,7 +438,7 @@ function zoomObject(obj)
 }
 function printTexts()
 {
-	if (textEdit.get(0).scrollheight==textEdit.innerHeight())
+	if (textEdit.get(0).scrollHeight==textEdit.innerHeight())
 		calculatePartialHeight();
 	while (textQueue.length)
 	{
@@ -638,6 +639,416 @@ function menuSelect(item)
 			fatal("Unknown menuitem: "+item.toString(16));
 	}
 }
+
+function buttonClicked(btn,event)
+{
+	var win=btn.win;
+	if (win.kind==2)
+		return win.done(btn.refcon);
+	if (win==exitWin)
+		exitClicked(btn,event);
+	else
+		commandClicked(btn);
+}
+function exitClicked(btn,event)
+{
+	if (isPaused) return;
+	handleObjectSelect(btn.refcon,exitWin,event,false);
+}
+function commandClicked(btn)
+{
+	if (btn.refcon==0xff)
+	{
+		continueClicked();
+		return;
+	}
+	if (isPaused) return;
+	if (activeCmd && btn!=activeCmd)
+		activeCmd.deselect();
+	selectedCtl=btn.refcon;
+	activateCommand(selectedCtl);
+	switch (numCmdObjs())
+	{
+		case 0:
+			cmdReady=true;
+			break;
+		case 1:
+			cmdReady=curSelection.length!=0;
+			break;
+		case 2:
+			if (destObject>0)
+				cmdReady=true;
+			break;
+	}
+	runMain();
+}
+
+function handleObjectSelect(obj,win,event,canDrag)
+{
+	if (win==exitWin)
+		win=mainWin;
+	if (event.shiftKey)
+	{
+		if (!obj)
+		{
+			if (win.kind==0xe)
+				doLasso(win,event,canDrag);
+			else
+			{
+				if (curSelection.length==0 ||
+					win!=getParentWin(curSelection[0]))
+				{
+					if (curSelection.indexOf(win.refCon.id)!=-1)
+						unselectObj(win.refCon.id);
+					else
+						selectObj(win.refCon.id);
+				}
+				runMain();
+			}
+		}
+		else
+		{
+			if (curSelection.indexOf(obj)!=-1)
+				unselectObj(obj);
+			else
+				selectObj(obj);
+			runMain();
+		}
+	}
+	else
+	{
+		if (selectedCtl && curSelection.length && numCmdObjs()>1)
+		{
+			if (!obj)
+				primaryObject(win.refCon.id);
+			else
+				primaryObject(obj);
+			runMain();
+		}
+		else
+		{
+			if (!obj)
+			{
+				unselectall();
+				if (win.kind==0xe)
+					doLasso(win,event,canDrag);
+				else
+					obj=win.refCon.id;
+			}
+			if (obj)
+			{
+				if (isDoubleClick(event))
+				{
+					if (curSelection.indexOf(obj)==-1)
+						unselectall();
+					selectObj(obj);
+					doubleClickObject(obj,win,event,canDrag);
+				}
+				else
+				{
+					if (curSelection.indexOf(obj)==-1)
+						unselectall();
+					selectObj(obj);
+					singleClickObject(obj,win,event,canDrag);
+				}
+			}
+		}
+	}
+}
+function isDoubleClick(event)
+{
+	if (event.timeStamp-lastClick<=300 && event.target==lastClickTarget)
+	{
+		lastClick=0;
+		lastClickTarget=undefined;
+		return true;
+	}
+	return false;
+}
+function doLasso(win,start,canDrag)
+{
+	var bounds={};
+	var pt={h:win.refCon.x,v:win.refCon.y};
+	win.localToGlobal(pt);
+	bounds.minx=pt.h;
+	bounds.miny=pt.v;
+	bounds.maxx=pt.h+win.port.width();
+	bounds.maxy=pt.v+win.port.height();
+	var lasso=$(document.createElement('div'));
+	lasso.addClass('lasso');
+	desktop.append(lasso);
+	lasso.css('top',start.pageY+'px');
+	lasso.css('left',start.pageX+'px');
+	lasso.css('width','0px');
+	lasso.css('height','0px');
+	$(document).mousemove(function(event){
+		var sx=Math.max(Math.min(start.pageX,event.pageX),bounds.minx);
+		var sy=Math.max(Math.min(start.pageY,event.pageY),bounds.miny);
+		var ex=Math.min(Math.max(start.pageX,event.pageX),bounds.maxx);
+		var ey=Math.min(Math.max(start.pageY,event.pageY),bounds.maxy);
+		lasso.css('top',sy+'px');
+		lasso.css('left',sx+'px');
+		lasso.css('width',(ex-sx)+'px');
+		lasso.css('height',(ey-sy)+'px');
+	});
+	$(document).mouseup(function(event){
+		$(document).unbind('mousemove');
+		$(document).unbind('mouseup');
+		var sx=Math.max(Math.min(start.pageX,event.pageX),bounds.minx);
+		var sy=Math.max(Math.min(start.pageY,event.pageY),bounds.miny);
+		var ex=Math.min(Math.max(start.pageX,event.pageX),bounds.maxx);
+		var ey=Math.min(Math.max(start.pageY,event.pageY),bounds.maxy);
+		lasso.remove();
+		var pt={h:sx,v:sy};
+		win.globalToLocal(pt);
+		var select={top:pt.v,left:pt.h,width:ex-sx,height:ey-sy};
+		var h=[];
+		for (var i=0;i<win.refCon.children.length;i++)
+		{
+			var obj=win.refCon.children[i].id;
+			if (!get(obj,4))
+			{
+				select.left=pt.h-get(obj,1);
+				select.top=pt.v-get(obj,2);
+				if (intersectObj(obj,select))
+					h.push(obj);
+			}
+		}
+		if (start.shiftKey)
+		{
+			if (h.length==0)
+			{
+				if (curSelection.length==0 ||
+					win!=getParentWin(curSelection[0]))
+				{
+					if (curSelection.indexOf(win.refCon.id)!=-1)
+						unselectObj(win.refCon.id);
+					else
+						selectObj(win.refCon.id);
+				}
+			}
+			else while (h.length)
+			{
+				var sel=h.shift();
+				if (curSelection.indexOf(sel)!=-1)
+					unselectObj(sel);
+				else
+					selectObj(sel);
+			}
+			runMain();
+		}
+		else
+		{
+			var obj;
+			if (h.length==0)
+				obj=win.refCon.id;
+			else while (h.length)
+			{
+				obj=h.shift();
+				selectObj(obj);
+			}
+			handleObjectSelect(obj,win,start,canDrag);
+		}
+	});
+}
+function doubleClickObject(obj,win,event,canDrag)
+{
+	var lastX=event.pageX;
+	var lastY=event.pageY;
+	var start={h:0,v:0};
+	var moved=false;
+	dragObject=undefined;
+	if (canDrag)
+	{
+		$(document).mousemove(function(event){
+			if (dragObject==undefined)
+			{
+				if (Math.abs(event.pageX-lastX)+Math.abs(event.pageY-lastY)<=7) return false;
+				moved=true;
+				dragObject=createProxy(obj);
+				var child=getChildIdx(win.refCon.children,obj);
+				if (child)
+				{
+					child--;
+					start.h=win.refCon.children[child].left;
+					start.v=win.refCon.children[child].top;
+				}
+				win.localToGlobal(start);
+				dragObject.css('top',start.v+'px');
+				dragObject.css('left',start.h+'px');
+			}
+			var pos=dragObject.position();
+			dragObject.css('top',(pos.top+(event.pageY-lastY))+'px');
+			dragObject.css('left',(pos.left+(event.pageX-lastX))+'px');
+			lastX=event.pageX;
+			lastY=event.pageY;
+			return false;
+		});
+	}
+	$(document).mouseup(function(event){
+		var pos;
+		if (canDrag)
+		{
+			$(document).unbind('mousemove');
+			if (dragObject)
+			{
+				pos=dragObject.position();
+				dragObject.remove();
+			}
+		}
+		$(document).unbind('mouseup');
+		if (moved)
+		{
+			deltaPt.h=pos.left;
+			deltaPt.v=pos.top;
+			var loc=getWindowLocation(event.pageX,event.pageY);
+			destObject=loc.id;
+			deltaPt.h-=start.h;
+			deltaPt.v-=start.v;
+			if (loc.win!=win)
+			{
+				win.localToGlobal(deltaPt);
+				if (loc.win)
+					loc.win.globalToLocal(deltaPt);
+			}
+			selectedCtl=5;
+			activateCommand(5);
+			cmdReady=true;
+		}
+		if (!cmdReady)
+		{
+			primaryObject(obj);
+			if (!selectedCtl)
+			{
+				selectedCtl=4;
+				activateCommand(4);
+				cmdReady=true;
+			}
+		}
+		runMain();
+	});
+}
+function singleClickObject(obj,win,event,canDrag)
+{
+	var lastX=event.pageX;
+	var lastY=event.pageY;
+	var start={h:0,v:0};
+	var moved=false;
+	dragObject=undefined;
+	if (canDrag)
+	{
+		$(document).mousemove(function(event){
+			if (dragObject==undefined)
+			{
+				if (Math.abs(event.pageX-lastX)+Math.abs(event.pageY-lastY)<=7) return false;
+				moved=true;
+				dragObject=createProxy(obj);
+				var child=getChildIdx(win.refCon.children,obj);
+				if (child)
+				{
+					child--;
+					start.h=win.refCon.children[child].left;
+					start.v=win.refCon.children[child].top;
+				}
+				win.localToGlobal(start);
+				dragObject.css('top',start.v+'px');
+				dragObject.css('left',start.h+'px');
+			}
+			var pos=dragObject.position();
+			dragObject.css('top',(pos.top+(event.pageY-lastY))+'px');
+			dragObject.css('left',(pos.left+(event.pageX-lastX))+'px');
+			lastX=event.pageX;
+			lastY=event.pageY;
+			return false;
+		});
+	}
+	$(document).mouseup(function(event){
+		lastClick=event.timeStamp;
+		lastClickTarget=event.target;
+		var pos;
+		if (canDrag)
+		{
+			$(document).unbind('mousemove');
+			if (dragObject)
+			{
+				pos=dragObject.position();
+				dragObject.remove();
+			}
+		}
+		$(document).unbind('mouseup');
+		if (moved)
+		{
+			deltaPt.h=pos.left;
+			deltaPt.v=pos.top;
+			var loc=getWindowLocation(event.pageX,event.pageY);
+			destObject=loc.id;
+			deltaPt.h-=start.h;
+			deltaPt.v-=start.v;
+			if (loc.win!=win)
+			{
+				win.localToGlobal(deltaPt);
+				if (loc.win)
+					loc.win.globalToLocal(deltaPt);
+			}
+			selectedCtl=5;
+			activateCommand(5);
+			cmdReady=true;
+		}
+		if (numCmdObjs()==1)
+			cmdReady=true;
+		runMain();
+	});
+}
+function unselectall()
+{
+	while (curSelection.length)
+		unselectObj(curSelection.shift());
+}
+function selectObj(obj)
+{
+	if (curSelection.length)
+	{
+		if (getParentWin(obj)!=getParentWin(curSelection[0]))
+			unselectall();
+	}
+	if (curSelection.indexOf(obj)==-1)
+		curSelection.push(obj);
+	if (selectedObjs.indexOf(obj)==-1)
+	{
+		selectedObjs.push(obj);
+		hiliteExit(obj);
+	}
+}
+function unselectObj(obj)
+{
+	var idx=curSelection.indexOf(obj);
+	if (idx!=-1) curSelection.splice(idx,1);
+	if ((idx=selectedObjs.indexOf(obj))!=-1)
+	{
+		selectedObjs.splice(idx,1);
+		hiliteExit(obj);
+	}
+}
+function primaryObject(obj)
+{
+	if (obj==destObject) return;
+	var idx;
+	if (destObject>0 &&
+		(idx=selectedObjs.indexOf(destObject))!=-1 &&
+		curSelection.indexOf(destObject)==-1)
+	{
+		selectedObjs.splice(idx,1);
+		hiliteExit(destObject);
+	}
+	destObject=obj;
+	if (selectedObjs.indexOf(destObject)==-1)
+	{
+		selectedObjs.push(destObject);
+		hiliteExit(destObject);
+	}
+	cmdReady=true;
+}
+
 
 /********************** private functions *********************/
 
@@ -1062,7 +1473,12 @@ function setParent(obj,val)
 	relations[obj*2+1]=o;
 	relations[p]=obj;
 }
-
+function neg8(v)
+{
+	if (v&0x80)
+		v=-((v^0xff)+1);
+	return v;
+}
 function neg16(v)
 {
 	if (v&0x8000)
@@ -1081,6 +1497,11 @@ function getObjectWindow(obj)
 	return findObjectWindow(obj);
 }
 
+function getFamily(obj,recurs)
+{
+	var rels=[obj];
+	return rels.concat(getChildren(obj,recurs));
+}
 function getChildren(obj,recurs)
 {
 	var rels=[];
@@ -1177,4 +1598,33 @@ function updateCtls()
 		activeCmd.deselect();
 	toggleExits();
 	initVars();
+}
+function getWindowLocation(x,y)
+{
+	var info=findWindow(x,y);
+	var kind=0;
+	if (info.win!=undefined) kind=info.win.kind;
+	if (info.id==3 && (kind==0xe || kind==0xa)) //content
+		info.id=info.win.refCon.id;
+	else switch (kind)
+	{
+		case 0x9: info.id=-1; break;
+		case 0xb: info.id=-2; break;
+		case 0xc: info.id=-3; break;
+		case 0xd: info.id=-4; break;
+		default:
+			switch (info.id)
+			{
+				case 0: info.id=-5; break; //nohit
+				case 1: info.id=-6; break; //menubar
+				case 2: info.id=-7; break; //dialog
+				case 3: info.id=-8; break; //content
+				case 4: info.id=-9; break; //indrag
+				case 5: info.id=-10; break; //grow
+				case 6: info.id=-11; break; //goaway
+				default: info.id=-12; break; //zoom
+			}
+			break;
+	}
+	return info;
 }

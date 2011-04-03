@@ -38,20 +38,23 @@ function moveControl(ctl,x,y)
  */
 function CButtonCtl(bounds,refcon,opts)
 {
-	this.obj=$(document.createElement('canvas'));
-	this.obj.addClass('cbutton');
-	this.obj.css('left',bounds[0]+'px');
-	this.obj.css('top',bounds[1]+'px');
-	this.obj.attr('width',bounds[2]);
-	this.obj.attr('height',bounds[3]);
+	var self=this;
+	var obj=$(document.createElement('canvas'));
+	obj.addClass('cbutton');
+	obj.css('left',bounds[0]+'px');
+	obj.css('top',bounds[1]+'px');
+	obj.attr('width',bounds[2]);
+	obj.attr('height',bounds[3]);
+	obj.mousedown(function(event){
+		buttonClicked(self,event);
+		return false;
+	});
+	this.obj=obj;
 	this.refcon=refcon;
 	this.selected=false;
 	this.bpr=opts[0];
 	this.bits=opts[1];
 	this.selbits=opts[2];
-	this.obj.mousedown(function(event){
-		fatal("cbutton");
-	});
 }
 CButtonCtl.prototype.hide=function()
 {
@@ -123,17 +126,20 @@ CButtonCtl.prototype.deselect=function()
  */
 function ButtonCtl(bounds,refcon,opts)
 {
-	this.obj=$(document.createElement('div'));
-	this.obj.addClass('button');
-	this.obj.css('left',bounds[0]+'px');
-	this.obj.css('top',bounds[1]+'px');
-	this.obj.css('width',bounds[2]+'px');
-	this.obj.css('height',bounds[3]+'px');
-	this.obj.html(opts[0]);
-	this.refcon=refcon;
-	this.obj.mousedown(function(event){
-		fatal("button");
+	var self=this;
+	var obj=$(document.createElement('div'));
+	obj.addClass('button');
+	obj.css('left',bounds[0]+'px');
+	obj.css('top',bounds[1]+'px');
+	obj.css('width',bounds[2]+'px');
+	obj.css('height',bounds[3]+'px');
+	obj.html(opts[0]);
+	obj.mousedown(function(event){
+		buttonClicked(self,event);
+		return false;
 	});
+	this.obj=obj;
+	this.refcon=refcon;
 }
 ButtonCtl.prototype.hide=function()
 {
@@ -280,40 +286,42 @@ function SliderCtl(bounds,refcon,opts)
 	this.min=parseInt(opts[1],10);
 	this.max=parseInt(opts[2],10);
 	this.width=bounds[2];
-	this.obj=$(document.createElement('div'));
-	this.obj.addClass('hscroll');
-	this.obj.css('left',bounds[0]+'px');
-	this.obj.css('top',bounds[1]+'px');
-	this.obj.css('width',bounds[2]+'px');
-	this.obj.css('height',bounds[3]+'px');
-	this.obj.mousedown(function(event){
+	var obj=$(document.createElement('div'));
+	obj.addClass('hscroll');
+	obj.css('left',bounds[0]+'px');
+	obj.css('top',bounds[1]+'px');
+	obj.css('width',bounds[2]+'px');
+	obj.css('height',bounds[3]+'px');
+	this.obj=obj;
+	var leftarrow=$(document.createElement('div'));
+	leftarrow.addClass('leftarrow');
+	leftarrow.css('top','0px');
+	leftarrow.css('left','0px');
+	obj.append(leftarrow);
+	var rightarrow=$(document.createElement('div'));
+	rightarrow.addClass('rightarrow');
+	rightarrow.css('top','0px');
+	rightarrow.css('left',(bounds[2]-HScrollArrowRight)+'px');
+	obj.append(rightarrow);
+	var slider=$(document.createElement('div'));
+	slider.addClass('slider');
+	slider.css('top','0px');
+	slider.css('left','50px');
+	slider.css('width','20px');
+	obj.append(slider);
+	this.slider=slider;
+	obj.mousedown(function(event){
 		fatal("mousedown");
 	});
-	this.leftarrow=$(document.createElement('div'));
-	this.leftarrow.addClass('leftarrow');
-	this.leftarrow.css('top','0px');
-	this.leftarrow.css('left','0px');
-	this.leftarrow.mousedown(function(event){
+	leftarrow.mousedown(function(event){
 		fatal("left");
 	});
-	this.obj.append(this.leftarrow);
-	this.rightarrow=$(document.createElement('div'));
-	this.rightarrow.addClass('rightarrow');
-	this.rightarrow.css('top','0px');
-	this.rightarrow.css('left',(bounds[2]-HScrollArrowRight)+'px');
-	this.rightarrow.mousedown(function(event){
+	rightarrow.mousedown(function(event){
 		fatal("right");
 	});
-	this.obj.append(this.rightarrow);
-	this.slider=$(document.createElement('div'));
-	this.slider.addClass('slider');
-	this.slider.css('top','0px');
-	this.slider.css('left','50px');
-	this.slider.css('width','20px');
-	this.slider.mousedown(function(event){
+	slider.mousedown(function(event){
 		fatal("slider");
 	});
-	this.obj.append(this.slider);
 }
 SliderCtl.prototype.hide=function()
 {
@@ -341,17 +349,20 @@ SliderCtl.prototype.setValue=function(val)
  */
 function SButtonCtl(bounds,refcon,opts)
 {
-	this.obj=$(document.createElement('div'));
-	this.obj.addClass('sbutton');
-	this.obj.css('left',bounds[0]+'px');
-	this.obj.css('top',bounds[1]+'px');
-	this.obj.css('width',(bounds[2]-2)+'px');
-	this.obj.css('height',(bounds[3]-2)+'px');
-	this.obj.html(opts[0]);
-	this.refcon=refcon;
-	this.obj.mousedown(function(event){
-		fatal("button");
+	var self=this;
+	var obj=$(document.createElement('div'));
+	obj.addClass('sbutton');
+	obj.css('left',bounds[0]+'px');
+	obj.css('top',bounds[1]+'px');
+	obj.css('width',(bounds[2]-2)+'px');
+	obj.css('height',(bounds[3]-2)+'px');
+	obj.html(opts[0]);
+	obj.mousedown(function(event){
+		buttonClicked(self,event);
+		return false;
 	});
+	this.obj=obj;
+	this.refcon=refcon;
 }
 SButtonCtl.prototype.hide=function()
 {

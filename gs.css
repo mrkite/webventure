@@ -183,6 +183,8 @@ div.document.active div.resize {
 }
 div.document div.hscroll {
 	position: absolute;
+	left: 0px;
+	height: 22px;
 	border-top: 2px solid #000;
 	background: #fff;
 }
@@ -212,12 +214,19 @@ div.document.active div.vscroll {
 div.document.active div.leftarrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 32px;
+	height: 22px;
 	background-image: url('images/gs/scrollleft.png');
 	border-right: 2px solid #000;
 }
 div.document.active div.rightarrow {
 	display: block;
 	position: absolute;
+	top: 0px;
+	width: 10px;
+	height: 18px;
 	background-image: url('images/gs/scrollright.png');
 	border-left: 2px solid #000;
 }
@@ -243,6 +252,8 @@ div.document.active div.downarrow {
 div.document.active div.slider {
 	display: block;
 	position: absolute;
+	width: 26px;
+	height: 18px;
 	background: #fff;
 	border: 2px solid #000;
 }
@@ -371,6 +382,12 @@ div.zoom {
 	background: #fff;
 	opacity: 0.7;
 	border: 1px solid #000;
+}
+div.exits {
+	background: #0af;
+}
+div.exits.selected {
+	background: #080;
 }
 div.resizeProxy {
 	position: absolute;

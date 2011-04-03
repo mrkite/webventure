@@ -94,8 +94,9 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 	if (this.vScroll || this.hScroll)
 		this.initScrollbars();
 }
-Win.prototype.show=function()
+Win.prototype.show=function(doneCB)
 {
+	this.done=doneCB;
 	this.win.show();
 	this.showControls();
 }
@@ -268,7 +269,7 @@ Win.prototype.initScrollbars=function()
 		this.vscroll=$(document.createElement('div'));
 		this.vscroll.addClass('vscroll');
 		this.vscroll.css('left',(this.width-VScrollWidth)+'px');
-		this.vscroll.css('height',(this.height-VScrollBucket)+'px');
+		this.vscroll.css('height',(this.height-VScrollBucket-WinTitleHeight)+'px');
 		this.vscroll.mousedown(function(event){
 			fatal("scroll");
 		});
@@ -341,17 +342,15 @@ Win.prototype.redrawScroll=function()
 		{
 			var left=this.refCon.x-min;
 			var scale=this.port.width();
-			var start=(left*(this.port.width()-HScrollBucket)/(max-min))|0;
-			var end=(scale*(this.port.width()-HScrollBucket)/(max-min))|0;
-			if (end>this.port.width()-HScrollBucket-start)
-				end=this.port.width()-HScrollBucket-start;
+			var start=(left*(this.port.width()-HScrollBucketStart-HScrollArrowRight)/(max-min))|0;
+			var end=(scale*(this.port.width()-HScrollBucketStart-HScrollArrowRight)/(max-min))|0;
 			this.hslider.css('left',(start+HScrollBucketStart)+'px');
 			this.hslider.css('width',end+'px');
 		}
 		else
 		{
 			this.hslider.css('left',HScrollBucketStart+'px');
-			this.hslider.css('width',(this.port.width()-HScrollBucket)+'px');
+			this.hslider.css('width',(this.port.width()-HScrollBucketStart-HScrollArrowRight)+'px');
 		}
 	}
 	if (this.vScroll)
@@ -362,17 +361,15 @@ Win.prototype.redrawScroll=function()
 		{
 			var top=this.refCon.y-min;
 			var scale=this.port.height();
-			var start=(top*(this.port.height()-VScrollBucket)/(max-min))|0;
-			var end=(scale*(this.port.height()-VScrollBucket)/(max-min))|0;
-			if (end>this.port.height()-VScrollBucket-start)
-				end=this.port.height()-VScrollBucket-start;
+			var start=(top*(this.port.height()-VScrollBucketStart-VScrollArrowDown)/(max-min))|0;
+			var end=(scale*(this.port.height()-VScrollBucketStart-VScrollArrowDown)/(max-min))|0;
 			this.vslider.css('top',(start+VScrollBucketStart)+'px');
 			this.vslider.css('height',end+'px');
 		}
 		else
 		{
 			this.vslider.css('top',VScrollBucketStart+'px');
-			this.vslider.css('height',(this.port.height()-VScrollBucket)+'px');
+			this.vslider.css('height',(this.port.height()-VScrollBucketStart-VScrollArrowDown)+'px');
 		}
 	}
 }
@@ -395,6 +392,25 @@ Win.prototype.redrawTextScroll=function()
 		this.vslider.css('top',VScrollBucketStart+'px');
 		this.vslider.css('height',(this.height-VScrollBucket-WinTitleHeight-VScrollArrowDown)+'px');
 	}
+}
+Win.prototype.invert=function()
+{
+	var ctx=this.port.get(0).getContext('2d');
+	var w=this.port.width();
+	var h=this.port.height();
+	var image=ctx.getImageData(0,0,w,h);
+	for (var y=0;y<image.height;y++)
+	{
+		var imgofs=y*image.width*4;
+		for (var x=0;x<image.width;x++)
+		{
+			image.data[imgofs++]^=0xff;
+			image.data[imgofs++]^=0xff;
+			image.data[imgofs++]^=0xff;
+			image.data[imgofs++]=0xff;
+		}
+	}
+	ctx.putImageData(image,0,0);
 }
 function resetWindows()
 {
@@ -496,6 +512,20 @@ function findObjectWindow(obj)
 		}
 	}
 	return undefined;
+}
+
+function findWindow(x,y)
+{
+	var pos=desktop.offset();
+	//menubar
+	if (y>=pos.top && y<pos.top+MBHeight && x>=pos.left && x<pos.left+desktop.width()) return {id:1,win:undefined};
+	for (var i=0;i<wins.length;i++)
+	{
+		var info=wins[i].hit(x,y);
+		if (info!=undefined) return info;
+	}
+	//desktop
+	return {id:0,win:undefined};
 }
 
 

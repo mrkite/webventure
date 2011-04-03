@@ -146,8 +146,6 @@ function setPalettes()
 	}
 	paletteMap=resGetPaletteMap();
 	winbg=resGetWindowColor();
-	exitbg=resGetExitBG();
-	exitbga=resGetExitBGA();
 }
 
 function createMenus()
@@ -179,6 +177,13 @@ function clickToContinue()
 	commandsWin.hideControls();
 	commandsWin.showControl(0xff);
 	isPaused=true;
+}
+function continueClicked()
+{
+	commandsWin.hideControl(0xff);
+	commandsWin.showControls();
+	if (!checkScroll()) //are we still CtC?
+		runMain();
 }
 
 function getExit(left,top,obj)
@@ -232,6 +237,63 @@ function numCmdObjs()
 {
 	if (!selectedCtl) return 3000;
 	return cmdNumObjs[selectedCtl];
+}
+
+function getObjBounds(obj)
+{
+	var rect={top:0,left:0,width:0,height:0};
+	var win=getParentWin(obj);
+	var child=0;
+	if (win && win.refCon)
+		child=getChildIdx(win.refCon.children,obj);
+	if (child)
+	{
+		child--;
+		if (emptyRect(win.refCon.children[child]))
+		{
+			var r=drawObject(obj,win,true);
+			win.refCon.children[child].top=r.top;
+			win.refCon.children[child].left=r.left;
+			win.refCon.children[child].width=r.width;
+			win.refCon.children[child].height=r.height;
+		}
+		rect.top=win.refCon.children[child].top;
+		rect.left=win.refCon.children[child].left;
+		rect.width=win.refCon.children[child].width;
+		rect.height=win.refCon.children[child].height;
+	}
+	else
+	{
+		var bmp;
+		if (bmp=getGraphic(obj*2))
+		{
+			rect.top=get(obj,2);
+			rect.left=get(obj,1);
+			rect.width=bmp.width;
+			rect.height=bmp.height;
+		}
+		else
+		{
+			rect.top=0;
+			rect.left=0;
+			rect.width=0;
+			rect.height=0;
+		}
+	}
+	return rect;
+}
+function createProxy(obj)
+{
+	var img=getGraphic(obj*2);
+	var w=img.width;
+	var h=img.height;
+	var drag=$(document.createElement('canvas'));
+	drag.addClass('proxy');
+	drag.attr('width',w);
+	drag.attr('height',h);
+	desktop.append(drag);
+	img.draw(drag,0,0);
+	return drag;
 }
 
 /********************** private functions *********************/

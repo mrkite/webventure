@@ -150,6 +150,20 @@ BitMap.prototype.hit=function(x,y)
 	var pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
 	return pix!=0;
 }
+BitMap.prototype.intersect=function(rect)
+{
+	for (var y=rect.top;y<rect.top+rect.height;y++)
+	{
+		var bmpofs=y*this.rowBytes;
+		var pix;
+		for (var x=rect.left;x<rect.left+rect.width;x++)
+		{
+			pix=this.data[bmpofs+(x>>3)]&(1<<(7-(x&7)));
+			if (pix) return true;
+		}
+	}
+	return false;
+}
 
 function draw(id,x,y,port,mode)
 {
@@ -240,6 +254,24 @@ function decodePack(data)
 			bitmap.data[out++]=line[i];
 	}
 	return bitmap;
+}
+
+function getDiploma()
+{
+	var title=resGetString(0x83);
+	var diploma=getResFile(title);
+	var bmp;
+	if (diploma!=undefined)
+	{
+		var id=openRes(diploma);
+		var ppic=getRes('PPIC',0);
+		if (ppic!=undefined)
+			bmp=decodePPIC(ppic);
+		closeRes(id);
+	}
+	if (bmp==undefined)
+		bmp=decodePack(getFile(title));
+	return bmp;
 }
 
 /********************** private functions *********************/
