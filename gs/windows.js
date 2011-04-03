@@ -122,10 +122,10 @@ function getLoseDialog()
 function getTextDialog()
 {
 	var dialog=createAlert(20,92,600,140);
-	dialog.add(createCtl([10,94,50,30],1,0xa,['OK']));
-	dialog.add(createCtl([96,94,120,30],2,0xa,['CANCEL']));
-	dialog.add(createCtl([10,10,580,36],3,0x16,['^0']));
-	dialog.add(createCtl([10,56,580,28],4,0x11,['']));
+	dialog.add(createCtl([10,99,50,20],1,0xa,['OK']));
+	dialog.add(createCtl([96,99,120,20],2,0xa,['CANCEL']));
+	dialog.add(createCtl([10,10,580,36],4,0x16,['^0']));
+	dialog.add(createCtl([10,56,580,28],3,0x11,['']));
 	return dialog;
 }
 

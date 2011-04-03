@@ -139,14 +139,18 @@ var curMenu=undefined;
 
 
 $('body').keydown(function(event){
-	if (event.target.type=='text') return false; //no hotkeys in inputfields
-	if (!event.altKey) return false; //no non-alt keys
-	if (isPaused) return false; //do nothing if we're paused
+	if (event.target.type=='text') return true; //no hotkeys in inputfields
+	if (!event.altKey) return true; //no non-alt keys
+	if (isPaused) return true; //do nothing if we're paused
 	for (var i=0;i<hotkeys.length;i++)
 	{
 		if (hotkeys[i].key.charCodeAt(0)==event.which)
+		{
 			selectItem(hotkeys[i].id);
+			return false;
+		}
 	}
+	return true;
 });
 function selectItem(id)
 {

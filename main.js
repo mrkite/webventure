@@ -600,8 +600,7 @@ function textEntry(txt,obj,target)
 	sourceObject=obj;
 	var dialog=getTextDialog();
 	dialog.param([getText(txt)]);
-	var el=dialog.getItem(4);
-	el.obj.focus();
+	var el=dialog.getItem(3);
 	el.obj.keypress(function(event){
 		if (event.which==13)
 		{
@@ -611,7 +610,7 @@ function textEntry(txt,obj,target)
 		return true;
 	});
 	dialog.show(function(id){
-		userInput=dialog.getItem(4).obj.val();
+		userInput=dialog.getItem(3).obj.val();
 		if (id==1) //OK
 			frames[0].state.push(0xffff);
 		else
@@ -1344,7 +1343,6 @@ function saveDialog()
 	var dialog=getSaveDialog();
 	isPaused=true;
 	var el=dialog.getItem(3);
-	el.obj.focus();
 	el.obj.keypress(function(event){
 		if (event.which==13)
 		{

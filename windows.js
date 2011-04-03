@@ -6,6 +6,7 @@
 function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 {
 	var self=this;
+	this.lastZoom=undefined;
 	this.ctls=[];
 	this.hasZoom=hasZoom;
 	this.hasClose=hasClose;
@@ -41,7 +42,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 			var el=this.title.children('div.resize');
 			el.mousedown(function(){return false;});
 			el.click(function(event){
-				resizeClicked(event);
+				zoomClicked(event,self);
 				return false;
 			});
 		}
@@ -724,8 +725,26 @@ function closeClicked(event)
 	if (isPaused) return;
 	fatal(event);
 }
-function resizeClicked(event)
+function zoomClicked(event,win)
 {
 	if (isPaused) return;
-	fatal(event);
+	var pos=win.win.position();
+	var save={x:pos.left,y:pos.top};
+	save.w=win.win.width();
+	save.h=win.win.height();
+	if (win.lastZoom!=undefined)
+	{
+		win.win.css('left',win.lastZoom.x+'px');
+		win.win.css('top',win.lastZoom.y+'px');
+		win.resize(win.lastZoom.w,win.lastZoom.h);
+	}
+	else
+	{
+		//TODO: this should resize to fit contents.
+		//for now, resize to fill desktop because I'm lazy
+		win.win.css('left','0px');
+		win.win.css('top',MBHeight+'px');
+		win.resize(desktop.width(),desktop.height()-MBHeight);
+	}
+	win.lastZoom=save;
 }

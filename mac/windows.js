@@ -233,6 +233,7 @@ function getDialog(res)
 	var items=getRes('DITL',itemlist);
 	var w=createWindow(type,close,zoom,false,false,left,top,width,height);
 	w.setTitle(title);
+	w.kind=2;
 	var numitems=items.r16()+1;
 	for (var i=0;i<numitems;i++)
 	{

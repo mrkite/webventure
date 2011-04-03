@@ -189,13 +189,18 @@ TextLineCtl.prototype.draw=function(){}
  */
 function InputCtl(bounds,refcon,opts)
 {
-	this.obj=$(document.createElement('input'));
-	this.obj.addClass('textinput');
-	this.obj.css('left',bounds[0]+'px');
-	this.obj.css('top',bounds[1]+'px');
-	this.obj.css('width',bounds[2]+'px');
-	this.obj.css('height',bounds[3]+'px');
-	this.obj.val(opts[0]);
+	var obj=$(document.createElement('input'));
+	obj.addClass('textinput');
+	obj.css('left',bounds[0]+'px');
+	obj.css('top',bounds[1]+'px');
+	obj.css('width',bounds[2]+'px');
+	obj.css('height',bounds[3]+'px');
+	obj.val(opts[0]);
+	obj.mousedown(function(){
+		obj.focus();
+		return false;
+	});
+	this.obj=obj;
 	this.refcon=refcon;
 }
 InputCtl.prototype.hide=function()
@@ -205,6 +210,7 @@ InputCtl.prototype.hide=function()
 InputCtl.prototype.show=function()
 {
 	this.obj.show();
+	this.obj.focus();
 }
 InputCtl.prototype.draw=function(){}
 
