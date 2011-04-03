@@ -605,7 +605,7 @@ function textEntry(txt,obj,target)
 	el.obj.keypress(function(event){
 		if (event.which==13)
 		{
-			dialog.getItem(1).obj.click();
+			dialog.getItem(1).obj.mousedown();
 			return false;
 		}
 		return true;
@@ -1280,7 +1280,7 @@ function openDialog()
 			selectedItem.addClass('active');
 		});
 		item.dblclick(function(event){
-			dialog.getItem(1).obj.click();
+			dialog.getItem(1).obj.mousedown();
 		});
 		item.text(title.toString());
 		list.obj.append(item);
@@ -1340,7 +1340,7 @@ function saveDialog()
 	el.obj.keypress(function(event){
 		if (event.which==13)
 		{
-			dialog.getItem(1).obj.click();
+			dialog.getItem(1).obj.mousedown();
 			return false;
 		}
 		return true;
@@ -1363,7 +1363,7 @@ function saveDialog()
 			dialog.getItem(3).obj.val(selectedItem.text());
 		});
 		item.dblclick(function(event){
-			dialog.getItem(1).obj.click();
+			dialog.getItem(1).obj.mousedown();
 		});
 		item.text(title.toString());
 		list.obj.append(item);

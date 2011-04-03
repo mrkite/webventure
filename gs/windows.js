@@ -25,7 +25,7 @@ var winbg,exitbg,exitbga;
 function getAboutWin()
 {
 	var dialog=createAlert(10,36,620,354);
-	dialog.add(createCtl([240,318,120,22],1,0xa,["OK"]));
+	dialog.add(createCtl([240,318,118,20],1,0xa,["OK"]));
 	dialog.add(createCtl([10,18,600,146],2,0x8016,["\x01\x4a\x01\x00Apple IIGS ^0\r\x01\x4a\x01\x00Written by:\r\x01\x4a\x01\x00\x01\x53\x01\x00Fred Allen\x01\x53\x00\x00\r\r\x01\x4a\x01\x00Artwork by:\r^1\r\r\x01\x4a\x01\x00\x01\x53\x04\x00MacVenture Team\x01\x53\x00\x00"]));
 	dialog.add(createCtl([10,164,300,136],3,0x8016,["^2"]));
 	dialog.add(createCtl([310,164,300,136],4,0x8016,["^3"]));
@@ -36,9 +36,11 @@ function getAboutWin()
 function getVolumeWin()
 {
 	var dialog=createAlert(80,80,480,200);
-	dialog.add(createCtl([214,150,50,30],1,0xa,["OK"]));
+	dialog.add(createCtl([214,150,50,20],1,0xa,["OK"]));
 	dialog.add(createCtl([100,80,280,22],2,0x18,[0,0,100]));
-	dialog.add(createCtl([20,30,440,30],3,0xf,["Sound Volume"]));
+	var label=createCtl([20,30,440,30],3,0xf,["Sound Volume"]);
+	label.obj.css('text-align','center');
+	dialog.add(label);
 	return dialog;
 }
 

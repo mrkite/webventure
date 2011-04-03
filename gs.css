@@ -328,7 +328,7 @@ div.button {
 	cursor: pointer;
 	background: #fff;
 	color: #000;
-	border: 1px solid #000;
+	border: 2px solid #000;
 	position: absolute;
 	font-size: 14px;
 	text-align: center;

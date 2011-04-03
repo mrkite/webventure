@@ -133,6 +133,7 @@ function ButtonCtl(bounds,refcon,opts)
 	obj.css('top',bounds[1]+'px');
 	obj.css('width',bounds[2]+'px');
 	obj.css('height',bounds[3]+'px');
+	obj.css('line-height',bounds[3]+'px');
 	obj.html(opts[0]);
 	obj.mousedown(function(event){
 		buttonClicked(self,event);

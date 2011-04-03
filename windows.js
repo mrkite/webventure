@@ -431,6 +431,34 @@ Win.prototype.invert=function()
 	}
 	ctx.putImageData(image,0,0);
 }
+Win.prototype.param=function(p)
+{
+	for (var i=0;i<this.ctls.length;i++)
+	{
+		if (!this.ctls[i].getText) continue;
+		var text=this.ctls[i].getText();
+		var pos;
+		do {
+			pos=text.indexOf('^');
+			if (pos>=0)
+			{
+				var prev=text.substr(0,pos);
+				var idx=text.substr(pos+1,1);
+				prev+=p[parseInt(idx,10)];
+				prev+=text.substr(pos+2);
+				this.ctls[i].setText(prev);
+				text=prev;
+			}
+		} while (pos>=0);
+	}
+}
+Win.prototype.getItem=function(id)
+{
+	for (var i=0;i<this.ctls.length;i++)
+		if (this.ctls[i].refcon==id)
+			return this.ctls[i];
+	return undefined;
+}
 function resetWindows()
 {
 	var toClose=[];
