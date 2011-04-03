@@ -49,7 +49,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 	}
 	this.port=$(document.createElement('canvas'));
 	this.port.mousedown(function(event){
-		contentDown(event);
+		contentDown(event,self);
 		return false;
 	});
 	this.port.attr('width',width);
@@ -394,6 +394,24 @@ Win.prototype.redrawTextScroll=function()
 		this.vslider.css('height',(this.height-VScrollBucket-WinTitleHeight-VScrollArrowDown)+'px');
 	}
 }
+Win.prototype.hit=function(x,y)
+{
+	var pos=this.win.offset();
+	if (x>=pos.left && x<pos.left+this.win.width() &&
+		y>=pos.top && y<pos.top+this.win.height())
+	{
+		pos=this.port.offset();
+		if (x>=pos.left && x<pos.left+this.port.width() &&
+			y>=pos.top && y<pos.top+this.port.height())
+		{
+			//in content
+			return {id:3,win:this};
+		}
+		//in titlebar
+		return {id:4,win:this};
+	}
+	return undefined;
+}
 Win.prototype.invert=function()
 {
 	var ctx=this.port.get(0).getContext('2d');
@@ -558,10 +576,46 @@ function dragWindow(x,y,win)
 		win.win.css('left',(pos.left+(event.pageX-lastX))+'px');
 	});
 }
-function contentDown(event)
+function contentDown(event,win)
 {
 	if (isPaused) return;
-	fatal(event);
+	bringToFront(win);
+	switch (win.kind)
+	{
+		case 0x9: //commands
+			dragWindow(event.pageX,event.pageY,win);
+			break;
+		case 0xa: //main
+		case 0xe: //inventory
+			var obj=findObjectAt(event.pageX,event.pageY,win);
+			var canDrag=false;
+			if (obj && !get(obj,3)) canDrag=true;
+			handleObjectSelect(obj,win,event,canDrag);
+			break;
+		case 0xc: //selfwin
+			var obj=findObjectAt(event.pageX,event.pageY,win);
+			if (obj==1)
+				handleObjectSelect(obj,win,event,false);
+			else
+				dragWindow(event.pageX,event.pageY,win);
+			break;
+		case 0xd: //exitwin
+			handleObjectSelect(get(1,0),win,event,false);
+			break;
+	}
+}
+function findObjectAt(x,y,win)
+{
+	var pt={h:x,v:y};
+	var obj=0;
+	var i=win.refCon.children.length;
+	win.globalToLocal(pt);
+	while (i>0 && obj==0)
+	{
+		i--;
+		obj=objHit(pt,win.refCon.children[i]);
+	}
+	return obj;
 }
 function closeClicked(event)
 {

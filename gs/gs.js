@@ -296,6 +296,23 @@ function createProxy(obj)
 	return drag;
 }
 
+function objHit(pt,child)
+{
+	var obj=0;
+	if (!get(child.id,4) &&
+		inRect(pt,child))
+	{
+		var bmp;
+		if (bmp=getGraphic(child.id*2))
+		{
+			if (bmp.hit(pt.h-child.left,pt.v-child.top))
+				obj=child.id;
+		}
+		else obj=child.id;
+	}
+	return obj;
+}
+
 /********************** private functions *********************/
 function getWindow(id)
 {

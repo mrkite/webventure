@@ -269,6 +269,7 @@ function openObject(obj)
 	{
 		var p={h:get(obj,1),v:get(obj,2)};
 		getParentWin(obj).localToGlobal(p);
+		globalToDesktop(p);
 		var title=getText(obj);
 		var iw=getInventoryWindow();
 		iw.setTitle(title);
@@ -309,6 +310,7 @@ function closeObject(obj)
 	zoom.css('height',info.height+'px');
 	var p={h:get(info.obj,1),v:get(info.obj,2)};
 	w.localToGlobal(p);
+	globalToDesktop(p);
 	zoom.animate({
 		top:p.v+'px',
 		left:p.h+'px',
@@ -428,6 +430,7 @@ function zoomObject(obj)
 	desktop.append(dragObject);
 	var pt={h:get(obj,1),v:get(obj,2)};
 	getParentWin(obj).localToGlobal(pt);
+	globalToDesktop(pt);
 	dragObject.animate({
 		top:pt.v+'px',
 		left:pt.h+'px'
@@ -770,6 +773,7 @@ function doLasso(win,start,canDrag)
 	var bounds={};
 	var pt={h:win.refCon.x,v:win.refCon.y};
 	win.localToGlobal(pt);
+	globalToDesktop(pt);
 	bounds.minx=pt.h;
 	bounds.miny=pt.v;
 	bounds.maxx=pt.h+win.port.width();
@@ -874,6 +878,7 @@ function doubleClickObject(obj,win,event,canDrag)
 					start.v=win.refCon.children[child].top;
 				}
 				win.localToGlobal(start);
+				globalToDesktop(start);
 				dragObject.css('top',start.v+'px');
 				dragObject.css('left',start.h+'px');
 			}
@@ -951,6 +956,7 @@ function singleClickObject(obj,win,event,canDrag)
 					start.v=win.refCon.children[child].top;
 				}
 				win.localToGlobal(start);
+				globalToDesktop(start);
 				dragObject.css('top',start.v+'px');
 				dragObject.css('left',start.h+'px');
 			}
@@ -1047,6 +1053,14 @@ function primaryObject(obj)
 		hiliteExit(destObject);
 	}
 	cmdReady=true;
+}
+
+function inRect(pt,rect)
+{
+	if (pt.h>=rect.left && pt.v>=rect.top &&
+		pt.h<rect.left+rect.width &
+		pt.v<rect.top+rect.height) return true;
+	return false;
 }
 
 
@@ -1627,4 +1641,10 @@ function getWindowLocation(x,y)
 			break;
 	}
 	return info;
+}
+function globalToDesktop(pt)
+{
+	var pos=desktop.offset();
+	pt.v-=pos.top;
+	pt.h-=pos.left;
 }
