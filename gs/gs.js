@@ -152,20 +152,20 @@ function createMenus()
 {
 	var stock=[
 		">L File \\H\x02\x00\r"+
-		" LNew\\V*NnH\x01\x01\r"+
-		" LOpen...\\*OoH\x02\x01\r"+
-		" LSave\\*SsH\x03\x01\r"+
-		" LSave As...\\VH\x04\x01\r"+
-		" LQuit\\*QqH\x05\x01\r.",
+		" LNew\\V*NnH\x00\x81\r"+
+		" LOpen...\\*OoH\x02\x81\r"+
+		" LSave\\*SsH\x03\x81\r"+
+		" LSave As...\\VH\x04\x81\r"+
+		" LQuit\\*QqH\x06\x81\r.",
 		">L Edit \\H\x03\x00\r"+
-		" LUndo\\DV*ZzH\xfa\x00\r"+
-		" LCut\\D*XxH\xfb\x00\r"+
-		" LCopy\\D*CcH\xfc\x00\r"+
-		" LPaste\\DV*VvH\xfd\x00\r"+
-		" LClear\\DH\xfe\x00\r.",
+		" LUndo\\DV*ZzH\x00\x82\r"+
+		" LCut\\D*XxH\x02\x82\r"+
+		" LCopy\\D*CcH\x03\x82\r"+
+		" LPaste\\DV*VvH\x04\x82\r"+
+		" LClear\\DH\x05\x82\r.",
 		">L Special \\H\x04\x00\r"+
-		" LClean Up\\DH\x06\x01\r"+
-		" LMess Up\\DH\x07\x01\r."
+		" LClean Up\\DH\x00\x83\r"+
+		" LMess Up\\DH\x01\x83\r."
 	];
 	addMenu(resGetAppleMenu());
 	for (var i=0;i<stock.length;i++)

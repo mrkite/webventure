@@ -29,10 +29,10 @@ function getAboutWin()
 	var name=toascii(r.read(len));
 	var dialog=createAlert(146,96,220,150);
 	dialog.add(createCtl([75,120,70,18],1,0xa,['Ok']));
-	dialog.add(createCtl([20,30,180,40],2,0xf,name));
-	dialog.add(createCtl([20,80,180,40],3,0xf,['WebVenture <br/> &#169; 2010 Sean Kasun']));
-	dialog.getItem(2).css('text-align','center');
-	dialog.getItem(3).css('text-align','center');
+	dialog.add(createCtl([20,30,180,40],2,0xf,[name]));
+	dialog.add(createCtl([20,80,180,40],3,0xf,['WebVenture <br/> &#169; 2011 Sean Kasun']));
+	dialog.getItem(2).obj.css('text-align','center');
+	dialog.getItem(3).obj.css('text-align','center');
 	return dialog;
 }
 
@@ -40,9 +40,9 @@ function getVolumeWin()
 {
 	var dialog=createAlert(146,96,220,120);
 	dialog.add(createCtl([75,90,70,18],1,0xa,['Ok']));
-	dialog.add(createCtl([55,55,110,13],2,0x18,[0,0,100]));
+	dialog.add(createCtl([55,55,110,14],2,0x18,[0,0,100]));
 	dialog.add(createCtl([20,25,180,20],3,0xf,['Sound Volume']));
-	dialog.getItem(3).css('text-align','center');
+	dialog.getItem(3).obj.css('text-align','center');
 	return dialog;
 }
 
@@ -182,13 +182,13 @@ function getAlert(res)
 		switch (type&0x7f)
 		{
 			case 4: //button
-				dialog.add(createCtl([left,top,width,height],0xa,i+1,[title]));
+				dialog.add(createCtl([left,top,width,height],i+1,0xa,[title]));
 				break;
 			case 8: //static text
-				dialog.add(createCtl([left,top,width,height],0xf,i+1,[title]));
+				dialog.add(createCtl([left,top,width,height],i+1,0xf,[title]));
 				break;
 			case 0x10: //edit text
-				dialog.add(createCtl([left,top,width,height],0x11,i+1,[title]));
+				dialog.add(createCtl([left,top,width,height],i+1,0x11,[title]));
 				break;
 			default:
 				fatal("Unknown DITL:"+(type&0x7f));
@@ -251,13 +251,13 @@ function getDialog(res)
 		switch (type&0x7f)
 		{
 			case 4: //button
-				w.add(createCtl([left,top,width,height],0xa,i+1,[title]));
+				w.add(createCtl([left,top,width,height],i+1,0xa,[title]));
 				break;
 			case 8: //static text
-				w.add(createCtl([left,top,width,height],0xf,i+1,[title]));
+				w.add(createCtl([left,top,width,height],i+1,0xf,[title]));
 				break;
 			case 0x10: //edit text
-				w.add(createCtl([left,top,width,height],0x11,i+1,[title]));
+				w.add(createCtl([left,top,width,height],i+1,0x11,[title]));
 				break;
 			default:
 				fatal("Unknown DITL:"+(type&0x7f));

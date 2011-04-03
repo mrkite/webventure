@@ -29,7 +29,7 @@ function getAboutWin()
 	dialog.add(createCtl([10,18,600,146],2,0x8016,["\x01\x4a\x01\x00Apple IIGS ^0\r\x01\x4a\x01\x00Written by:\r\x01\x4a\x01\x00\x01\x53\x01\x00Fred Allen\x01\x53\x00\x00\r\r\x01\x4a\x01\x00Artwork by:\r^1\r\r\x01\x4a\x01\x00\x01\x53\x04\x00MacVenture Team\x01\x53\x00\x00"]));
 	dialog.add(createCtl([10,164,300,136],3,0x8016,["^2"]));
 	dialog.add(createCtl([310,164,300,136],4,0x8016,["^3"]));
-	dialog.add(createCtl([10,294,600,22],5,0x8016,["\x01\x4a\x01\x00WebVenture by Sean Kasun"]));
+	dialog.add(createCtl([10,294,600,22],5,0x8016,["\x01\x4a\x01\x00WebVenture &#169; 2011 Sean Kasun"]));
 	dialog.param([resGetGameName(),resGetCredits(0),resGetCredits(1),resGetCredits(2)]);
 	return dialog;
 }
@@ -48,8 +48,8 @@ function getAskSave(why)
 {
 	var dialog=createAlert(92,146,456,108);
 	dialog.add(createCtl([24,68,120,22],1,0xa,["YES"]));
-	dialog.add(createCtl([168,68,120,22],2,0xa,["NO"]));
-	dialog.add(createCtl([312,68,120,22],3,0xa,["CANCEL"]));
+	dialog.add(createCtl([168,68,120,22],3,0xa,["NO"]));
+	dialog.add(createCtl([312,68,120,22],2,0xa,["CANCEL"]));
 	dialog.add(createCtl([100,10,340,38],4,0x8016,["Save changes before ^0   "]));
 	switch (why)
 	{

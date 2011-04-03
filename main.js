@@ -625,19 +625,27 @@ function menuSelect(item)
 {
 	switch (item)
 	{
-		case 0x100: doAbout(); break;
-		case 0x101: checkNew(); break;
-		case 0x102: checkOpen(); break;
-		case 0x103:
+		case 0x100: doAbout(); break; //gs about
+		case 0x8000: doAbout(); break; //mac about
+		case 0x8100: checkNew(); break;
+		case 0x8102: checkOpen(); break;
+		case 0x8103:
 			afterSave=function(){}
 			doSave();
 			break
-		case 0x104:
+		case 0x8104:
 			afterSave=function(){}
 			saveDialog();
 			break;
-		case 0x105: checkQuit(); break;
+		case 0x8106: checkQuit(); break;
 		case 0x900: doVolume(); break;
+		case 0x8200: break; //undo
+		case 0x8202: break; //cut
+		case 0x8203: break; //copy
+		case 0x8204: break; //paste
+		case 0x8205: break; //clear
+		case 0x8300: break; //clean up
+		case 0x8301: break; //mess up
 		default:
 			fatal("Unknown menuitem: "+item.toString(16));
 	}
@@ -1196,10 +1204,10 @@ function checkNew()
 					afterSave=checkNew;
 					doSave();
 					break;
-				case 2: //no
+				case 3: //no
 					doNew();
 					break;
-				case 3: //cancel
+				case 2: //cancel
 					isPaused=false;
 					break;
 			}
@@ -1249,10 +1257,10 @@ function checkOpen()
 					afterSave=checkOpen;
 					doSave();
 					break;
-				case 2: //no
+				case 3: //no
 					openDialog();
 					break;
-				case 3: //cancel
+				case 2: //cancel
 					isPaused=false;
 					break;
 			}
@@ -1411,11 +1419,11 @@ function checkQuit()
 					afterSave=checkQuit;
 					doSave();
 					break;
-				case 2: //no
+				case 3: //no
 					gameState=4;
 					runMain();
 					break;
-				case 3: //cancel
+				case 2: //cancel
 					isPaused=false;
 					break;
 			}

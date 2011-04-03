@@ -159,6 +159,38 @@ div.alert canvas {
 div.alert.active {
 	z-index: 50000;
 }
+div.alert div.hscroll {
+	position: absolute;
+	left: 0px;
+	height: 14px;
+	border: 1px solid #000;
+	background-image: url('images/mac/ltGray.png');
+	cursor: pointer;
+}
+div.alert div.leftarrow {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 14px;
+	height: 14px;
+	background-image: url('images/mac/scrollleft.png');
+	border-right: 1px solid #000;
+}
+div.alert div.rightarrow {
+	position: absolute;
+	top: 0px;
+	width: 14px;
+	height: 14px;
+	background-image: url('images/mac/scrollright.png');
+	border-left: 1px solid #000;
+}
+div.alert div.slider {
+	position: absolute;
+	background: #fff;
+	width: 12px;
+	height: 12px;
+	border: 1px solid #000;
+}
 div.plainDBox {
 	background: #fff;
 	position: absolute;
@@ -522,6 +554,12 @@ div.text {
 	color: #000;
 	font-size: 12px;
 	overflow: none;
+}
+div.textblock {
+	position: absolute;
+	background: #fff;
+	color: #000;
+	font-size: 12px;
 }
 div.list {
 	position: absolute;
