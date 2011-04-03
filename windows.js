@@ -235,6 +235,7 @@ Win.prototype.localToGlobal=function(pt)
 }
 Win.prototype.initScrollbars=function()
 {
+	var self=this;
 	if (this.hScroll)
 	{
 		this.hscroll=$(document.createElement('div'));
@@ -300,9 +301,82 @@ Win.prototype.initScrollbars=function()
 	this.grow.css('top',(this.height-GrowHeight)+'px');
 	this.grow.css('left',(this.width-GrowWidth)+'px');
 	this.grow.mousedown(function(event){
-		fatal("grow");
+		if (isPaused) return false;
+		bringToFront(self);
+		var proxy=$(document.createElement('div'));
+		proxy.addClass('resizeProxy');
+		desktop.append(proxy);
+		var pos=self.win.position();
+		proxy.css('top',pos.top+'px');
+		proxy.css('left',pos.left+'px');
+		var x=self.win.width();
+		var y=self.win.height();
+		proxy.css('width',x+'px');
+		proxy.css('height',y+'px');
+		var oldX=event.pageX;
+		var oldY=event.pageY;
+		$(document).mousemove(function(event){
+			var newx=x+(event.pageX-oldX);
+			var newy=y+(event.pageY-oldY);
+			if (newx>100)
+			{
+				x=newx;
+				proxy.css('width',x+'px');
+				oldX=event.pageX;
+			}
+			if (newy>100)
+			{
+				y=newy;
+				proxy.css('height',y+'px');
+				oldY=event.pageY;
+			}
+		});
+		$(document).mouseup(function(event){
+			$(document).unbind('mousemove');
+			$(document).unbind('mouseup');
+			proxy.remove();
+			self.resize(x,y);
+		});
+		return false;
 	});
 	this.win.append(this.grow);
+}
+Win.prototype.resize=function(w,h)
+{
+	var deltaw=this.width-this.port.width();
+	var deltah=this.height-this.port.height();
+	this.width=w;
+	this.height=h;
+	this.win.css('width',w+'px');
+	this.win.css('height',h+'px');
+	if (this.hScroll)
+	{
+		this.hscroll.css('top',(h-HScrollHeight)+'px');
+		this.hscroll.css('width',(w-HScrollBucket)+'px');
+		this.rightarrow.css('left',(w-HScrollArrowRight-GrowWidth)+'px');
+	}
+	if (this.vScroll)
+	{
+		this.vscroll.css('left',(w-VScrollWidth)+'px');
+		this.vscroll.css('height',(h-VScrollBucket-WinTitleHeight)+'px');
+		this.downarrow.css('top',(h-VScrollArrowDown-GrowHeight-WinTitleHeight)+'px');
+	}
+	this.grow.css('top',(h-GrowHeight)+'px');
+	this.grow.css('left',(w-GrowWidth)+'px');
+	if (this.refCon)
+	{
+		this.port.attr('width',(w-deltaw));
+		this.port.attr('height',(h-deltah));
+		this.refCon.updateScroll=true;
+		updateWindow(this);
+	}
+	else //text window
+	{
+		this.port.css('width',(w-deltaw));
+		this.port.css('height',(h-deltah));
+		lastViewed=this.port.get(0).scrollHeight;
+		checkScroll();
+	}
 }
 Win.prototype.setScrollBounds=function(rect)
 {
