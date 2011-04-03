@@ -127,7 +127,10 @@ function menudown(event)
 		active.menu.remove();
 		activeMenu.removeClass('active');
 		if (selectedItem!=-1)
+		{
+			active.items[selectedItem].obj.removeClass('active');
 			menuSelect(active.items[selectedItem].id);
+		}
 	});
 }
 
