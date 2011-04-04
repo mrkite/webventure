@@ -33,7 +33,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 			var el=this.title.children('div.close');
 			el.mousedown(function(){return false;});
 			el.click(function(event){
-				closeClicked(event);
+				closeClicked(event,self);
 				return false;
 			});
 		}
@@ -834,10 +834,18 @@ function findObjectAt(x,y,win)
 	}
 	return obj;
 }
-function closeClicked(event)
+function closeClicked(event,win)
 {
 	if (isPaused) return;
-	fatal(event);
+	if (win.kind==0xe)
+	{
+		unselectall();
+		selectObj(win.refCon.id);
+		selectedCtl=2;
+		activateCommand(2);
+		cmdReady=true;
+	}
+	runMain();
 }
 function zoomClicked(event,win)
 {
