@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>WebVenture Inspector</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+<div class="intro">
+<h3>WebVenture Inspector</h3>
+<p>
+Please choose a game to inspect.
+</p>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+$.getJSON("games.js",function(games){
+	for (var i=0;i<games.length;i++)
+	{
+		var link=document.createElement('a');
+		link.href="inspect.html#"+escape(games[i].game);
+		var img=document.createElement('img');
+		img.src=games[i].icon;
+		$(link).append(img);
+		$(link).append(games[i].title);
+		$('#gamelist').append(link);
+	}
+});
+});
+</script>
+<div id="gamelist"></div>
+</body>
+</html>
