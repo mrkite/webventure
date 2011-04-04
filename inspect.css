@@ -91,3 +91,8 @@ table td {
 table td.odd {
 	background: #ccc;
 }
+div.play {
+	border: 1px solid #888;
+	background: #484;
+	color: #efe;
+}

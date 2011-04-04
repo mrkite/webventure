@@ -497,7 +497,7 @@ function runFunc()
 			frames[0].p.shift();
 			p=frames[0].p[0];
 			break;
-		case 0xbd: //open object
+		case 0xbd: //focus object
 			obj=state.pop();
 			queue.push({id:2,val:obj});
 			break;

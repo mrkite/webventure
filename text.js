@@ -142,8 +142,6 @@ function getNoun(subval)
 	else
 	{
 		name=getText(obj);
-		if (name=='')
-			throw "text failure";
 		switch (subval&3)
 		{
 			case 2:
