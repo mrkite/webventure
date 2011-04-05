@@ -90,14 +90,15 @@ function getInventoryWindow()
 
 function getDiplomaWin()
 {
+	hires=true;
 	return getWindow(6);
 }
 function getDiplomaDialog()
 {
 	var dialog=createAlert(10,352,620,40);
-	dialog.add(createCtl([5,8,30,24],1,0xa,['Print']));
-	dialog.add(createCtl([272,8,32,24],2,0xa,['Quit']));
-	dialog.add(createCtl([42,2,225,36],3,0x8016,['^0']));
+	dialog.add(createCtl([10,8,60,24],1,0xa,['Print']));
+	dialog.add(createCtl([544,8,64,24],2,0xa,['Quit']));
+	dialog.add(createCtl([84,10,450,26],3,0x8016,['\x01\x4a\x01\x00^0']));
 	dialog.param([resGetCertPrompt()]);
 	return dialog;
 }
@@ -113,9 +114,9 @@ function getLoseDialog()
 {
 	var dialog=createAlert(140,136,430,128);
 	dialog.add(createCtl([14,56,122,26],1,0xa,['YES']));
-	dialog.add(createCtl([260,56,152,26],2,0xa,['NO']));
-	dialog.add(createCtl([14,92,398,26],3,0xa,["Yes, I'll use a saved game."]));
-	dialog.add(createCtl([14,10,398,38],4,0xf,["You have lost ... Would you\nlike to have another try?"]));
+	dialog.add(createCtl([260,56,152,26],3,0xa,['NO']));
+	dialog.add(createCtl([14,92,398,26],4,0xa,["Yes, I'll use a saved game."]));
+	dialog.add(createCtl([14,10,398,38],2,0xf,["You have lost ... Would you\nlike to have another try?"]));
 	return dialog;
 }
 

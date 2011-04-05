@@ -315,8 +315,16 @@ function objHit(pt,child)
 }
 
 /********************** private functions *********************/
+var hires=false;
 function getWindow(id)
 {
 	var w=resGetWindow(id);
-	return gsWindow(w.wFrame,w.left*2,w.top*2,(w.right-w.left)*2,(w.bottom-w.top)*2);
+	var lt=w.left;
+	var wd=w.right-w.left;
+	if (!hires)
+	{
+		lt*=2;
+		wd*=2;
+	}
+	return gsWindow(w.wFrame,lt,w.top*2,wd,(w.bottom-w.top)*2);
 }

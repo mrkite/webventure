@@ -1,5 +1,7 @@
 /********************** public functions *********************/
 
+var RELEASE=0;  //set to 0 for debug version
+
 function resetEngine()
 {
 	frames=[];
@@ -581,7 +583,7 @@ function runFunc()
 			state.push(86);
 			break;
 		case 0xcf: //push scenario number
-			state.push(3);
+			state.push(RELEASE);
 			break;
 		case 0xd0: //push 1
 			state.push(1);

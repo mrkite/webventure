@@ -162,11 +162,11 @@ function endGame()
 				case 1: //restart
 					doNew();
 					break;
-				case 2: //quit
+				case 3: //quit
 					gameState=4;
 					runMain();
 					break;
-				case 3: //load
+				case 4: //load
 					openDialog();
 					break;
 			}
