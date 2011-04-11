@@ -3,11 +3,11 @@
 function loadGame(root)
 {
 	$.ajax({
-		url:root,
-		beforeSend: function(xhr) {
+		'url':root,
+		'beforeSend': function(xhr) {
 			xhr.overrideMimeType('text/html; charset=x-user-defined');
 		},
-		complete: function(xhr) {
+		'complete': function(xhr) {
 			var img=new GFile(xhr.responseText);
 			if (img.r4()!="2IMG")
 				fatal("Not a valid 2mg file");

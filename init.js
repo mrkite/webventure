@@ -27,9 +27,9 @@ function waitForLoad()
 	{
 		saveName=gameparts[1];
 		var g=window.JSON.parse(window.localStorage.getItem(saveName).toString());
-		game=g.gamedata;
-		globals=g.globals;
-		textEdit.html(g.text);
+		game=g['gamedata'];
+		globals=g['globals'];
+		textEdit.html(g['text']);
 		textWin.setTitle(saveName);
 	}
 	else

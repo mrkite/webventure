@@ -75,7 +75,7 @@ function disableMenu(id)
 	var item=findMenu(id);
 	if (item)
 	{
-		item.disabled=true;
+		item.enabled=false;
 		item.obj.addClass('disabled');
 	}
 }

@@ -1278,7 +1278,7 @@ function openDialog()
 		var title=window.localStorage.key(i);
 		if (title==null) continue;
 		var g=window.JSON.parse(window.localStorage.getItem(title).toString());
-		if (g.game!=gamename) continue;
+		if (g['game']!=gamename) continue;
 		var item=$(document.createElement('div'));
 		item.addClass('listitem');
 		item.mousedown(function(event){return false;});
@@ -1313,12 +1313,12 @@ function openDialog()
 function doOpen()
 {
 	var g=window.JSON.parse(window.localStorage.getItem(saveName).toString());
-	game=g.gamedata;
-	globals=g.globals;
+	game=g['gamedata'];
+	globals=g['globals'];
 	reset();
 	calculateRelations();
 	textWin.setTitle(saveName);
-	textEdit.html(g.text);
+	textEdit.html(g['text']);
 	lastViewed=textEdit.get(0).scrollHeight;
 	textEdit.scrollTop(lastViewed);
 	gameState=1;
@@ -1359,7 +1359,7 @@ function saveDialog()
 		var title=window.localStorage.key(i);
 		if (title==null) continue;
 		var game=window.JSON.parse(window.localStorage.getItem(title).toString());
-		if (game.game!=gamename) continue;
+		if (game['game']!=gamename) continue;
 		var item=$(document.createElement('div'));
 		item.addClass('listitem');
 		item.mousedown(function(event){return false;});
@@ -1394,7 +1394,7 @@ function saveDialog()
 }
 function save()
 {
-	window.localStorage.setItem(saveName,window.JSON.stringify({game:gamename,gamedata:game,globals:globals,text:textEdit.html()}));
+	window.localStorage.setItem(saveName,window.JSON.stringify({'game':gamename,'gamedata':game,'globals':globals,'text':textEdit.html()}));
 	textWin.setTitle(saveName);
 	gameChanged=false;
 	afterSave();

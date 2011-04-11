@@ -718,6 +718,7 @@ function bringToFront(win)
 			wins.splice(i,1);
 	wins.unshift(win);
 	win.win.addClass('active');
+	enableMenus();
 }
 
 function createWindow(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)

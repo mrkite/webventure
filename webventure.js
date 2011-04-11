@@ -7,9 +7,9 @@ $(document).ready(function(){
 	$('script[src="webventure.js"]').after(desktop);
 
 	if (gamename.match(/\.dsk$/)) //macintosh
-		$.getScript("mac_full.js");
+		$.getScript("mac.js");
 	else if (gamename.match(/\.2mg$/)) //IIgs
-		$.getScript("gs_full.js");
+		$.getScript("gs.js");
 	else
 		fatal("Unknown disk type");
 });

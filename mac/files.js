@@ -4,11 +4,11 @@
 function loadGame(root)
 {
 	$.ajax({
-		url:root,
-		beforeSend: function(xhr) {
+		'url':root,
+		'beforeSend': function(xhr) {
 			xhr.overrideMimeType('text/html; charset=x-user-defined');
 		},
-		complete: function(xhr) {
+		'complete': function(xhr) {
 			disk=new GFile(xhr.responseText);
 			disk.seek(0x414,disk.set);
 			allocSize=disk.r32();
