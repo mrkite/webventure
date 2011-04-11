@@ -58,6 +58,7 @@ function runMain()
 	}
 	if (gameState==2 || gameState==3)
 		endGame();
+	enableMenus();
 }
 function runEngine()
 {
@@ -643,8 +644,8 @@ function menuSelect(item)
 		case 0x8203: break; //copy
 		case 0x8204: break; //paste
 		case 0x8205: break; //clear
-		case 0x8300: break; //clean up
-		case 0x8301: break; //mess up
+		case 0x8300: cleanUp(wins[0]); break; //clean up
+		case 0x8301: messUp(wins[0]); break; //mess up
 		default:
 			fatal("Unknown menuitem: "+item.toString(16));
 	}
@@ -1666,4 +1667,258 @@ function globalToDesktop(pt)
 	var pos=desktop.offset();
 	pt.v-=pos.top;
 	pt.h-=pos.left;
+}
+function hasLocalStorage()
+{
+	try {
+		return 'localStorage' in window && window['localStorage']!==null;
+	} catch (e) {
+		return false;
+	}
+}
+function enableFeatureMenus()
+{
+	if (hasLocalStorage())
+	{
+		enableMenu(0x8102); //open
+		enableMenu(0x8103); //save
+		enableMenu(0x8104); //save as
+	}
+	else
+	{
+		disableMenu(0x8102); //open
+		disableMenu(0x8103); //save
+		disableMenu(0x8104); //save as
+	}
+	if (soundSupport)
+		enableMenu(0x900); //volume
+	else
+		disableMenu(0x900); //volume
+}
+function enableMenus()
+{
+	if (wins[0].kind==0xe) //inventory
+	{
+		enableMenu(0x8300); //cleanup
+		enableMenu(0x8301); //messup
+	}
+	else
+	{
+		disableMenu(0x8300); //cleanup
+		disableMenu(0x8301); //messup
+	}
+	disableMenu(0x8200); //undo
+	disableMenu(0x8202); //cut
+	disableMenu(0x8203); //copy
+	disableMenu(0x8204); //paste
+	disableMenu(0x8205); //clear
+}
+function newLayout()
+{
+	return {width:8,items:[]};
+}
+function appendLayout(layout,child,children)
+{
+	layout.width+=8+children[child].width;
+	layout.items.push(child);
+}
+function removeLayout(layout,idx,children)
+{
+	var child=layout.items[idx];
+	layout.width-=8+children[child].width;
+	layout.items.splice(idx,1);
+	return child;
+}
+function removeOutlier(layout,flag,children,rect)
+{
+	var max=flag?0x7fff:-0x8000;
+	var first=true;
+	var outlier=-1;
+	for (var i=0;i<layout.items.length;i++)
+	{
+		var child=layout.items[i];
+		var oob=(children[child].top+children[child].height>
+			rect.top+rect.height ||
+			children[child].top>rect.top);
+		if (flag) oob=!oob;
+		if (first && oob)
+		{
+			first=false;
+			max=flag?0x7fff:-0x8000;
+		}
+		if (first || oob)
+		{
+			var center=children[child].width/2|0;
+			var over=false;
+			if (flag)
+				over=(max>=center);
+			else
+				over=(max<=center);
+			if (over)
+			{
+				outlier=i;
+				max=center;
+			}
+		}
+	}
+	return removeLayout(layout,outlier,children);
+}
+function cleanUp(win)
+{
+	var rect={};
+	rect.top=win.refCon.y;
+	rect.left=win.refCon.x;
+	rect.width=win.port.width();
+	rect.height=win.port.height();
+
+	var children=win.refCon.children;
+
+	var newLocs=[];
+
+	var onScreen=newLayout();
+	var offScreen=newLayout();
+	var line=newLayout();
+	var overflow=newLayout();
+
+	for (var i=children.length-1;i>=0;i--)
+	{
+		var child=children[i];
+		if (child.top+child.height>rect.top+rect.height ||
+			child.top<rect.top)
+			appendLayout(offScreen,i,children);
+		else if (16+child.width>rect.width)
+			appendLayout(offScreen,i,children);
+		else
+			appendLayout(onScreen,i,children);
+	}
+	var y=rect.top+8;
+	while (onScreen.items.length || offScreen.items.length)
+	{
+		var min=0x7fff;
+		var minidx=-1;
+		var height=0;
+		//find highest element onscreen
+		for (var i=onScreen.items.length-1;i>=0;i--)
+		{
+			var child=onScreen.items[i];
+			if (children[child].top<min)
+			{
+				min=children[child].top;
+				height=children[child].height;
+				minidx=i;
+			}
+		}
+		if (minidx!=-1)
+		{
+			//remove it and put it on line
+			appendLayout(line,removeLayout(onScreen,minidx,children),children);
+			//along with all elements in same line
+			var done;
+			do {
+				done=true;
+				for (var i=onScreen.items.length-1;i>=0;i--)
+				{
+					var child=onScreen.items[i];
+					if (children[child].top<min+height)
+					{
+						if (height<children[child].height)
+						{
+							done=false;
+							height=children[child].height;
+						}
+						appendLayout(line,removeLayout(onScreen,i,children),children);
+					}
+				}
+			} while (!done);
+		}
+		//line too long?  put items back onscreen
+		while (line.items.length && line.width>rect.width)
+			appendLayout(onScreen,removeOutlier(line,false,children,rect),children);
+		//find line height
+		height=0;
+		for (var i=line.items.length-1;i>=0;i--)
+		{
+			var child=line.items[i];
+			if (height<children[child].height)
+				height=children[child].height;
+		}
+		//while there's room, add offscreen items
+		while (offScreen.items.length && line.width<rect.width)
+		{
+			var idx=removeOutlier(offScreen,true,children,rect);
+			if (onScreen.items.length && children[idx].height>height)
+				appendLayout(overflow,idx,children);
+			else if (line.width+8+children[idx].width<=rect.width)
+			{
+				//adjust line height
+				if (height<children[idx].height)
+					height=children[idx].height;
+				appendLayout(line,idx,children);
+			}
+			else
+				appendLayout(overflow,idx,children);
+		}
+		//move all overflow back offscreen
+		while (overflow.items.length)
+			appendLayout(offScreen,removeLayout(overflow,0,children),children);
+		//is line empty? put one offscreen item on there
+		if (!line.items.length && offScreen.items.length)
+		{
+			var idx=removeLayout(offScreen,0,children);
+			if (height<children[idx].height)
+				height=children[idx].height;
+			appendLayout(line,idx,children);
+		}
+		var x=rect.left+8;
+		//now add line to new positions
+		while (line.items.length)
+		{
+			var idx=removeOutlier(line,true,children,rect);
+			newLocs.push({id:children[idx].id,left:x,
+				top:y+(height-children[idx].height)/2|0});
+			x+=children[idx].width+8;
+		}
+		y+=height+8;
+	}
+	moveItems(newLocs,win);
+}
+function messUp(win)
+{
+	var rect={};
+	rect.top=win.refCon.y;
+	rect.left=win.refCon.x;
+	rect.width=win.port.width();
+	rect.height=win.port.height();
+
+	var children=win.refCon.children;
+	var newLocs=[];
+
+	for (var i=0;i<children.length;i++)
+	{
+		var scale=rect.height-children[i].height;
+		if (scale<0) scale=0;
+		var y=(Math.random()*scale|0)+rect.top;
+		scale=rect.width-children[i].width;
+		if (scale<0) scale=0;
+		var x=(Math.random()*scale|0)+rect.left;
+		newLocs.push({id:children[i].id,left:x,top:y});
+	}
+	moveItems(newLocs,win);
+}
+// this should animate the items to their new location
+// but it's really unnecessary
+function moveItems(locs,win)
+{
+	for (var i=0;i<locs.length;i++)
+	{
+		var pt=getObjBounds(locs[i].id);
+		if (pt.top!=locs[i].top || pt.left!=locs[i].left)
+		{
+			set(locs[i].id,1,locs[i].left);
+			set(locs[i].id,2,locs[i].top);
+
+		}
+	}
+	win.refCon.updateScroll=true;
+	updateWindow(win);
 }

@@ -49,6 +49,36 @@ function createItem(name,id,key,enabled)
 	curMenu.body.append(item.obj);
 	curMenu.items.push(item);
 }
+function findMenu(id)
+{
+	for (var i=0;i<menus.length;i++)
+	{
+		for (var j=0;j<menus[i].items.length;j++)
+		{
+			if (menus[i].items[j].id==id)
+				return menus[i].items[j];
+		}
+	}
+	return undefined;
+}
+function enableMenu(id)
+{
+	var item=findMenu(id);
+	if (item)
+	{
+		item.enabled=true;
+		item.obj.removeClass('disabled');
+	}
+}
+function disableMenu(id)
+{
+	var item=findMenu(id);
+	if (item)
+	{
+		item.disabled=true;
+		item.obj.addClass('disabled');
+	}
+}
 
 function menudown(event)
 {
@@ -88,6 +118,9 @@ function menudown(event)
 					break;
 				}
 			}
+			for (var i=0;i<active.items.length;i++)
+				active.items[i].obj.removeClass('active');
+			selectedItem=-1;
 		}
 		else
 		{

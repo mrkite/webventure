@@ -19,6 +19,8 @@ function waitForLoad()
 	createMenus();
 	addDeskAccessory("Adjust Volume...",0x900);
 
+	enableFeatureMenus();
+
 	textWin.setTitle(resGetUntitled());
 
 	if (gameparts.length>1) //save game to load

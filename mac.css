@@ -60,7 +60,7 @@ table.menu tr.menuitem.disabled {
 	color: #aaa;
 }
 table.menu tr.menuitem.disabled td.shortcut {
-	background-image: url("images/dclover.png");
+	background-image: url("images/mac/dclover.png");
 	background-repeat: no-repeat;
 	background-position: 15px 4px;
 }
