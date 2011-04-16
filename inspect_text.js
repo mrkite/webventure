@@ -1,9 +1,6 @@
 /********************** public functions *********************/
 var oldText=true;
 var huff=undefined;
-var userInput='';
-var sourceObject=undefined;
-var targetObject=undefined;
 
 function setHuff(h)
 {
@@ -16,7 +13,7 @@ function getText(id)
 {
 	if (oldText) return getOldText(id);
 	if (id&0x8000)
-		return userInput;
+		return "&lt;user&gt;";
 	var p=new GFile(getObject(2,id));
 	var len;
 	var out='';
@@ -72,7 +69,7 @@ function capitalize(str)
 function getOldText(id)
 {
 	if (id&0x8000)
-		return userInput;
+		return "&lt;user&gt;";
 	var p=new GFile(getObject(2,id));
 	var lower=false;
 	var out='';
@@ -128,38 +125,26 @@ function getOldText(id)
 
 function getNoun(subval)
 {
-	var obj,name;
+	var obj;
 	if (subval&8)
-		obj=targetObject;
+		obj="&lt;target";
 	else
-		obj=sourceObject;
+		obj="&lt;source";
 	if ((subval&3)==1)
-	{
-		var idx=get(obj,7);
-		idx=((idx>>4)&3)+1;
-		name=getNouns(idx);
-	}
+		obj+=".indir"; //he,she,it
 	else
 	{
-		name=getText(obj);
 		switch (subval&3)
 		{
 			case 2:
-				name=getPrefix(0,obj)+name;
+				obj+=".pfx";
 				break;
 			case 3:
-				name=getPrefix(2,obj)+name;
+				obj+=".pfx2";
 				break;
 		}
 	}
-	if (name.length && (subval&4))
-		name=capitalize(name);
-	return name;
-}
-function getPrefix(flag,obj)
-{
-	var attr=(get(obj,7)>>flag)&3;
-	if (attr)
-		return getPrefixes(attr);
-	return '';
+	if (subval&4)
+		obj+=".cap";
+	return obj+"&gt;";
 }

@@ -7,7 +7,7 @@ var Modules=[
 	"files.js",
 	"graphics.js",
 	"sound.js",
-	"text.js",
+	"inspect_text.js",
 	"objects.js",
 	"inspect_main.js"
 ];

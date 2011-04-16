@@ -1,7 +1,9 @@
 div.nav {
-	width: 100px;
+	width: 130px;
 	float: left;
 	background: #cce;
+	overflow: auto;
+	height: 100%;
 }
 div.nav div {
 	padding-left: 5px;
@@ -11,51 +13,22 @@ div.nav div {
 	border-bottom: 1px solid #eee;
 }
 div.view {
-	margin-left: 110px;
+	margin-left: 140px;
 }
 
-div.selector {
-	padding-top: 5px;
+div.sections {
+	border-bottom: 1px solid #888;
+	background: #444;
+	color: #eee;
+}
+div.sections span {
 	font-size: 14px;
 	font-family: sans-serif;
-} 
-span.prev {
-	width: 40px;
-	border-top: 1px solid #444;
-	border-left: 1px solid #444;
-	border-bottom: 1px solid #444;
-	border-right: 1px solid #aae;
-	padding: 5px;
-	background: #448;
-	color: #eef;
+	padding-left: 5px;
+	padding-right: 5px;
 	cursor: pointer;
 }
-span.prev.disabled {
-	color: #aaa;
-}
-span.next {
-	width: 40px;
-	border-top: 1px solid #444;
-	border-right: 1px solid #444;
-	border-bottom: 1px solid #444;
-	border-left: 1px solid #aae;
-	padding: 5px;
-	background: #448;
-	color: #eef;
-	cursor: pointer;
-}
-span.next.disabled {
-	color: #aaa;
-}
-span.counter {
-	display: inline-block;
-	width: 150px;
-	padding: 5px;
-	background: #88c;
-	border-top: 1px solid #444;
-	border-bottom: 1px solid #444;
-	text-align: center;
-}
+
 table {
 	border: 1px solid #888;
 	border-collapse: collapse;

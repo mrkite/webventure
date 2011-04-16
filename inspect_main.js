@@ -1,6 +1,10 @@
+var nav;
 var view;
 var game;
-var subview;
+
+var curObject=0;
+var curScript=0;
+
 function waitForLoad()
 {
 	if (!gameLoaded())
@@ -34,158 +38,126 @@ function waitForLoad()
 	link.href="inspect.css";
 	$('head').append(link);
 
-	var nav=$(document.createElement('div'))
+	var sections=$(document.createElement('div'));
+	sections.addClass('sections');
+	desktop.append(sections);
+	var secs={'Objects':showObjects,'Text':showText,'Scripts':showScripts};
+	for (var i in secs)
+	{
+		var sec=$(document.createElement('span'));
+		sec.html(i);
+		sec.click(secs[i]);
+		sections.append(sec);
+	}
+
+	nav=$(document.createElement('div'))
 	nav.addClass("nav");
 	desktop.append(nav);
 	view=$(document.createElement('div'));
 	view.addClass("view");
 	desktop.append(view);
 
-	var navs={Objects:showObjects,Sounds:showSounds,Scripts:showScripts,Text:showText};
-	for (var i in navs)
-	{
-		var l=$(document.createElement('div'));
-		l.append(i);
-		nav.append(l);
-		l.click(navs[i]);
-	}
+	showObjects();
 }
 function initVars(){}
 
-function createSelector(numItems,cb)
-{
-	view.html('');
-	var curItem=0;
-	var sel=$(document.createElement('div'));
-	sel.addClass('selector');
-	view.append(sel);
-	var prev=$(document.createElement('span'))
-	prev.addClass('prev');
-	prev.append("&laquo;");
-	sel.append(prev);
-	var counter=$(document.createElement('span'));
-	counter.addClass('counter');
-	sel.append(counter);
-	var next=$(document.createElement('span'));
-	next.addClass('next');
-	next.append("&raquo;");
-	sel.append(next);
-	subview=$(document.createElement('div'));
-	view.append(subview);
-
-	function update()
-	{
-		counter.html('#'+curItem+'/'+(numItems-1));
-		if (curItem==0)
-			prev.addClass('disabled');
-		else
-			prev.removeClass('disabled');
-		if (curItem==numItems-1)
-			next.addClass('disabled');
-		else
-			next.removeClass('disabled');
-		subview.html('');
-		cb(curItem);
-	}
-	prev.mousedown(function(){
-		if (curItem>0)
-		{
-			curItem--;
-			update();
-		}
-		return false;
-	});
-	next.mousedown(function(){
-		if (curItem<numItems-1)
-		{
-			curItem++;
-			update();
-		}
-		return false;
-	});
-	$('body').keydown(function(event){
-		if (event.which==37) //left
-		{
-			if (curItem>0)
-			{
-				curItem--;
-				update();
-			}
-			return false;
-		}
-		if (event.which==39) //right
-		{
-			if (curItem<numItems-1)
-			{
-				curItem++;
-				update();
-			}
-			return false;
-		}
-		if (event.which==33) //pgup
-		{
-			curItem-=10;
-			if (curItem<0)
-				curItem=0;
-			update();
-			return false;
-		}
-		if (event.which==34) //pgdown
-		{
-			curItem+=10;
-			if (curItem>numItems-1)
-				curItem=numItems-1;
-			update();
-			return false;
-		}
-		if (event.which==36) //home
-		{
-			curItem=0;
-			update();
-			return false;
-		}
-		if (event.which==35) //end
-		{
-			curItem=numItems-1;
-			update();
-			return false;
-		}
-		return true;
-	});
-	update();
-}
-
 function showObjects()
 {
-	createSelector(numObjects,showObject);
+	nav.html('');
+	for (var i=0;i<numObjects;i++)
+	{
+		var name=$(document.createElement('div'));
+		nav.append(name);
+		name.append(toascii(getText(i))+' $'+i.toString(16));
+		name.click(function(id){
+			return function() { viewObject(id);} }(i));
+	}
+	viewObject(curObject);
 }
-function showObject(id)
+function showText()
 {
+	nav.html('');
+	view.html('');
+	for (var i=0;i<objFiles[2].numitems;i++)
+	{
+		var p=$(document.createElement('p'));
+		view.append(p);
+		var h=$(document.createElement('strong'));
+		h.append('$'+i.toString(16)+':');
+		p.append(h);
+		p.append(toascii(getText(i)));
+	}
+}
+function showScripts()
+{
+	nav.html('');
+	for (var i=0;i<objFiles[1].numitems;i++)
+	{
+		var name=$(document.createElement('div'));
+		nav.append(name);
+		name.append('$'+i.toString(16));
+		name.click(function(id){
+			return function() {
+				view.html('');
+				curScript=id;
+				showScript(id);
+			}
+		}(i));
+	}
+	view.html('');
+	showScript(view,curScript);
+}
+
+function viewObject(id)
+{
+	curObject=id;
 	var attrnames=[
 		"parent",
 		"x",
 		"y",
-		"offscreen",
+		"invisible",
 		"unclickable",
 		"undraggable",
-		"current room", //6
+		"container open", //6
 		"prefixes",
 		"is exit",
 		"exit x",
 		"exit y",
-		"hidden exit"
+		"hidden exit",
+		"other door",
+		"is open",
+		"is locked",
+		"weight",
+		"size",
+		"has description",
+		"is door",
+		"21",
+		"is container",
+		"is operable",
+		"is enterable",
+		"is edible"
 	];
+
+	view.html('');
+
 	var name=$(document.createElement("h3"));
-	subview.append(name);
-	name.append("Name: "+getText(id));
+	view.append(name);
+	name.append("Name: "+toascii(getText(id)));
+	var desc=$(document.createElement("h4"));
+	view.append(desc);
+	desc.append("Description:");
+	var descv=$(document.createElement('div'));
+	view.append(descv);
+	descv.append(toascii(getText(id+numObjects)));
+
 	var img=getGraphic(id*2);
 	var mask=getGraphic(id*2+1);
 	if (mask)
-		addImageMask(subview,img,mask);
+		addImageMask(view,img,mask);
 	else if (img)
-		addImage(subview,img);
+		addImage(view,img);
 	var attrtab=$(document.createElement('table'));
-	subview.append(attrtab);
+	view.append(attrtab);
 	var attrs=$(document.createElement('tbody'));
 	attrtab.append(attrs);
 	var tr=$(document.createElement('tr'));
@@ -211,6 +183,7 @@ function showObject(id)
 		td.append(get(id,i));
 		tr.append(td);
 	}
+	showScript(view,id);
 }
 function addImage(subview,img)
 {
@@ -265,24 +238,6 @@ function createImageMask(el,bmp,mask)
 	else
 		bmp.draw(canvas,0,0);
 }
-function showSounds()
-{
-	createSelector(objFiles[4].numitems,showSound);
-}
-function showSound(id)
-{
-	var play=$(document.createElement('div'));
-	play.addClass('play');
-	subview.append(play);
-	play.append("Play Sound");
-	play.click(function(){
-		playSound(id);
-	});
-}
-function showScripts()
-{
-	createSelector(objFiles[1].numitems,showScript);
-}
 function two(x)
 {
 	var r=x.toString(16);
@@ -295,7 +250,7 @@ function four(x)
 	while (r.length<4) r="0"+r;
 	return r;
 }
-function showScript(id)
+function showScript(subview,id)
 {
 	var p=new GFile(getObject(1,id));
 	var ch;
@@ -828,17 +783,6 @@ function showScript(id)
 	var text=$(document.createElement('pre'));
 	text.append(out);
 	subview.append(text);
-}
-function showText()
-{
-	createSelector(objFiles[2].numitems,showString);
-}
-function showString(id)
-{
-	userInput="&lt;OBJECT&gt;";
-	targetObject=0x8000;
-	sourceObject=0x8000;
-	subview.append("&#8220;"+getText(id)+"&#8221;");
 }
 
 function get(obj,attr)
