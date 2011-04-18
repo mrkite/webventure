@@ -640,7 +640,7 @@ function showScript(id)
 			pop("function");
 			break;
 		case 0xbd:
-			out+="open";
+			out+="focus";
 			pop("object_id");
 			break;
 		case 0xbe:
