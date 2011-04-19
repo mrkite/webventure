@@ -9,6 +9,7 @@ var Modules=[
 	"sound.js",
 	"inspect_text.js",
 	"objects.js",
+	"inspect_disasm.js",
 	"inspect_main.js"
 ];
 var loadedModules=0;
