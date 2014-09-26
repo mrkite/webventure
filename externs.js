@@ -9,3 +9,6 @@ function fatal(message) {};
 
 /** @type {Object} */
 var desktop;
+
+/** @type {Object} */
+var macgap;
