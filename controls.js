@@ -320,7 +320,7 @@ function SliderCtl(bounds,refcon,opts)
 	this.slider=slider;
 	obj.mousedown(function(event){
 		var pos=slider.offset().left;
-		if (event.pageX<pos)
+		if (Math.floor(event.pageX / pageZoom)<pos)
 			scrollCtl(self,-20);
 		else
 			scrollCtl(self,20);
@@ -335,7 +335,7 @@ function SliderCtl(bounds,refcon,opts)
 		return false;
 	});
 	slider.mousedown(function(event){
-		dragCtl(self,event.pageX);
+		dragCtl(self,Math.floor(event.pageX / pageZoom));
 		return false;
 	});
 }
@@ -377,8 +377,8 @@ function dragCtl(ctl,x)
 {
 	var last=x;
 	$(document).mousemove(function(event){
-		var delta=(event.pageX-last)*(ctl.max-ctl.min)/(ctl.width-HScrollBucketStart-HScrollArrowRight-20-HScrollPadding)|0;
-		last=event.pageX;
+		var delta=(Math.floor(event.pageX / pageZoom)-last)*(ctl.max-ctl.min)/(ctl.width-HScrollBucketStart-HScrollArrowRight-20-HScrollPadding)|0;
+		last=Math.floor(event.pageX / pageZoom);
 		ctl.value+=delta;
 		if (ctl.value<ctl.min)
 			ctl.value=ctl.min;

@@ -9,3 +9,9 @@ function fatal(message) {};
 
 /** @type {Object} */
 var desktop;
+
+/** @type {number} */
+var pageZoom;
+
+/** @type {Object} */
+var brackets;

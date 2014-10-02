@@ -95,16 +95,16 @@ function menudown(event)
 	$(document).mousemove(function(event){
 		var pos=menubar.offset();
 		//over menubar?
-		if (event.pageX>=pos.left &&
-			event.pageY>pos.top &&
-			event.pageX<pos.left+menubar.width() &&
-			event.pageY<pos.top+menubar.height())
+		if (Math.floor(event.pageX / pageZoom)>=pos.left &&
+			Math.floor(event.pageY / pageZoom)>pos.top &&
+			Math.floor(event.pageX / pageZoom)<pos.left+menubar.width() &&
+			Math.floor(event.pageY / pageZoom)<pos.top+menubar.height())
 		{
 			for (var idx=0;idx<menus.length;idx++)
 			{
 				pos=menus[idx].obj.offset();
-				if (event.pageX>=pos.left &&
-					event.pageX<pos.left+menus[idx].obj.outerWidth())
+				if (Math.floor(event.pageX / pageZoom)>=pos.left &&
+					Math.floor(event.pageX / pageZoom)<pos.left+menus[idx].obj.outerWidth())
 				{
 					active.menu.remove();
 					activeMenu.removeClass('active');
@@ -125,10 +125,10 @@ function menudown(event)
 		else
 		{
 			pos=active.menu.offset();
-			if (event.pageX>=pos.left &&
-				event.pageY>=pos.top &&
-				event.pageX<pos.left+active.menu.outerWidth() &&
-				event.pageY<pos.top+active.menu.outerHeight())
+			if (Math.floor(event.pageX / pageZoom)>=pos.left &&
+				Math.floor(event.pageY / pageZoom)>=pos.top &&
+				Math.floor(event.pageX / pageZoom)<pos.left+active.menu.outerWidth() &&
+				Math.floor(event.pageY / pageZoom)<pos.top+active.menu.outerHeight())
 			{
 				for (var i=0;i<active.items.length;i++)
 				{
@@ -136,8 +136,8 @@ function menudown(event)
 					if (!el.hasClass('menuitem') || !active.items[i].enabled)
 						continue;
 					pos=el.offset();
-					if (event.pageY>=pos.top &&
-						event.pageY<pos.top+el.outerHeight())
+					if (Math.floor(event.pageY / pageZoom)>=pos.top &&
+						Math.floor(event.pageY / pageZoom)<pos.top+el.outerHeight())
 					{
 						selectedItem=i;
 						el.addClass('active');

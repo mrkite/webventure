@@ -37,7 +37,7 @@ function runMain()
 {
 	if (gameState==4) //quit
 	{
-		window.location="index.html";
+		brackets['app']['quit']();
 		return;
 	}
 	if (!halted)
@@ -473,7 +473,7 @@ function checkScroll()
 	var canView=textEdit.innerHeight();
 	textEdit.scrollTop(lastViewed-(lastViewed%textLH));
 	var y=textEdit.scrollTop();
-	lastViewed=y+canView;
+	lastViewed=y+canView+textLH;
 	textWin.setScrollBounds({left:0,right:0,top:0,bottom:toView});
 	if (lastViewed<toView)
 	{
@@ -650,6 +650,7 @@ function menuSelect(item)
 			fatal("Unknown menuitem: "+item.toString(16));
 	}
 }
+window['menuSelect']=menuSelect;
 
 function buttonClicked(btn,event)
 {
@@ -789,14 +790,14 @@ function doLasso(win,start,canDrag)
 	var lasso=$(document.createElement('div'));
 	lasso.addClass('lasso');
 	desktop.append(lasso);
-	var stpt={h:start.pageX,v:start.pageY};
+	var stpt={h:Math.floor(start.pageX / pageZoom),v:Math.floor(start.pageY / pageZoom)};
 	globalToDesktop(stpt);
 	lasso.css('top',stpt.v+'px');
 	lasso.css('left',stpt.h+'px');
 	lasso.css('width','0px');
 	lasso.css('height','0px');
 	$(document).mousemove(function(event){
-		var evpt={h:event.pageX,v:event.pageY};
+		var evpt={h:Math.floor(event.pageX / pageZoom),v:Math.floor(event.pageY / pageZoom)};
 		globalToDesktop(evpt);
 		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
 		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
@@ -810,7 +811,7 @@ function doLasso(win,start,canDrag)
 	$(document).mouseup(function(event){
 		$(document).unbind('mousemove');
 		$(document).unbind('mouseup');
-		var evpt={h:event.pageX,v:event.pageY};
+		var evpt={h:Math.floor(event.pageX / pageZoom),v:Math.floor(event.pageY / pageZoom)};
 		globalToDesktop(evpt);
 		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
 		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
@@ -872,8 +873,8 @@ function doLasso(win,start,canDrag)
 }
 function doubleClickObject(obj,win,event,canDrag)
 {
-	var lastX=event.pageX;
-	var lastY=event.pageY;
+	var lastX=Math.floor(event.pageX / pageZoom);
+	var lastY=Math.floor(event.pageY / pageZoom);
 	var start={h:0,v:0};
 	var moved=false;
 	dragObject=undefined;
@@ -882,7 +883,7 @@ function doubleClickObject(obj,win,event,canDrag)
 		$(document).mousemove(function(event){
 			if (dragObject==undefined)
 			{
-				if (Math.abs(event.pageX-lastX)+Math.abs(event.pageY-lastY)<=7) return false;
+				if (Math.abs(Math.floor(event.pageX / pageZoom)-lastX)+Math.abs(Math.floor(event.pageY / pageZoom)-lastY)<=7) return false;
 				moved=true;
 				dragObject=createProxy(obj);
 				var child=getChildIdx(win.refCon.children,obj);
@@ -898,10 +899,10 @@ function doubleClickObject(obj,win,event,canDrag)
 				dragObject.css('left',start.h+'px');
 			}
 			var pos=dragObject.position();
-			dragObject.css('top',(pos.top+(event.pageY-lastY))+'px');
-			dragObject.css('left',(pos.left+(event.pageX-lastX))+'px');
-			lastX=event.pageX;
-			lastY=event.pageY;
+			dragObject.css('top',(pos.top+(Math.floor(event.pageY / pageZoom)-lastY))+'px');
+			dragObject.css('left',(pos.left+(Math.floor(event.pageX / pageZoom)-lastX))+'px');
+			lastX=Math.floor(event.pageX / pageZoom);
+			lastY=Math.floor(event.pageY / pageZoom);
 			return false;
 		});
 	}
@@ -921,7 +922,7 @@ function doubleClickObject(obj,win,event,canDrag)
 		{
 			deltaPt.h=pos.left;
 			deltaPt.v=pos.top;
-			var loc=getWindowLocation(event.pageX,event.pageY);
+			var loc=getWindowLocation(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom));
 			destObject=loc.id;
 			deltaPt.h-=start.h;
 			deltaPt.v-=start.v;
@@ -950,8 +951,8 @@ function doubleClickObject(obj,win,event,canDrag)
 }
 function singleClickObject(obj,win,event,canDrag)
 {
-	var lastX=event.pageX;
-	var lastY=event.pageY;
+	var lastX=Math.floor(event.pageX / pageZoom);
+	var lastY=Math.floor(event.pageY / pageZoom);
 	var start={h:0,v:0};
 	var moved=false;
 	dragObject=undefined;
@@ -960,7 +961,7 @@ function singleClickObject(obj,win,event,canDrag)
 		$(document).mousemove(function(event){
 			if (dragObject==undefined)
 			{
-				if (Math.abs(event.pageX-lastX)+Math.abs(event.pageY-lastY)<=7) return false;
+				if (Math.abs(Math.floor(event.pageX / pageZoom)-lastX)+Math.abs(Math.floor(event.pageY / pageZoom)-lastY)<=7) return false;
 				moved=true;
 				dragObject=createProxy(obj);
 				var child=getChildIdx(win.refCon.children,obj);
@@ -976,10 +977,10 @@ function singleClickObject(obj,win,event,canDrag)
 				dragObject.css('left',start.h+'px');
 			}
 			var pos=dragObject.position();
-			dragObject.css('top',(pos.top+(event.pageY-lastY))+'px');
-			dragObject.css('left',(pos.left+(event.pageX-lastX))+'px');
-			lastX=event.pageX;
-			lastY=event.pageY;
+			dragObject.css('top',(pos.top+(Math.floor(event.pageY / pageZoom)-lastY))+'px');
+			dragObject.css('left',(pos.left+(Math.floor(event.pageX / pageZoom)-lastX))+'px');
+			lastX=Math.floor(event.pageX / pageZoom);
+			lastY=Math.floor(event.pageY / pageZoom);
 			return false;
 		});
 	}
@@ -1001,7 +1002,7 @@ function singleClickObject(obj,win,event,canDrag)
 		{
 			deltaPt.h=pos.left;
 			deltaPt.v=pos.top;
-			var loc=getWindowLocation(event.pageX,event.pageY);
+			var loc=getWindowLocation(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom));
 			destObject=loc.id;
 			deltaPt.h-=start.h;
 			deltaPt.v-=start.v;

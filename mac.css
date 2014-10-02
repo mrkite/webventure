@@ -1,9 +1,13 @@
+body {
+	margin: 0;
+	padding: 0;
+}
 div.screen {
 	font-family: sans-serif;
 	background: #ccc;
 	background-image: url("images/mac/gray.png");
-	width: 512px;
-	height: 342px;
+	width: 100%;
+	height: 100%;
 	position: absolute;
 }
 div.menubar {
@@ -117,6 +121,7 @@ div.document div.textEdit {
 	border-top: 1px solid #000;
 	overflow: auto;
 	font-size: 12px;
+	line-height: 14px;
 }
 div.document div.title span {
 	background: #fff;
