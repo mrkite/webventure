@@ -37,7 +37,7 @@ function runMain()
 {
 	if (gameState==4) //quit
 	{
-		brackets['app']['quit']();
+		macgap.app.terminate();
 		return;
 	}
 	if (!halted)
