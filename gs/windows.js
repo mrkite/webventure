@@ -24,13 +24,10 @@ var winbg,exitbg,exitbga;
 
 function getAboutWin()
 {
-	var dialog=createAlert(10,36,620,354);
-	dialog.add(createCtl([240,318,118,20],1,0xa,["OK"]));
-	dialog.add(createCtl([10,18,600,146],2,0x8016,["\x01\x4a\x01\x00Apple IIGS ^0\r\x01\x4a\x01\x00Written by:\r\x01\x4a\x01\x00\x01\x53\x01\x00Fred Allen\x01\x53\x00\x00\r\r\x01\x4a\x01\x00Artwork by:\r^1\r\r\x01\x4a\x01\x00\x01\x53\x04\x00MacVenture Team\x01\x53\x00\x00"]));
-	dialog.add(createCtl([10,164,300,136],3,0x8016,["^2"]));
-	dialog.add(createCtl([310,164,300,136],4,0x8016,["^3"]));
-	dialog.add(createCtl([10,294,600,22],5,0x8016,["\x01\x4a\x01\x00WebVenture &#169; 2014 Sean Kasun"]));
-	dialog.param([resGetGameName(),resGetCredits(0),resGetCredits(1),resGetCredits(2)]);
+	var dialog=createAlert(168,121,310,177);
+	dialog.add(createCtl([96,150,118,20],1,0xa,["OK"]));
+  dialog.add(createCtl([10,17,290,120], 2, 0x8016, ["\x01\x4a\x01\x00^0\r\x01\x4a\x01\x00&#169; 2014 Zojoi LLC.\r\x01\x4a\x01\x00^0 is a registered trademark of Zojoi LLC. All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun"]));
+	dialog.param([resGetGameName()]);
 	return dialog;
 }
 function getVolumeWin()

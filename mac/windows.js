@@ -29,9 +29,7 @@ function getAboutWin()
 	var name=toascii(r.read(len));
 	var dialog=createAlert(146,96,220,150);
 	dialog.add(createCtl([75,120,70,18],1,0xa,['Ok']));
-	dialog.add(createCtl([20,30,180,40],2,0xf,[name]));
-	dialog.add(createCtl([20,80,180,40],3,0xf,['WebVenture <br/> &#169; 2014 Sean Kasun']));
-	dialog.getItem(2).obj.css('text-align','center');
+	dialog.add(createCtl([20,10,180,80],3,0xf,['&#169; 2014 Zojoi LLC.<br />' + fullGameName+' is a registered trademark of Zojoi LLC. All rights reserved.<br />Programming by Sean Kasun']));
 	dialog.getItem(3).obj.css('text-align','center');
 	return dialog;
 }

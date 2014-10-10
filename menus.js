@@ -5,21 +5,20 @@ function initMenus()
 	menubar.addClass('menubar');
 
   var file = macgap.menu.getItem("File").submenu();
-  file.addItem("New", "", function() {menuSelect(0x8100)});
-  file.addSeparator();
-  file.addItem("Open...", "cmd+o", function() {menuSelect(0x8102)});
-  file.addItem("Save", "cmd+s", function() {menuSelect(0x8103)});
-  file.addItem("Save As...", "", function() {menuSelect(0x8104)});
+  file.getItem("New").setCallback(function(){menuSelect(0x8100)});
+  file.getItem("Open...").setCallback(function(){menuSelect(0x8102)});
+  file.getItem("Save").setCallback(function(){menuSelect(0x8103)});
+  file.getItem("Save As...").setCallback(function(){menuSelect(0x8104)});
 
-  var apple = macgap.menu.getItem("Shadowgate").submenu();
-  apple.addItem("About Shadowgate", "", function() {menuSelect(0x8000)});
-  apple.addItem("Adjust Volume", "", function() {menuSelect(0x900)});
-  apple.addSeparator();
-  apple.addItem("Quit", "cmd+q", function() {menuSelect(0x8106)});
+  var apple = macgap.menu.getItem(AppleMenu).submenu();
+  apple.getItem("About " + AppleMenu).setCallback(function(){menuSelect(0x8000)});
+  apple.getItem("Adjust Volume...").setCallback(function(){menuSelect(0x900)});
+  apple.getItem("Choose Game...").setCallback(function(){window.location="index.html"});
+  apple.getItem("Quit").setCallback(function(){menuSelect(0x8106)});
 
   var spec = macgap.menu.getItem("Special").submenu();
-  spec.addItem("Clean Up", "", function() {menuSelect(0x8300)});
-  spec.addItem("Mess Up", "", function() {menuSelect(0x8301)});
+  spec.getItem("Clean Up").setCallback(function(){menuSelect(0x8300)});
+  spec.getItem("Mess Up").setCallback(function(){menuSelect(0x8301)});
 }
 function showMenus()
 {

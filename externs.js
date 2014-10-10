@@ -13,5 +13,11 @@ var desktop;
 /** @type {number} */
 var pageZoom;
 
-/** @type {{menu:{getItem:function(string):{submenu:function():{addItem:function(string, string, function()),addSeparator:function(), getItem:function(string):{enable:function(), disable:function()}}}}, app:{terminate:function()}}} */
+/** @type {{menu:{getItem:function(string):{submenu:function():{addItem:function(string, string, function()),addSeparator:function(), getItem:function(string):{enable:function(), disable:function(), setCallback:function(function())}}}}, app:{terminate:function()}}} */
 var macgap;
+
+/** @type {string} */
+var fullGameName;
+
+/** @type {string} */
+var AppleMenu;
