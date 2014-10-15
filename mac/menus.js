@@ -25,7 +25,8 @@ function getMenu(res)
 	curMenu.body=$(document.createElement('tbody'));
 	curMenu.menu.append(curMenu.body);
 	curMenu.items=[];
-	menubar.append(curMenu.obj);
+	if (!title.match(/(Edit)|(Font)/i))
+		menubar.append(curMenu.obj);
 	menus.push(curMenu);
 
 	var i=0;

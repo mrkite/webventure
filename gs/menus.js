@@ -85,7 +85,8 @@ function parseLine(r)
 	curMenu.body=$(document.createElement('tbody'));
 	curMenu.menu.append(curMenu.body);
 	curMenu.items=[];
-	menubar.append(curMenu.obj);
+	if (!name.match(/(Edit)|(Font)/i))
+		menubar.append(curMenu.obj);
 	menus.push(curMenu);
 	return true;
 }

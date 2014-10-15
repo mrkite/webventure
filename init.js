@@ -18,6 +18,7 @@ function waitForLoad()
 	initMenus();
 	createMenus();
 	addDeskAccessory("Adjust Volume...",0x900);
+	addDeskAccessory("Choose Game...",0x901);
 
 	enableFeatureMenus();
 

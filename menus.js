@@ -3,26 +3,10 @@ function initMenus()
 {
 	menubar=$(document.createElement('div'));
 	menubar.addClass('menubar');
-
-  var file = macgap.menu.getItem("File").submenu();
-  file.getItem("New").setCallback(function(){menuSelect(0x8100)});
-  file.getItem("Open...").setCallback(function(){menuSelect(0x8102)});
-  file.getItem("Save").setCallback(function(){menuSelect(0x8103)});
-  file.getItem("Save As...").setCallback(function(){menuSelect(0x8104)});
-
-  var apple = macgap.menu.getItem(AppleMenu).submenu();
-  apple.getItem("About " + AppleMenu).setCallback(function(){menuSelect(0x8000)});
-  apple.getItem("Adjust Volume...").setCallback(function(){menuSelect(0x900)});
-  apple.getItem("Choose Game...").setCallback(function(){window.location="index.html"});
-  apple.getItem("Quit").setCallback(function(){menuSelect(0x8106)});
-
-  var spec = macgap.menu.getItem("Special").submenu();
-  spec.getItem("Clean Up").setCallback(function(){menuSelect(0x8300)});
-  spec.getItem("Mess Up").setCallback(function(){menuSelect(0x8301)});
 }
 function showMenus()
 {
-//	desktop.append(menubar);
+	desktop.append(menubar);
 }
 
 function addDeskAccessory(text,id)
@@ -85,40 +69,6 @@ function enableMenu(id)
 		item.enabled=true;
 		item.obj.removeClass('disabled');
 	}
-
-  switch (id)
-  {
-    case 0x8100:
-      item = macgap.menu.getItem("File").submenu().getItem("New");
-      if (item != undefined)
-        item.enable();
-      break;
-    case 0x8102:
-      item = macgap.menu.getItem("File").submenu().getItem("Open...");
-      if (item != undefined)
-        item.enable();
-      break;
-    case 0x8103:
-      item = macgap.menu.getItem("File").submenu().getItem("Save");
-      if (item != undefined)
-        item.enable();
-      break;
-    case 0x8104:
-      item = macgap.menu.getItem("File").submenu().getItem("Save As...");
-      if (item != undefined)
-        item.enable();
-      break;
-    case 0x8300:
-      item = macgap.menu.getItem("File").submenu().getItem("Clean Up");
-      if (item != undefined)
-        item.enable();
-      break;
-    case 0x8301:
-      item = macgap.menu.getItem("File").submenu().getItem("Mess Up");
-      if (item != undefined)
-        item.enable();
-      break;
-  }
 }
 function disableMenu(id)
 {
@@ -128,40 +78,6 @@ function disableMenu(id)
 		item.enabled=false;
 		item.obj.addClass('disabled');
 	}
-
-  switch (id)
-  {
-    case 0x8100:
-      item = macgap.menu.getItem("File").submenu().getItem("New");
-      if (item != undefined)
-        item.disable();
-      break;
-    case 0x8102:
-      item = macgap.menu.getItem("File").submenu().getItem("Open...");
-      if (item != undefined)
-        item.disable();
-      break;
-    case 0x8103:
-      item = macgap.menu.getItem("File").submenu().getItem("Save");
-      if (item != undefined)
-        item.disable();
-      break;
-    case 0x8104:
-      item = macgap.menu.getItem("File").submenu().getItem("Save As...");
-      if (item != undefined)
-        item.disable();
-      break;
-    case 0x8300:
-      item = macgap.menu.getItem("File").submenu().getItem("Clean Up");
-      if (item != undefined)
-        item.disable();
-      break;
-    case 0x8301:
-      item = macgap.menu.getItem("File").submenu().getItem("Mess Up");
-      if (item != undefined)
-        item.disable();
-      break;
-  }
 }
 
 function menudown(event)

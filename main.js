@@ -37,7 +37,7 @@ function runMain()
 {
 	if (gameState==4) //quit
 	{
-		macgap.app.terminate();
+		window.cefQuery({'request':"quit"});
 		return;
 	}
 	if (!halted)
@@ -639,6 +639,8 @@ function menuSelect(item)
 			break;
 		case 0x8106: checkQuit(); break;
 		case 0x900: doVolume(); break;
+		case 0x901: window.location="index.html"; break;
+		case 0x902: gameState = 2; runMain(); break;
 		case 0x8200: break; //undo
 		case 0x8202: break; //cut
 		case 0x8203: break; //copy
