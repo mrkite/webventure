@@ -631,10 +631,10 @@ div.commands {
 	background: #000;
 }
 div.exits {
-	background-image: url("images/mac/ltGray.png");
+  background: #aaa;
 }
 div.exits.selected {
-	background-image: url("images/mac/dkGray.png");
+  background: #555;
 }
 div.resizeProxy {
 	position: absolute;

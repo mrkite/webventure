@@ -408,12 +408,12 @@ Win.prototype.setScrollBounds=function(rect)
 	}
 	if (rect.left>this.refCon.x)
 		rect.left=this.refCon.x;
-	if (rect.right<this.refCon.x+this.port.width())
-		rect.right=this.refCon.x+this.port.width();
+	if (rect.right<this.refCon.x+Math.floor(this.port.width()))
+		rect.right=this.refCon.x+Math.floor(this.port.width());
 	if (rect.top>this.refCon.y)
 		rect.top=this.refCon.y;
-	if (rect.bottom<this.refCon.y+this.port.height())
-		rect.bottom=this.refCon.y+this.port.height();
+	if (rect.bottom<this.refCon.y+Math.floor(this.port.height()))
+		rect.bottom=this.refCon.y+Math.floor(this.port.height());
 	if (this.hScroll)
 	{
 		this.hslider.data('min',rect.left);
@@ -573,8 +573,8 @@ function scroll(win,x,y)
 		var max=win.hslider.data('max');
 		if (win.refCon.x<min)
 			win.refCon.x=min;
-		if (win.refCon.x>max-win.port.width())
-			win.refCon.x=max-win.port.width();
+		if (win.refCon.x>max-Math.floor(win.port.width()))
+			win.refCon.x=max-Math.floor(win.port.width());
 	}
 	if (win.vScroll)
 	{
@@ -582,8 +582,8 @@ function scroll(win,x,y)
 		var max=win.vslider.data('max');
 		if (win.refCon.y<min)
 			win.refCon.y=min;
-		if (win.refCon.y>max-win.port.height())
-			win.refCon.y=max-win.port.height();
+		if (win.refCon.y>max-Math.floor(win.port.height()))
+			win.refCon.y=max-Math.floor(win.port.height());
 	}
 	win.refCon.updateScroll=true;
 	updateWindow(win);
@@ -610,8 +610,8 @@ function dragSlider(win,start,horiz)
 			var max=win.hslider.data('max');
 			if (win.refCon.x<min)
 				win.refCon.x=min;
-			if (win.refCon.x>max-win.port.width())
-				win.refCon.x=max-win.port.width();
+			if (win.refCon.x>max-Math.floor(win.port.width()))
+				win.refCon.x=max-Math.floor(win.port.width());
 		}
 		else
 		{
@@ -621,8 +621,8 @@ function dragSlider(win,start,horiz)
 			var max=win.vslider.data('max');
 			if (win.refCon.y<min)
 				win.refCon.y=min;
-			if (win.refCon.y>max-win.port.height())
-				win.refCon.y=max-win.port.height();
+			if (win.refCon.y>max-Math.floor(win.port.height()))
+				win.refCon.y=max-Math.floor(win.port.height());
 		}
 		win.refCon.updateScroll=true;
 		updateWindow(win);
@@ -827,9 +827,7 @@ function findObjectAt(x,y,win)
 	var pt={h:x,v:y};
 	var obj=0;
 	var i=win.refCon.children.length;
-	console.log("x:"+x+" y:"+y);
 	win.globalToLocal(pt);
-	console.log("adjustx:"+pt.h+" y:"+pt.v);
 	while (i>0 && obj==0)
 	{
 		i--;
