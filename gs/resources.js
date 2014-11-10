@@ -125,7 +125,7 @@ function resGetCertPrompt()
 {
 	res.seek(0x5b8,res.set);
 	var len=res.r8();
-	return res.read(len);
+	return toascii(res.read(len));
 }
 
 function resGetGameName()

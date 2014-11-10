@@ -308,11 +308,11 @@ div.zoomDoc div.slider {
 	display: none;
 }
 div.zoomDoc.active div.hscroll {
-	background-image: url('images/mac/ltGray.png');
+	background-color: #bfbfbf;
 	cursor: pointer;
 }
 div.zoomDoc.active div.vscroll {
-	background-image: url('images/mac/ltGray.png');
+	background-color: #bfbfbf;
 	cursor: pointer;
 }
 div.zoomDoc.active div.leftarrow {

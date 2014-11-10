@@ -18,3 +18,6 @@ var cefQuery;
 
 /** @type {string} */
 var fullGameName;
+
+/** @type {string} */
+var helpURL;
