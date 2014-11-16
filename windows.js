@@ -407,11 +407,11 @@ Win.prototype.setScrollBounds=function(rect)
 		return;
 	}
 	if (rect.left>this.refCon.x)
-		rect.left=this.refCon.x;
+    this.refCon.x = rect.left;
 	if (rect.right<this.refCon.x+Math.floor(this.port.width()))
 		rect.right=this.refCon.x+Math.floor(this.port.width());
 	if (rect.top>this.refCon.y)
-		rect.top=this.refCon.y;
+    this.refCon.y = rect.top;
 	if (rect.bottom<this.refCon.y+Math.floor(this.port.height()))
 		rect.bottom=this.refCon.y+Math.floor(this.port.height());
 	if (this.hScroll)
