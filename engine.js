@@ -591,8 +591,8 @@ function runFunc()
 		case 0xd1: //get object dimensions
 			obj=state.pop();
 			pt=getObjBounds(obj);
-			state.push(pt.width);
-			state.push(pt.height);
+			state.push(Math.round(pt.width / XYScale));
+			state.push(Math.round(pt.height / XYScale));
 			break;
 		case 0xd2: //get overlap percent
 			b=state.pop();

@@ -268,8 +268,8 @@ function getObjBounds(obj)
 		var bmp;
 		if (bmp=getGraphic(obj*2))
 		{
-			rect.top=get(obj,2);
-			rect.left=get(obj,1);
+			rect.top=get(obj,2) * XYScale;
+			rect.left=get(obj,1) * XYScale;
 			rect.width=bmp.width;
 			rect.height=bmp.height;
 		}
