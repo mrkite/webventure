@@ -117,8 +117,8 @@ function isActiveObject(obj)
 	if (!isDraggable(obj)) return false;
 	if (get(1,0)!=destObject) return true;
 	var rect={top:0,left:0,width:mainWin.port.width(),height:mainWin.port.height()};
-	rect.top-=get(obj,2)+deltaPt.v;
-	rect.left-=get(obj,1)+deltaPt.h;
+	rect.top-=get(obj,2) * XYScale + deltaPt.v * XYScale;
+	rect.left-=get(obj,1) * XYScale + deltaPt.h * XYScale;
 	return intersectObj(obj,rect);
 }
 function isDraggable(obj)
@@ -269,7 +269,7 @@ function openObject(obj)
 	}
 	else
 	{
-		var p={h:get(obj,1),v:get(obj,2)};
+		var p={h:get(obj,1) * XYScale,v:get(obj,2) * XYScale};
 		getParentWin(obj).localToGlobal(p);
 		globalToDesktop(p);
 		var title=getText(obj);
@@ -310,7 +310,7 @@ function closeObject(obj)
 	zoom.css('left',info.left+'px');
 	zoom.css('width',info.width+'px');
 	zoom.css('height',info.height+'px');
-	var p={h:get(info.obj,1),v:get(info.obj,2)};
+	var p={h:get(info.obj,1) * XYScale,v:get(info.obj,2) * XYScale};
 	w.localToGlobal(p);
 	globalToDesktop(p);
 	zoom.animate({
@@ -339,8 +339,8 @@ function checkObject(old)
 			updateWindow(getParentWin(id));
 	}
 	else if (old.parent!=get(id,0) ||
-		old.x!=get(id,1) ||
-		old.y!=get(id,2))
+		old.x!=get(id,1) * XYScale ||
+		old.y!=get(id,2) * XYScale)
 	{
 		var oldwin=getObjectWindow(old.parent);
 		if (oldwin)
@@ -430,7 +430,7 @@ function hiliteExit(obj)
 function zoomObject(obj)
 {
 	desktop.append(dragObject);
-	var pt={h:get(obj,1),v:get(obj,2)};
+	var pt={h:get(obj,1) * XYScale,v:get(obj,2) * XYScale};
 	getParentWin(obj).localToGlobal(pt);
 	globalToDesktop(pt);
 	dragObject.animate({
@@ -522,8 +522,6 @@ function playSounds(pause)
 
 function set(obj,attr,val)
 {
-	if (attr==1 || attr==2) //x,y
-		val=Math.round(val/XYScale);
 	if (attr==0)
 		setParent(obj,val);
 	if (attr<0xc)
@@ -551,8 +549,6 @@ function get(obj,attr)
 	}
 	val&=attrMasks[attr];
 	var r=neg16(val>>attrShifts[attr]);
-	if (attr==1 || attr==2) //x,y
-		r*=XYScale;
 	return r;
 }
 
@@ -832,8 +828,8 @@ function doLasso(win,start,canDrag)
 			var obj=win.refCon.children[i].id;
 			if (!get(obj,4))
 			{
-				select.left=pt.h-get(obj,1);
-				select.top=pt.v-get(obj,2);
+				select.left=pt.h-get(obj,1) * XYScale;
+				select.top=pt.v-get(obj,2) * XYScale;
 				if (intersectObj(obj,select))
 					h.push(obj);
 			}
@@ -936,6 +932,8 @@ function doubleClickObject(obj,win,event,canDrag)
 				if (loc.win)
 					loc.win.globalToLocal(deltaPt);
 			}
+      deltaPt.h = Math.round(deltaPt.h / XYScale);
+      deltaPt.v = Math.round(deltaPt.v / XYScale);
 			selectedCtl=5;
 			activateCommand(5);
 			cmdReady=true;
@@ -1016,6 +1014,8 @@ function singleClickObject(obj,win,event,canDrag)
 				if (loc.win)
 					loc.win.globalToLocal(deltaPt);
 			}
+      deltaPt.h = Math.round(deltaPt.h / XYScale);
+      deltaPt.v = Math.round(deltaPt.v / XYScale);
 			selectedCtl=5;
 			activateCommand(5);
 			cmdReady=true;
@@ -1088,8 +1088,8 @@ function inRect(pt,rect)
 
 function drawObject(obj,win,flag)
 {
-	var x=get(obj,1);
-	var y=get(obj,2);
+	var x=get(obj,1) * XYScale;
+	var y=get(obj,2) * XYScale;
 	var off=get(obj,3);
 	if (flag || !off || !get(obj,4))
 	{
@@ -1474,8 +1474,8 @@ function queueObject(obj)
 		inQueue.push(obj);
 		var item={obj:obj};
 		item.parent=get(obj,0);
-		item.x=get(obj,1);
-		item.y=get(obj,2);
+		item.x=get(obj,1) * XYScale;
+		item.y=get(obj,2) * XYScale;
 		item.exitx=get(obj,9);
 		item.exity=get(obj,0xa);
 		item.hidden=get(obj,0xb);
@@ -1613,8 +1613,8 @@ function setRefCon(obj,w)
 			var child={id:children[i],top:0,left:0,width:0,height:0};
 			if (w!=mainWin)
 			{
-				var x=get(child,1);
-				var y=get(child,2);
+				var x=get(children[i],1) * XYScale;
+				var y=get(children[i],2) * XYScale;
 				if (originx>x) originx=x;
 				if (originy>y) originy=y;
 			}
@@ -1919,8 +1919,8 @@ function moveItems(locs,win)
 		var pt=getObjBounds(locs[i].id);
 		if (pt.top!=locs[i].top || pt.left!=locs[i].left)
 		{
-			set(locs[i].id,1,locs[i].left);
-			set(locs[i].id,2,locs[i].top);
+			set(locs[i].id,1,Math.round(locs[i].left / XYScale));
+			set(locs[i].id,2,Math.round(locs[i].top / XYScale));
 
 		}
 	}

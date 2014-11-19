@@ -1,6 +1,6 @@
 /********************** public functions *********************/
 
-var RELEASE=0;  //set to 0 for debug version
+var RELEASE=4;  //set to 0 for debug version
 
 function resetEngine()
 {
@@ -182,6 +182,8 @@ function runFunc()
 			obj=state.pop();
 			attr=state.pop();
 			val=neg16(state.pop());
+      //if (obj == 0x4e6 && attr == 0 && val == 25 && gamename.match(/II/))
+       // break;
 			set(obj,attr,val);
 			break;
 		case 0x82: //sum children attribute
@@ -591,8 +593,8 @@ function runFunc()
 		case 0xd1: //get object dimensions
 			obj=state.pop();
 			pt=getObjBounds(obj);
-			state.push(pt.width);
-			state.push(pt.height);
+			state.push(Math.round(pt.width / XYScale));
+			state.push(Math.round(pt.height / XYScale));
 			break;
 		case 0xd2: //get overlap percent
 			b=state.pop();

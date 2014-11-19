@@ -21,15 +21,33 @@ var GrowHeight=15;
 
 var winbg=0;
 
+var abouts = [
+"^0 is a registered trademark of Zojoi LLC. All rights reserved.<br />Programming by Sean Kasun<br />Original Development Team: Dave Marsh, Karl Roelofs, Terry Schulenburg, Dave Feldman, Jay Zipnick, Todd Squires, Darin Adler, Tod Zipnick, Waldemar Horwat, Steven Hays",
+"All rights reserved.<br />Programming by Sean Kasun<br />Original Development Team: Todd Squires, Craig Erickson, Kurt Nelson, Steven Hays, Terry Schulenburg, Darin Adler, Jay Zipnick, Waldemar Horwat, Mark Waterman",
+"All rights reserved.<br />Programming by Sean Kasun<br />Original Development Team: Darin Adler, Mitch Adler, Fred Allen, Brian Baker, Ed Dluzen, David Feldman, Steven Hays, Jay Zipnick, Julia Ulano, David Marsh, Karl Roelofs, Paul Snively, Todd Squires, Tod Zipnick, Waldemar Horwat, Michael Manning",
+"All rights reserved.<br />Programming by Sean Kasun<br />Original Development Team: Jay Zipnick, Billy Wolfe, Terry Schulenburg, Mark Waterman, Darin Adler, Dave Marsh, Todd Squires, Tod Zipnick, Steven Hays, Waldemar Horwat, Craig Erickson"
+];
 
 function getAboutWin()
 {
 	var r=getRes(resGetIndStr(0x81,1),0);
 	var len=r.r8();
 	var name=toascii(r.read(len));
-	var dialog=createAlert(146,96,220,150);
-	dialog.add(createCtl([75,120,70,18],1,0xa,['Ok']));
-	dialog.add(createCtl([20,10,180,80],3,0xf,['&#169; 2014 Zojoi LLC.<br />' + fullGameName+' is a registered trademark of Zojoi LLC. All rights reserved.<br />Programming by Sean Kasun']));
+	var dialog=createAlert(146,46,220,210);
+
+  var msg = "&#169; 2014 Zojoi LLC.<br />";
+  if (fullGameName.match(/II/))
+    msg += abouts[2];
+  else if (fullGameName.match(/Shadow/))
+    msg += abouts[0];
+  else if (fullGameName.match(/Uninv/))
+    msg += abouts[3];
+  else
+    msg += abouts[1];
+
+	dialog.add(createCtl([75,180,70,18],1,0xa,['Ok']));
+	dialog.add(createCtl([20,10,180,80],3,0xf,[msg]));
+  dialog.param([fullGameName]);
 	dialog.getItem(3).obj.css('text-align','center');
 	return dialog;
 }

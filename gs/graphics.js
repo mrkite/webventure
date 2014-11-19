@@ -188,11 +188,21 @@ function fillRect(port,left,top,width,height,color)
 		var imgofs=y*image.width*4;
 		for (var x=0;x<width;x++)
 		{
-			var pix=((color>>(4*(x&3)))&0xf)*3;
-			image.data[imgofs++]=palette[pix++];
-			image.data[imgofs++]=palette[pix++];
-			image.data[imgofs++]=palette[pix++];
-			image.data[imgofs++]=0xff;
+      if (color == winbg)
+      {
+        image.data[imgofs++] = 0x64;
+        image.data[imgofs++] = 0xcb;
+        image.data[imgofs++] = 0xfe;
+        image.data[imgofs++] = 0xff;
+      }
+      else
+      {
+			  var pix=((color>>(4*(x&3)))&0xf)*3;
+  			image.data[imgofs++] = palette[pix++];
+  			image.data[imgofs++] = palette[pix++];
+  			image.data[imgofs++] = palette[pix++];
+  			image.data[imgofs++] = 0xff;
+      }
 		}
 	}
 	ctx.putImageData(image,left,top);

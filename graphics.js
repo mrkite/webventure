@@ -15,6 +15,8 @@ function getGraphic(id)
 
 function fill(port,color)
 {
+  if (port.width() == 0) //don't bother on a window still opening..
+    return;
 	fillRect(port,0,0,port.width(),port.height(),color);
 }
 
