@@ -17,8 +17,8 @@ function waitForLoad()
 	createWindows();
 	initMenus();
 	createMenus();
+	addDeskAccessory("More Games...",0x901);
 	addDeskAccessory("Adjust Volume...",0x900);
-	addDeskAccessory("Choose Game...",0x901);
 	addDeskAccessory("Help",0x903);
 //	addDeskAccessory("Win!", 0x902);
 

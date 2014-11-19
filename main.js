@@ -640,7 +640,7 @@ function menuSelect(item)
 			break;
 		case 0x8106: checkQuit(); break;
 		case 0x900: doVolume(); break;
-		case 0x901: window.location="index.html"; break;
+		case 0x901: window.cefQuery({'request':"moregames"}); break;
 		case 0x902: gameState = 2; runMain(); break;
 		case 0x903: window.open(helpURL); break;
 		case 0x8200: break; //undo
