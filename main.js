@@ -522,8 +522,6 @@ function playSounds(pause)
 
 function set(obj,attr,val)
 {
-//	if (attr==1 || attr==2) //x,y
-//		val=Math.round(val/XYScale);
 	if (attr==0)
 		setParent(obj,val);
 	if (attr<0xc)
@@ -551,8 +549,6 @@ function get(obj,attr)
 	}
 	val&=attrMasks[attr];
 	var r=neg16(val>>attrShifts[attr]);
-//	if (attr==1 || attr==2) //x,y
-//		r*=XYScale;
 	return r;
 }
 
@@ -1617,8 +1613,8 @@ function setRefCon(obj,w)
 			var child={id:children[i],top:0,left:0,width:0,height:0};
 			if (w!=mainWin)
 			{
-				var x=get(child,1) * XYScale;
-				var y=get(child,2) * XYScale;
+				var x=get(children[i],1) * XYScale;
+				var y=get(children[i],2) * XYScale;
 				if (originx>x) originx=x;
 				if (originy>y) originy=y;
 			}
