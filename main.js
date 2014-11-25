@@ -562,7 +562,8 @@ function updateWindow(win)
 		if (win==mainWin)
 		{
 			var bmp=getGraphic(win.refCon.id*2);
-			bmp.draw(mainWin.port,0,0);
+      if (bmp != undefined)
+			  bmp.draw(mainWin.port,0,0);
 		}
 		else
 			fill(win.port,winbg);

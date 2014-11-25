@@ -100,7 +100,7 @@ function showScripts()
 			return function() {
 				view.html('');
 				curScript=id;
-				showScript(id);
+				showScript(view,id);
 			}
 		}(i));
 	}

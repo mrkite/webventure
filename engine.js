@@ -1,6 +1,7 @@
 /********************** public functions *********************/
 
 var RELEASE=4;  //set to 0 for debug version
+var DOLOG = false;
 
 function resetEngine()
 {
@@ -71,32 +72,33 @@ function resumeOne(doAll)
 	var doFirst=doAll;
 	var doFamily=false;
 	var fail;
-	if (frames[0].haltedInFirst || doFirst)
+  var curFrame = frames[0];
+	if (curFrame.haltedInFirst || doFirst)
 	{
-		frames[0].haltedInFirst=false;
+		curFrame.haltedInFirst=false;
 		if (doFirst) fail=loadFunc(0);
 		else fail=resumeFunc();
 		if (fail)
 		{
-			frames[0].haltedInFirst=true;
+      curFrame.haltedInFirst=true;
 			return true;
 		}
 		doFamily=true;
-		frames[0].familyIdx=0;
+    curFrame.familyIdx = 0;
+    curFrame.family = getFamily(get(1, 0), false);
 	}
-	if (frames[0].haltedInFamily || doFamily)
+	if (curFrame.haltedInFamily || doFamily)
 	{
-		frames[0].haltedInFamily=false;
-		var funcs=getFamily(get(1,0),false);
-		var i=frames[0].familyIdx;
-		for (;i<funcs.length;i++)
+    curFrame.haltedInFamily=false;
+		var i=curFrame.familyIdx;
+		for (;i<curFrame.family.length;i++)
 		{
-			if (doFamily) fail=loadFunc(funcs[i]);
+			if (doFamily) fail=loadFunc(curFrame.family[i]);
 			else fail=resumeFunc();
 			if (fail)
 			{
-				frames[0].haltedInFamily=true;
-				frames[0].familyIdx=i;
+				curFrame.haltedInFamily=true;
+				curFrame.familyIdx=i;
 				return true;
 			}
 			doFamily=true;
@@ -104,31 +106,31 @@ function resumeOne(doAll)
 	}
 	var highest;
 	var high;
-	if (frames[0].haltedInSaves)
+	if (curFrame.haltedInSaves)
 	{
-		frames[0].haltedInSaves=false;
+		curFrame.haltedInSaves=false;
 		if (resumeFunc())
 		{
-			frames[0].haltedInSaves=true;
+			curFrame.haltedInSaves=true;
 			return true;
 		}
 	}
 	do {
 		highest=0;
-		for (var i=0;i<frames[0].saves.length;i++)
+		for (var i=0;i<curFrame.saves.length;i++)
 		{
-			if (highest<frames[0].saves[i].rank)
+			if (highest<curFrame.saves[i].rank)
 			{
-				highest=frames[0].saves[i].rank;
+				highest=curFrame.saves[i].rank;
 				high=i;
 			}
 		}
 		if (highest)
 		{
-			frames[0].saves[high].rank=0;
-			if (loadFunc(frames[0].saves[high].func))
+			curFrame.saves[high].rank=0;
+			if (loadFunc(curFrame.saves[high].func))
 			{
-				frames[0].haltedInSaves=true;
+				curFrame.haltedInSaves=true;
 				return true;
 			}
 		}
@@ -138,10 +140,13 @@ function resumeOne(doAll)
 }
 function loadFunc(id)
 {
+  if (id == 0x50f)
+    DOLOG = true;
 	var func;
 	if (func=getObject(1,id))
 	{
 		frames[0].p[0]=new GFile(func);
+    frames[0].funcID = id;
 		return runFunc();
 	}
 	return false;
@@ -153,6 +158,7 @@ function resumeFunc()
 	frames[0].p.shift();
 	if (frames[0].p.length)
 		return resumeFunc();
+  return false;
 }
 var fib;
 function runFunc()
@@ -163,6 +169,7 @@ function runFunc()
 
 	var p=frames[0].p[0];
 	var state=frames[0].state;
+  var fid = frames[0].funcID;
 	while (!p.eof())
 	{
 		ch=p.r8();
@@ -182,8 +189,6 @@ function runFunc()
 			obj=state.pop();
 			attr=state.pop();
 			val=neg16(state.pop());
-      //if (obj == 0x4e6 && attr == 0 && val == 25 && gamename.match(/II/))
-       // break;
 			set(obj,attr,val);
 			break;
 		case 0x82: //sum children attribute
@@ -478,8 +483,7 @@ function runFunc()
 			hi=state.pop();
 			lo=state.pop();
 			for (i=0;i<frames[0].saves.length;i++)
-				if (frames[0].saves[i].rank>=lo &&
-					frames[0].saves[i].rank<=hi)
+				if (frames[0].saves[i].rank>=lo && frames[0].saves[i].rank<=hi)
 					frames[0].saves[i].rank=0;
 			break;
 		case 0xbb: //fork
