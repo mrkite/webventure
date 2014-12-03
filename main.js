@@ -37,7 +37,7 @@ function runMain()
 {
 	if (gameState==4) //quit
 	{
-    macgap['app']['terminate']();
+		window.location="index.html";
 		return;
 	}
 	if (!halted)
@@ -116,8 +116,8 @@ function isActiveObject(obj)
 	if (!isDraggable(obj)) return false;
 	if (get(1,0)!=destObject) return true;
 	var rect={top:0,left:0,width:mainWin.port.width(),height:mainWin.port.height()};
-	rect.top-=get(obj,2)+deltaPt.v;
-	rect.left-=get(obj,1)+deltaPt.h;
+	rect.top-=get(obj,2) * XYScale + deltaPt.v * XYScale;
+	rect.left-=get(obj,1) * XYScale + deltaPt.h * XYScale;
 	return intersectObj(obj,rect);
 }
 function isDraggable(obj)
@@ -268,7 +268,7 @@ function openObject(obj)
 	}
 	else
 	{
-		var p={h:get(obj,1),v:get(obj,2)};
+		var p={h:get(obj,1) * XYScale,v:get(obj,2) * XYScale};
 		getParentWin(obj).localToGlobal(p);
 		globalToDesktop(p);
 		var title=getText(obj);
@@ -309,7 +309,7 @@ function closeObject(obj)
 	zoom.css('left',info.left+'px');
 	zoom.css('width',info.width+'px');
 	zoom.css('height',info.height+'px');
-	var p={h:get(info.obj,1),v:get(info.obj,2)};
+	var p={h:get(info.obj,1) * XYScale,v:get(info.obj,2) * XYScale};
 	w.localToGlobal(p);
 	globalToDesktop(p);
 	zoom.animate({
@@ -338,8 +338,8 @@ function checkObject(old)
 			updateWindow(getParentWin(id));
 	}
 	else if (old.parent!=get(id,0) ||
-		old.x!=get(id,1) ||
-		old.y!=get(id,2))
+		old.x!=get(id,1) * XYScale ||
+		old.y!=get(id,2) * XYScale)
 	{
 		var oldwin=getObjectWindow(old.parent);
 		if (oldwin)
@@ -429,7 +429,7 @@ function hiliteExit(obj)
 function zoomObject(obj)
 {
 	desktop.append(dragObject);
-	var pt={h:get(obj,1),v:get(obj,2)};
+	var pt={h:get(obj,1) * XYScale,v:get(obj,2) * XYScale};
 	getParentWin(obj).localToGlobal(pt);
 	globalToDesktop(pt);
 	dragObject.animate({
@@ -473,7 +473,7 @@ function checkScroll()
 	var canView=textEdit.innerHeight();
 	textEdit.scrollTop(lastViewed-(lastViewed%textLH));
 	var y=textEdit.scrollTop();
-	lastViewed=y+canView;
+	lastViewed=y+canView+textLH;
 	textWin.setScrollBounds({left:0,right:0,top:0,bottom:toView});
 	if (lastViewed<toView)
 	{
@@ -521,8 +521,6 @@ function playSounds(pause)
 
 function set(obj,attr,val)
 {
-	if (attr==1 || attr==2) //x,y
-		val=Math.round(val/XYScale);
 	if (attr==0)
 		setParent(obj,val);
 	if (attr<0xc)
@@ -550,8 +548,6 @@ function get(obj,attr)
 	}
 	val&=attrMasks[attr];
 	var r=neg16(val>>attrShifts[attr]);
-	if (attr==1 || attr==2) //x,y
-		r*=XYScale;
 	return r;
 }
 
@@ -565,7 +561,8 @@ function updateWindow(win)
 		if (win==mainWin)
 		{
 			var bmp=getGraphic(win.refCon.id*2);
-			bmp.draw(mainWin.port,0,0);
+      if (bmp != undefined)
+			  bmp.draw(mainWin.port,0,0);
 		}
 		else
 			fill(win.port,winbg);
@@ -639,6 +636,9 @@ function menuSelect(item)
 			break;
 		case 0x8106: checkQuit(); break;
 		case 0x900: doVolume(); break;
+		case 0x901: window.open('http://www.zojoi.com/store','_system'); break;
+		case 0x902: gameState = 2; runMain(); break;
+		case 0x903: window.open(helpURL); break;
 		case 0x8200: break; //undo
 		case 0x8202: break; //cut
 		case 0x8203: break; //copy
@@ -650,6 +650,7 @@ function menuSelect(item)
 			fatal("Unknown menuitem: "+item.toString(16));
 	}
 }
+window['menuSelect']=menuSelect;
 
 function buttonClicked(btn,event)
 {
@@ -789,14 +790,14 @@ function doLasso(win,start,canDrag)
 	var lasso=$(document.createElement('div'));
 	lasso.addClass('lasso');
 	desktop.append(lasso);
-	var stpt={h:start.pageX,v:start.pageY};
+	var stpt={h:Math.floor(start.pageX / pageZoom),v:Math.floor(start.pageY / pageZoom)};
 	globalToDesktop(stpt);
 	lasso.css('top',stpt.v+'px');
 	lasso.css('left',stpt.h+'px');
 	lasso.css('width','0px');
 	lasso.css('height','0px');
 	$(document).mousemove(function(event){
-		var evpt={h:event.pageX,v:event.pageY};
+		var evpt={h:Math.floor(event.pageX / pageZoom),v:Math.floor(event.pageY / pageZoom)};
 		globalToDesktop(evpt);
 		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
 		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
@@ -810,7 +811,7 @@ function doLasso(win,start,canDrag)
 	$(document).mouseup(function(event){
 		$(document).unbind('mousemove');
 		$(document).unbind('mouseup');
-		var evpt={h:event.pageX,v:event.pageY};
+		var evpt={h:Math.floor(event.pageX / pageZoom),v:Math.floor(event.pageY / pageZoom)};
 		globalToDesktop(evpt);
 		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
 		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
@@ -827,8 +828,8 @@ function doLasso(win,start,canDrag)
 			var obj=win.refCon.children[i].id;
 			if (!get(obj,4))
 			{
-				select.left=pt.h-get(obj,1);
-				select.top=pt.v-get(obj,2);
+				select.left=pt.h-get(obj,1) * XYScale;
+				select.top=pt.v-get(obj,2) * XYScale;
 				if (intersectObj(obj,select))
 					h.push(obj);
 			}
@@ -872,8 +873,8 @@ function doLasso(win,start,canDrag)
 }
 function doubleClickObject(obj,win,event,canDrag)
 {
-	var lastX=event.pageX;
-	var lastY=event.pageY;
+	var lastX=Math.floor(event.pageX / pageZoom);
+	var lastY=Math.floor(event.pageY / pageZoom);
 	var start={h:0,v:0};
 	var moved=false;
 	dragObject=undefined;
@@ -882,7 +883,7 @@ function doubleClickObject(obj,win,event,canDrag)
 		$(document).mousemove(function(event){
 			if (dragObject==undefined)
 			{
-				if (Math.abs(event.pageX-lastX)+Math.abs(event.pageY-lastY)<=7) return false;
+				if (Math.abs(Math.floor(event.pageX / pageZoom)-lastX)+Math.abs(Math.floor(event.pageY / pageZoom)-lastY)<=7) return false;
 				moved=true;
 				dragObject=createProxy(obj);
 				var child=getChildIdx(win.refCon.children,obj);
@@ -898,10 +899,10 @@ function doubleClickObject(obj,win,event,canDrag)
 				dragObject.css('left',start.h+'px');
 			}
 			var pos=dragObject.position();
-			dragObject.css('top',(pos.top+(event.pageY-lastY))+'px');
-			dragObject.css('left',(pos.left+(event.pageX-lastX))+'px');
-			lastX=event.pageX;
-			lastY=event.pageY;
+			dragObject.css('top',(pos.top+(Math.floor(event.pageY / pageZoom)-lastY))+'px');
+			dragObject.css('left',(pos.left+(Math.floor(event.pageX / pageZoom)-lastX))+'px');
+			lastX=Math.floor(event.pageX / pageZoom);
+			lastY=Math.floor(event.pageY / pageZoom);
 			return false;
 		});
 	}
@@ -921,7 +922,7 @@ function doubleClickObject(obj,win,event,canDrag)
 		{
 			deltaPt.h=pos.left;
 			deltaPt.v=pos.top;
-			var loc=getWindowLocation(event.pageX,event.pageY);
+			var loc=getWindowLocation(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom));
 			destObject=loc.id;
 			deltaPt.h-=start.h;
 			deltaPt.v-=start.v;
@@ -931,6 +932,8 @@ function doubleClickObject(obj,win,event,canDrag)
 				if (loc.win)
 					loc.win.globalToLocal(deltaPt);
 			}
+      deltaPt.h = Math.round(deltaPt.h / XYScale);
+      deltaPt.v = Math.round(deltaPt.v / XYScale);
 			selectedCtl=5;
 			activateCommand(5);
 			cmdReady=true;
@@ -950,8 +953,8 @@ function doubleClickObject(obj,win,event,canDrag)
 }
 function singleClickObject(obj,win,event,canDrag)
 {
-	var lastX=event.pageX;
-	var lastY=event.pageY;
+	var lastX=Math.floor(event.pageX / pageZoom);
+	var lastY=Math.floor(event.pageY / pageZoom);
 	var start={h:0,v:0};
 	var moved=false;
 	dragObject=undefined;
@@ -960,7 +963,7 @@ function singleClickObject(obj,win,event,canDrag)
 		$(document).mousemove(function(event){
 			if (dragObject==undefined)
 			{
-				if (Math.abs(event.pageX-lastX)+Math.abs(event.pageY-lastY)<=7) return false;
+				if (Math.abs(Math.floor(event.pageX / pageZoom)-lastX)+Math.abs(Math.floor(event.pageY / pageZoom)-lastY)<=7) return false;
 				moved=true;
 				dragObject=createProxy(obj);
 				var child=getChildIdx(win.refCon.children,obj);
@@ -976,10 +979,10 @@ function singleClickObject(obj,win,event,canDrag)
 				dragObject.css('left',start.h+'px');
 			}
 			var pos=dragObject.position();
-			dragObject.css('top',(pos.top+(event.pageY-lastY))+'px');
-			dragObject.css('left',(pos.left+(event.pageX-lastX))+'px');
-			lastX=event.pageX;
-			lastY=event.pageY;
+			dragObject.css('top',(pos.top+(Math.floor(event.pageY / pageZoom)-lastY))+'px');
+			dragObject.css('left',(pos.left+(Math.floor(event.pageX / pageZoom)-lastX))+'px');
+			lastX=Math.floor(event.pageX / pageZoom);
+			lastY=Math.floor(event.pageY / pageZoom);
 			return false;
 		});
 	}
@@ -1001,7 +1004,7 @@ function singleClickObject(obj,win,event,canDrag)
 		{
 			deltaPt.h=pos.left;
 			deltaPt.v=pos.top;
-			var loc=getWindowLocation(event.pageX,event.pageY);
+			var loc=getWindowLocation(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom));
 			destObject=loc.id;
 			deltaPt.h-=start.h;
 			deltaPt.v-=start.v;
@@ -1011,6 +1014,8 @@ function singleClickObject(obj,win,event,canDrag)
 				if (loc.win)
 					loc.win.globalToLocal(deltaPt);
 			}
+      deltaPt.h = Math.round(deltaPt.h / XYScale);
+      deltaPt.v = Math.round(deltaPt.v / XYScale);
 			selectedCtl=5;
 			activateCommand(5);
 			cmdReady=true;
@@ -1083,8 +1088,8 @@ function inRect(pt,rect)
 
 function drawObject(obj,win,flag)
 {
-	var x=get(obj,1);
-	var y=get(obj,2);
+	var x=get(obj,1) * XYScale;
+	var y=get(obj,2) * XYScale;
 	var off=get(obj,3);
 	if (flag || !off || !get(obj,4))
 	{
@@ -1469,8 +1474,8 @@ function queueObject(obj)
 		inQueue.push(obj);
 		var item={obj:obj};
 		item.parent=get(obj,0);
-		item.x=get(obj,1);
-		item.y=get(obj,2);
+		item.x=get(obj,1) * XYScale;
+		item.y=get(obj,2) * XYScale;
 		item.exitx=get(obj,9);
 		item.exity=get(obj,0xa);
 		item.hidden=get(obj,0xb);
@@ -1608,8 +1613,8 @@ function setRefCon(obj,w)
 			var child={id:children[i],top:0,left:0,width:0,height:0};
 			if (w!=mainWin)
 			{
-				var x=get(child,1);
-				var y=get(child,2);
+				var x=get(children[i],1) * XYScale;
+				var y=get(children[i],2) * XYScale;
 				if (originx>x) originx=x;
 				if (originy>y) originy=y;
 			}
@@ -1914,8 +1919,8 @@ function moveItems(locs,win)
 		var pt=getObjBounds(locs[i].id);
 		if (pt.top!=locs[i].top || pt.left!=locs[i].left)
 		{
-			set(locs[i].id,1,locs[i].left);
-			set(locs[i].id,2,locs[i].top);
+			set(locs[i].id,1,Math.round(locs[i].left / XYScale));
+			set(locs[i].id,2,Math.round(locs[i].top / XYScale));
 
 		}
 	}

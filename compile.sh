@@ -3,6 +3,7 @@
 # This is the path to the Closure Compiler from http://code.google.com/closure/compiler/
 COMPILER=~/compiler.jar
 COMPLEVEL=ADVANCED_OPTIMIZATIONS
+#COMPLEVEL=WHITESPACE_ONLY
 
 echo "Compiling Mac interpreter..."
 

@@ -215,8 +215,8 @@ Win.prototype.close=function()
 Win.prototype.globalToLocal=function(pt)
 {
 	var pos=this.port.offset();
-	pt.h-=pos.left+1;
-	pt.v-=pos.top+2;
+	pt.h-=Math.floor(pos.left)+1;
+	pt.v-=Math.floor(pos.top)+2;
 	if (this.refCon)
 	{
 		pt.h+=this.refCon.x;
@@ -226,8 +226,8 @@ Win.prototype.globalToLocal=function(pt)
 Win.prototype.localToGlobal=function(pt)
 {
 	var pos=this.port.offset();
-	pt.h+=pos.left+1;
-	pt.v+=pos.top+2;
+	pt.h+=Math.floor(pos.left)+1;
+	pt.v+=Math.floor(pos.top)+2;
 	if (this.refCon)
 	{
 		pt.h-=this.refCon.x;
@@ -246,7 +246,7 @@ Win.prototype.initScrollbars=function()
 		this.hscroll.mousedown(function(event){
 			bringToFront(self);
 			var pos=self.hslider.offset().left;
-			if (event.pageX<pos)
+			if (Math.floor(event.pageX / pageZoom) <pos)
 				scroll(self,-20,0);
 			else
 				scroll(self,20,0);
@@ -270,7 +270,7 @@ Win.prototype.initScrollbars=function()
 		this.hslider=$(document.createElement('div'));
 		this.hslider.addClass('slider');
 		this.hslider.mousedown(function(event){
-			dragSlider(self,event.pageX,true);
+			dragSlider(self,Math.floor(event.pageX / pageZoom),true);
 			return false;
 		});
 		this.hscroll.append(this.hslider);
@@ -285,7 +285,7 @@ Win.prototype.initScrollbars=function()
 		this.vscroll.mousedown(function(event){
 			bringToFront(self);
 			var pos=self.vslider.offset().top;
-			if (event.pageY<pos)
+			if (Math.floor(event.pageY / pageZoom)<pos)
 				scroll(self,0,-20);
 			else
 				scroll(self,0,20);
@@ -309,7 +309,7 @@ Win.prototype.initScrollbars=function()
 		this.vslider=$(document.createElement('div'));
 		this.vslider.addClass('slider');
 		this.vslider.mousedown(function(event){
-			dragSlider(self,event.pageY,false);
+			dragSlider(self,Math.floor(event.pageY / pageZoom),false);
 			return false;
 		});
 		this.vscroll.append(this.vslider);
@@ -332,22 +332,22 @@ Win.prototype.initScrollbars=function()
 		var y=self.win.height();
 		proxy.css('width',x+'px');
 		proxy.css('height',y+'px');
-		var oldX=event.pageX;
-		var oldY=event.pageY;
+		var oldX=Math.floor(event.pageX / pageZoom);
+		var oldY=Math.floor(event.pageY / pageZoom);
 		$(document).mousemove(function(event){
-			var newx=x+(event.pageX-oldX);
-			var newy=y+(event.pageY-oldY);
+			var newx=x+(Math.floor(event.pageX / pageZoom) - oldX);
+			var newy=y+(Math.floor(event.pageY / pageZoom) - oldY);
 			if (newx>100)
 			{
 				x=newx;
 				proxy.css('width',x+'px');
-				oldX=event.pageX;
+				oldX=Math.floor(event.pageX / pageZoom);
 			}
 			if (newy>100)
 			{
 				y=newy;
 				proxy.css('height',y+'px');
-				oldY=event.pageY;
+				oldY=Math.floor(event.pageY / pageZoom);
 			}
 		});
 		$(document).mouseup(function(event){
@@ -407,13 +407,13 @@ Win.prototype.setScrollBounds=function(rect)
 		return;
 	}
 	if (rect.left>this.refCon.x)
-		rect.left=this.refCon.x;
-	if (rect.right<this.refCon.x+this.port.width())
-		rect.right=this.refCon.x+this.port.width();
+    this.refCon.x = rect.left;
+	if (rect.right<this.refCon.x+Math.floor(this.port.width()))
+		rect.right=this.refCon.x+Math.floor(this.port.width());
 	if (rect.top>this.refCon.y)
-		rect.top=this.refCon.y;
-	if (rect.bottom<this.refCon.y+this.port.height())
-		rect.bottom=this.refCon.y+this.port.height();
+    this.refCon.y = rect.top;
+	if (rect.bottom<this.refCon.y+Math.floor(this.port.height()))
+		rect.bottom=this.refCon.y+Math.floor(this.port.height());
 	if (this.hScroll)
 	{
 		this.hslider.data('min',rect.left);
@@ -573,8 +573,8 @@ function scroll(win,x,y)
 		var max=win.hslider.data('max');
 		if (win.refCon.x<min)
 			win.refCon.x=min;
-		if (win.refCon.x>max-win.port.width())
-			win.refCon.x=max-win.port.width();
+		if (win.refCon.x>max-Math.floor(win.port.width()))
+			win.refCon.x=max-Math.floor(win.port.width());
 	}
 	if (win.vScroll)
 	{
@@ -582,8 +582,8 @@ function scroll(win,x,y)
 		var max=win.vslider.data('max');
 		if (win.refCon.y<min)
 			win.refCon.y=min;
-		if (win.refCon.y>max-win.port.height())
-			win.refCon.y=max-win.port.height();
+		if (win.refCon.y>max-Math.floor(win.port.height()))
+			win.refCon.y=max-Math.floor(win.port.height());
 	}
 	win.refCon.updateScroll=true;
 	updateWindow(win);
@@ -604,25 +604,25 @@ function dragSlider(win,start,horiz)
 	$(document).mousemove(function(event){
 		if (horiz)
 		{
-			win.refCon.x+=event.pageX-last;
-			last=event.pageX;
+			win.refCon.x+=Math.floor(event.pageX / pageZoom) - last;
+			last=Math.floor(event.pageX / pageZoom);
 			var min=win.hslider.data('min');
 			var max=win.hslider.data('max');
 			if (win.refCon.x<min)
 				win.refCon.x=min;
-			if (win.refCon.x>max-win.port.width())
-				win.refCon.x=max-win.port.width();
+			if (win.refCon.x>max-Math.floor(win.port.width()))
+				win.refCon.x=max-Math.floor(win.port.width());
 		}
 		else
 		{
-			win.refCon.y+=event.pageY-last;
-			last=event.pageY;
+			win.refCon.y+=Math.floor(event.pageY / pageZoom)-last;
+			last=Math.floor(event.pageY / pageZoom);
 			var min=win.vslider.data('min');
 			var max=win.vslider.data('max');
 			if (win.refCon.y<min)
 				win.refCon.y=min;
-			if (win.refCon.y>max-win.port.height())
-				win.refCon.y=max-win.port.height();
+			if (win.refCon.y>max-Math.floor(win.port.height()))
+				win.refCon.y=max-Math.floor(win.port.height());
 		}
 		win.refCon.updateScroll=true;
 		updateWindow(win);
@@ -638,8 +638,8 @@ function dragText(win,start)
 	$(document).mousemove(function(event){
 		var min=win.vslider.data('min');
 		var max=win.vslider.data('max');
-		var delta=(event.pageY-last)*(max-min)/(win.height-WinTitleHeight-GrowHeight-VScrollBucketStart-VScrollArrowDown)|0;
-		last=event.pageY;
+		var delta=(Math.floor(event.pageY / pageZoom)-last)*(max-min)/(win.height-WinTitleHeight-GrowHeight-VScrollBucketStart-VScrollArrowDown)|0;
+		last=Math.floor(event.pageY / pageZoom);
 		win.port.scrollTop(win.port.scrollTop()+delta);
 		win.redrawTextScroll();
 	});
@@ -772,7 +772,7 @@ var wins=[];
 function titleDown(event,win)
 {
 	if (isPaused) return;
-	dragWindow(event.pageX,event.pageY,win);
+	dragWindow(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
 }
 function dragWindow(x,y,win)
 {
@@ -781,17 +781,17 @@ function dragWindow(x,y,win)
 	bringToFront(win);
 	$(document).mousemove(function(event){
 		var pos=win.win.position();
-		win.win.css('top',(pos.top+(event.pageY-lastY))+'px');
-		win.win.css('left',(pos.left+(event.pageX-lastX))+'px');
-		lastX=event.pageX;
-		lastY=event.pageY;
+		win.win.css('top',(pos.top+(Math.floor(event.pageY / pageZoom) -lastY))+'px');
+		win.win.css('left',(pos.left+(Math.floor(event.pageX / pageZoom) -lastX))+'px');
+		lastX=Math.floor(event.pageX / pageZoom);
+		lastY=Math.floor(event.pageY / pageZoom);
 	});
 	$(document).mouseup(function(event){
 		$(document).unbind('mousemove');
 		$(document).unbind('mouseup');
 		var pos=win.win.position();
-		win.win.css('top',(pos.top+(event.pageY-lastY))+'px');
-		win.win.css('left',(pos.left+(event.pageX-lastX))+'px');
+		win.win.css('top',(pos.top+(Math.floor(event.pageY / pageZoom) -lastY))+'px');
+		win.win.css('left',(pos.left+(Math.floor(event.pageX / pageZoom) -lastX))+'px');
 	});
 }
 function contentDown(event,win)
@@ -801,21 +801,21 @@ function contentDown(event,win)
 	switch (win.kind)
 	{
 		case 0x9: //commands
-			dragWindow(event.pageX,event.pageY,win);
+			dragWindow(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
 			break;
 		case 0xa: //main
 		case 0xe: //inventory
-			var obj=findObjectAt(event.pageX,event.pageY,win);
+			var obj=findObjectAt(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
 			var canDrag=false;
 			if (obj && !get(obj,3)) canDrag=true;
 			handleObjectSelect(obj,win,event,canDrag);
 			break;
 		case 0xc: //selfwin
-			var obj=findObjectAt(event.pageX,event.pageY,win);
+			var obj=findObjectAt(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
 			if (obj==1)
 				handleObjectSelect(obj,win,event,false);
 			else
-				dragWindow(event.pageX,event.pageY,win);
+				dragWindow(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
 			break;
 		case 0xd: //exitwin
 			handleObjectSelect(get(1,0),win,event,false);

@@ -5,6 +5,8 @@ function openResources()
 	var main;
 	for (var i=1;main==undefined && i<5;i++)
 		main=getKind('APPL','MCV'+i);
+	for (var i=1;main==undefined && i<5;i++)
+		main=getKind('APPL','MCv'+i);
 	openRes(main);
 }
 function openRes(res)

@@ -3,29 +3,11 @@ function initMenus()
 {
 	menubar=$(document.createElement('div'));
 	menubar.addClass('menubar');
-
-  // insert menu items
-  var file = macgap['menu']['getItem']("File")['submenu']();
-  file['addItem']("New", "", function() { menuSelect(0x8100); });
-  file['addSeparator']();
-  file['addItem']("Open...", "cmd+o", function() { menuSelect(0x8102); });
-  file['addItem']("Save", "cmd+s", function() { menuSelect(0x8103); });
-  file['addItem']("Save As...", "", function() { menuSelect(0x8104); });
-
-  var apple = macgap['menu']['getItem']("Shadowgate")['submenu']();
-  apple['addItem']("About Shadowgate", "", function() { menuSelect(0x8000); }, 1);
-  apple['addItem']("Adjust Volume", "", function() { menuSelect(0x900); });
-  apple['addSeparator']();
-  apple['addItem']("Quit", "cmd+q", function() { menuSelect(0x8106); });
-
-  var spec = macgap['menu']['getItem']("Special")['submenu']();
-  spec['addItem']("Clean Up", "", function() { menuSelect(0x8300); });
-  spec['addItem']("Mess Up", "", function() { menuSelect(0x8301); });
 }
 
 function showMenus()
 {
-//	desktop.append(menubar);
+	desktop.append(menubar);
 }
 
 function addDeskAccessory(text,id)
@@ -88,40 +70,6 @@ function enableMenu(id)
 		item.enabled=true;
 		item.obj.removeClass('disabled');
 	}
-
-  switch (id)
-  {
-    case 0x8100:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("New");
-      if (item != undefined)
-        item['enable']();
-      break;
-    case 0x8102:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("Open...");
-      if (item != undefined)
-        item['enable']();
-      break;
-    case 0x8103:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("Save");
-      if (item != undefined)
-        item['enable']();
-      break;
-    case 0x8104:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("Save As");
-      if (item != undefined)
-        item['enable']();
-      break;
-    case 0x8300:
-      item = macgap['menu']['getItem']("Special")['submenu']()['getItem']("Clean Up");
-      if (item != undefined)
-        item['enable']();
-      break;
-    case 0x8301:
-      item = macgap['menu']['getItem']("Special")['submenu']()['getItem']("Mess Up");
-      if (item != undefined)
-        item['enable']();
-      break;
-  }
 }
 function disableMenu(id)
 {
@@ -131,39 +79,6 @@ function disableMenu(id)
 		item.enabled=false;
 		item.obj.addClass('disabled');
 	}
-  switch (id)
-  {
-    case 0x8100:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("New");
-      if (item != undefined)
-        item['disable']();
-      break;
-    case 0x8102:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("Open");
-      if (item != undefined)
-        item['disable']();
-      break;
-    case 0x8103:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("Save");
-      if (item != undefined)
-        item['disable']();
-      break;
-    case 0x8104:
-      item = macgap['menu']['getItem']("File")['submenu']()['getItem']("Save As");
-      if (item != undefined)
-        item['disable']();
-      break;
-    case 0x8300:
-      item = macgap['menu']['getItem']("Special")['submenu']()['getItem']("Clean Up");
-      if (item != undefined)
-        item['disable']();
-      break;
-    case 0x8301:
-      item = macgap['menu']['getItem']("Special")['submenu']()['getItem']("Mess Up");
-      if (item != undefined)
-        item['disable']();
-      break;
-  }
 }
 
 function menudown(event)
@@ -181,16 +96,16 @@ function menudown(event)
 	$(document).mousemove(function(event){
 		var pos=menubar.offset();
 		//over menubar?
-		if (event.pageX>=pos.left &&
-			event.pageY>pos.top &&
-			event.pageX<pos.left+menubar.width() &&
-			event.pageY<pos.top+menubar.height())
+		if (Math.floor(event.pageX / pageZoom)>=pos.left &&
+			Math.floor(event.pageY / pageZoom)>pos.top &&
+			Math.floor(event.pageX / pageZoom)<pos.left+menubar.width() &&
+			Math.floor(event.pageY / pageZoom)<pos.top+menubar.height())
 		{
 			for (var idx=0;idx<menus.length;idx++)
 			{
 				pos=menus[idx].obj.offset();
-				if (event.pageX>=pos.left &&
-					event.pageX<pos.left+menus[idx].obj.outerWidth())
+				if (Math.floor(event.pageX / pageZoom)>=pos.left &&
+					Math.floor(event.pageX / pageZoom)<pos.left+menus[idx].obj.outerWidth())
 				{
 					active.menu.remove();
 					activeMenu.removeClass('active');
@@ -211,10 +126,10 @@ function menudown(event)
 		else
 		{
 			pos=active.menu.offset();
-			if (event.pageX>=pos.left &&
-				event.pageY>=pos.top &&
-				event.pageX<pos.left+active.menu.outerWidth() &&
-				event.pageY<pos.top+active.menu.outerHeight())
+			if (Math.floor(event.pageX / pageZoom)>=pos.left &&
+				Math.floor(event.pageY / pageZoom)>=pos.top &&
+				Math.floor(event.pageX / pageZoom)<pos.left+active.menu.outerWidth() &&
+				Math.floor(event.pageY / pageZoom)<pos.top+active.menu.outerHeight())
 			{
 				for (var i=0;i<active.items.length;i++)
 				{
@@ -222,8 +137,8 @@ function menudown(event)
 					if (!el.hasClass('menuitem') || !active.items[i].enabled)
 						continue;
 					pos=el.offset();
-					if (event.pageY>=pos.top &&
-						event.pageY<pos.top+el.outerHeight())
+					if (Math.floor(event.pageY / pageZoom)>=pos.top &&
+						Math.floor(event.pageY / pageZoom)<pos.top+el.outerHeight())
 					{
 						selectedItem=i;
 						el.addClass('active');

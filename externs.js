@@ -10,5 +10,11 @@ function fatal(message) {};
 /** @type {Object} */
 var desktop;
 
-/** @type {Object} */
-var macgap;
+/** @type {number} */
+var pageZoom;
+
+/** @type {string} */
+var fullGameName;
+
+/** @type {string} */
+var helpURL;
