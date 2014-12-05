@@ -3,7 +3,7 @@ var desktop;
 $(document).ready(function(){
 	desktop=$(document.createElement('div'));
 	desktop.addClass('screen');
-	desktop.mousedown(function(event){return false;});
+	desktop.bind('touchstart', function(event){return false;});
 	$('script[src="webventure.js"]').after(desktop);
 
 	if (gamename.match(/\.dsk$/)) //macintosh

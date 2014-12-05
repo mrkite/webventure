@@ -161,6 +161,9 @@ jQuery.event.prototype.type;
 /** @type {number} */
 jQuery.event.prototype.which;
 
+/** @type {Event} */
+jQuery.event.prototype.originalEvent;
+
 /**
  * @param {(Object|boolean)=} arg1
  * @param {Object=} arg2

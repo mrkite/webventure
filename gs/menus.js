@@ -75,7 +75,7 @@ function parseLine(r)
 	else
 		curMenu.obj.html(name);
 	curMenu.obj.data('refCon',curMenu);
-	curMenu.obj.mousedown(function(event){
+  curMenu.obj.bind('touchstart',function(event) {
 		if (isPaused) return false;
 		menudown(event);
 		return false;

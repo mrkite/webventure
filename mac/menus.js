@@ -15,7 +15,7 @@ function getMenu(res)
 	else
 		curMenu.obj.html(title);
 	curMenu.obj.data('refCon',curMenu);
-	curMenu.obj.mousedown(function(event){
+  curMenu.obj.bind('touchstart', function(event) {
 		if (isPaused) return false;
 		menudown(event);
 		return false;

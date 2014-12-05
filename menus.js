@@ -93,19 +93,20 @@ function menudown(event)
 	active.menu.css('top',(pos.top+MBHeight)+'px');
 	active.menu.css('left',pos.left+'px');
 	var selectedItem=-1;
-	$(document).mousemove(function(event){
+  $(document).bind('touchmove', function(event) {
 		var pos=menubar.offset();
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
 		//over menubar?
-		if (Math.floor(event.pageX / pageZoom)>=pos.left &&
-			Math.floor(event.pageY / pageZoom)>pos.top &&
-			Math.floor(event.pageX / pageZoom)<pos.left+menubar.width() &&
-			Math.floor(event.pageY / pageZoom)<pos.top+menubar.height())
+		if (Math.floor(touch.pageX / pageZoom)>=pos.left &&
+			Math.floor(touch.pageY / pageZoom)>pos.top &&
+			Math.floor(touch.pageX / pageZoom)<pos.left+menubar.width() &&
+			Math.floor(touch.pageY / pageZoom)<pos.top+menubar.height())
 		{
 			for (var idx=0;idx<menus.length;idx++)
 			{
 				pos=menus[idx].obj.offset();
-				if (Math.floor(event.pageX / pageZoom)>=pos.left &&
-					Math.floor(event.pageX / pageZoom)<pos.left+menus[idx].obj.outerWidth())
+				if (Math.floor(touch.pageX / pageZoom)>=pos.left &&
+					Math.floor(touch.pageX / pageZoom)<pos.left+menus[idx].obj.outerWidth())
 				{
 					active.menu.remove();
 					activeMenu.removeClass('active');
@@ -126,10 +127,10 @@ function menudown(event)
 		else
 		{
 			pos=active.menu.offset();
-			if (Math.floor(event.pageX / pageZoom)>=pos.left &&
-				Math.floor(event.pageY / pageZoom)>=pos.top &&
-				Math.floor(event.pageX / pageZoom)<pos.left+active.menu.outerWidth() &&
-				Math.floor(event.pageY / pageZoom)<pos.top+active.menu.outerHeight())
+			if (Math.floor(touch.pageX / pageZoom)>=pos.left &&
+				Math.floor(touch.pageY / pageZoom)>=pos.top &&
+				Math.floor(touch.pageX / pageZoom)<pos.left+active.menu.outerWidth() &&
+				Math.floor(touch.pageY / pageZoom)<pos.top+active.menu.outerHeight())
 			{
 				for (var i=0;i<active.items.length;i++)
 				{
@@ -137,8 +138,8 @@ function menudown(event)
 					if (!el.hasClass('menuitem') || !active.items[i].enabled)
 						continue;
 					pos=el.offset();
-					if (Math.floor(event.pageY / pageZoom)>=pos.top &&
-						Math.floor(event.pageY / pageZoom)<pos.top+el.outerHeight())
+					if (Math.floor(touch.pageY / pageZoom)>=pos.top &&
+						Math.floor(touch.pageY / pageZoom)<pos.top+el.outerHeight())
 					{
 						selectedItem=i;
 						el.addClass('active');
@@ -155,9 +156,9 @@ function menudown(event)
 			}
 		}
 	});
-	$(document).mouseup(function(event){
-		$(document).unbind('mousemove');
-		$(document).unbind('mouseup');
+  $(document).bind('touchend', function() {
+		$(document).unbind('touchmove');
+		$(document).unbind('touchend');
 		active.menu.remove();
 		activeMenu.removeClass('active');
 		if (selectedItem!=-1)

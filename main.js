@@ -602,7 +602,7 @@ function textEntry(txt,obj,target)
 	el.obj.keypress(function(event){
 		if (event.which==13)
 		{
-			dialog.getItem(1).obj.mousedown();
+      dialog.getItem(1).obj.trigger('touchstart');
 			return false;
 		}
 		return true;
@@ -796,8 +796,9 @@ function doLasso(win,start,canDrag)
 	lasso.css('left',stpt.h+'px');
 	lasso.css('width','0px');
 	lasso.css('height','0px');
-	$(document).mousemove(function(event){
-		var evpt={h:Math.floor(event.pageX / pageZoom),v:Math.floor(event.pageY / pageZoom)};
+  $(document).bind('touchmove', function(event) {
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		var evpt={h:Math.floor(touch.pageX / pageZoom),v:Math.floor(touch.pageY / pageZoom)};
 		globalToDesktop(evpt);
 		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
 		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
@@ -808,10 +809,11 @@ function doLasso(win,start,canDrag)
 		lasso.css('width',(ex-sx)+'px');
 		lasso.css('height',(ey-sy)+'px');
 	});
-	$(document).mouseup(function(event){
-		$(document).unbind('mousemove');
-		$(document).unbind('mouseup');
-		var evpt={h:Math.floor(event.pageX / pageZoom),v:Math.floor(event.pageY / pageZoom)};
+  $(document).bind('touchend', function(event) {
+		$(document).unbind('touchmove');
+		$(document).unbind('touchend');
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		var evpt={h:Math.floor(touch.pageX / pageZoom),v:Math.floor(touch.pageY / pageZoom)};
 		globalToDesktop(evpt);
 		var sx=Math.max(Math.min(stpt.h,evpt.h),bounds.minx);
 		var sy=Math.max(Math.min(stpt.v,evpt.v),bounds.miny);
@@ -873,17 +875,19 @@ function doLasso(win,start,canDrag)
 }
 function doubleClickObject(obj,win,event,canDrag)
 {
-	var lastX=Math.floor(event.pageX / pageZoom);
-	var lastY=Math.floor(event.pageY / pageZoom);
+  var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+	var lastX=Math.floor(touch.pageX / pageZoom);
+	var lastY=Math.floor(touch.pageY / pageZoom);
 	var start={h:0,v:0};
 	var moved=false;
 	dragObject=undefined;
 	if (canDrag)
 	{
-		$(document).mousemove(function(event){
+    $(document).bind('touchmove', function(event) {
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
 			if (dragObject==undefined)
 			{
-				if (Math.abs(Math.floor(event.pageX / pageZoom)-lastX)+Math.abs(Math.floor(event.pageY / pageZoom)-lastY)<=7) return false;
+				if (Math.abs(Math.floor(touch.pageX / pageZoom)-lastX)+Math.abs(Math.floor(touch.pageY / pageZoom)-lastY)<=7) return false;
 				moved=true;
 				dragObject=createProxy(obj);
 				var child=getChildIdx(win.refCon.children,obj);
@@ -899,30 +903,31 @@ function doubleClickObject(obj,win,event,canDrag)
 				dragObject.css('left',start.h+'px');
 			}
 			var pos=dragObject.position();
-			dragObject.css('top',(pos.top+(Math.floor(event.pageY / pageZoom)-lastY))+'px');
-			dragObject.css('left',(pos.left+(Math.floor(event.pageX / pageZoom)-lastX))+'px');
-			lastX=Math.floor(event.pageX / pageZoom);
-			lastY=Math.floor(event.pageY / pageZoom);
+			dragObject.css('top',(pos.top+(Math.floor(touch.pageY / pageZoom)-lastY))+'px');
+			dragObject.css('left',(pos.left+(Math.floor(touch.pageX / pageZoom)-lastX))+'px');
+			lastX=Math.floor(touch.pageX / pageZoom);
+			lastY=Math.floor(touch.pageY / pageZoom);
 			return false;
 		});
 	}
-	$(document).mouseup(function(event){
+  $(document).bind('touchend', function(event) {
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
 		var pos;
 		if (canDrag)
 		{
-			$(document).unbind('mousemove');
+			$(document).unbind('touchmove');
 			if (dragObject)
 			{
 				pos=dragObject.position();
 				dragObject.remove();
 			}
 		}
-		$(document).unbind('mouseup');
+		$(document).unbind('touchend');
 		if (moved)
 		{
 			deltaPt.h=pos.left;
 			deltaPt.v=pos.top;
-			var loc=getWindowLocation(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom));
+			var loc=getWindowLocation(Math.floor(touch.pageX / pageZoom),Math.floor(touch.pageY / pageZoom));
 			destObject=loc.id;
 			deltaPt.h-=start.h;
 			deltaPt.v-=start.v;
@@ -953,17 +958,19 @@ function doubleClickObject(obj,win,event,canDrag)
 }
 function singleClickObject(obj,win,event,canDrag)
 {
-	var lastX=Math.floor(event.pageX / pageZoom);
-	var lastY=Math.floor(event.pageY / pageZoom);
+  var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+	var lastX=Math.floor(touch.pageX / pageZoom);
+	var lastY=Math.floor(touch.pageY / pageZoom);
 	var start={h:0,v:0};
 	var moved=false;
 	dragObject=undefined;
 	if (canDrag)
 	{
-		$(document).mousemove(function(event){
+    $(document).bind('touchmove', function(event) {
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
 			if (dragObject==undefined)
 			{
-				if (Math.abs(Math.floor(event.pageX / pageZoom)-lastX)+Math.abs(Math.floor(event.pageY / pageZoom)-lastY)<=7) return false;
+				if (Math.abs(Math.floor(touch.pageX / pageZoom)-lastX)+Math.abs(Math.floor(touch.pageY / pageZoom)-lastY)<=7) return false;
 				moved=true;
 				dragObject=createProxy(obj);
 				var child=getChildIdx(win.refCon.children,obj);
@@ -979,32 +986,33 @@ function singleClickObject(obj,win,event,canDrag)
 				dragObject.css('left',start.h+'px');
 			}
 			var pos=dragObject.position();
-			dragObject.css('top',(pos.top+(Math.floor(event.pageY / pageZoom)-lastY))+'px');
-			dragObject.css('left',(pos.left+(Math.floor(event.pageX / pageZoom)-lastX))+'px');
-			lastX=Math.floor(event.pageX / pageZoom);
-			lastY=Math.floor(event.pageY / pageZoom);
+			dragObject.css('top',(pos.top+(Math.floor(touch.pageY / pageZoom)-lastY))+'px');
+			dragObject.css('left',(pos.left+(Math.floor(touch.pageX / pageZoom)-lastX))+'px');
+			lastX=Math.floor(touch.pageX / pageZoom);
+			lastY=Math.floor(touch.pageY / pageZoom);
 			return false;
 		});
 	}
-	$(document).mouseup(function(event){
+  $(document).bind('touchend', function(event) {
 		lastClick=event.timeStamp;
 		lastClickTarget=event.target;
 		var pos;
 		if (canDrag)
 		{
-			$(document).unbind('mousemove');
+			$(document).unbind('touchmove');
 			if (dragObject)
 			{
 				pos=dragObject.position();
 				dragObject.remove();
 			}
 		}
-		$(document).unbind('mouseup');
+		$(document).unbind('touchend');
 		if (moved)
 		{
 			deltaPt.h=pos.left;
 			deltaPt.v=pos.top;
-			var loc=getWindowLocation(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom));
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+			var loc=getWindowLocation(Math.floor(touch.pageX / pageZoom),Math.floor(touch.pageY / pageZoom));
 			destObject=loc.id;
 			deltaPt.h-=start.h;
 			deltaPt.v-=start.v;
@@ -1286,14 +1294,13 @@ function openDialog()
 		if (g['game']!=gamename) continue;
 		var item=$(document.createElement('div'));
 		item.addClass('listitem');
-		item.mousedown(function(event){return false;});
-		item.click(function(event){
+    item.bind('touchstart', function(event) {
 			if (selectedItem) selectedItem.removeClass('active');
 			selectedItem=$(event.target);
 			selectedItem.addClass('active');
 		});
-		item.dblclick(function(event){
-			dialog.getItem(1).obj.mousedown();
+		item.dblclick(function(){
+			dialog.getItem(1).obj.trigger('touchstart');
 		});
 		item.text(title.toString());
 		list.obj.append(item);
@@ -1352,7 +1359,7 @@ function saveDialog()
 	el.obj.keypress(function(event){
 		if (event.which==13)
 		{
-			dialog.getItem(1).obj.mousedown();
+			dialog.getItem(1).obj.trigger('touchstart');
 			return false;
 		}
 		return true;
@@ -1367,15 +1374,14 @@ function saveDialog()
 		if (game['game']!=gamename) continue;
 		var item=$(document.createElement('div'));
 		item.addClass('listitem');
-		item.mousedown(function(event){return false;});
-		item.click(function(event){
+    item.bind('touchstart', function(event) {
 			if (selectedItem) selectedItem.removeClass('active');
 			selectedItem=$(event.target);
 			selectedItem.addClass('active');
 			dialog.getItem(3).obj.val(selectedItem.text());
 		});
-		item.dblclick(function(event){
-			dialog.getItem(1).obj.mousedown();
+		item.dblclick(function(){
+			dialog.getItem(1).obj.trigger('touchstart');
 		});
 		item.text(title.toString());
 		list.obj.append(item);

@@ -19,7 +19,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 		var txt='<span></span>';
 		this.title=$(document.createElement('div'));
 		this.title.addClass('title');
-		this.title.mousedown(function(event){
+    this.title.bind('touchstart', function(event) {
 			titleDown(event,self);
 			return false;
 		});
@@ -31,25 +31,25 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 		if (this.hasClose)
 		{
 			var el=this.title.children('div.close');
-			el.mousedown(function(){return false;});
-			el.click(function(event){
-				closeClicked(event,self);
+      el.bind('touchstart', function() { return false; });
+			el.click(function(){
+				closeClicked(self);
 				return false;
 			});
 		}
 		if (this.hasZoom)
 		{
 			var el=this.title.children('div.resize');
-			el.mousedown(function(){return false;});
-			el.click(function(event){
-				zoomClicked(event,self);
+      el.bind('touchstart', function(){ return false; });
+			el.click(function(){
+				zoomClicked(self);
 				return false;
 			});
 		}
 		this.win.append(this.title);
 	}
 	this.port=$(document.createElement('canvas'));
-	this.port.mousedown(function(event){
+  this.port.bind('touchstart', function(event) {
 		contentDown(event,self);
 		return false;
 	});
@@ -243,10 +243,11 @@ Win.prototype.initScrollbars=function()
 		this.hscroll.addClass('hscroll');
 		this.hscroll.css('top',(this.height-HScrollHeight)+'px');
 		this.hscroll.css('width',(this.width-HScrollBucket)+'px');
-		this.hscroll.mousedown(function(event){
+    this.hscroll.bind('touchstart', function(event) {
 			bringToFront(self);
 			var pos=self.hslider.offset().left;
-			if (Math.floor(event.pageX / pageZoom) <pos)
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+			if (Math.floor(touch.pageX / pageZoom) < pos)
 				scroll(self,-20,0);
 			else
 				scroll(self,20,0);
@@ -254,7 +255,7 @@ Win.prototype.initScrollbars=function()
 		});
 		var leftarrow=$(document.createElement('div'));
 		leftarrow.addClass('leftarrow');
-		leftarrow.mousedown(function(){
+    leftarrow.bind('touchstart', function() {
 			scroll(self,-5,0);
 			return false;
 		});
@@ -262,15 +263,16 @@ Win.prototype.initScrollbars=function()
 		this.rightarrow=$(document.createElement('div'));
 		this.rightarrow.addClass('rightarrow');
 		this.rightarrow.css('left',(this.width-HScrollArrowRight-GrowWidth)+'px');
-		this.rightarrow.mousedown(function(){
+    this.rightarrow.bind('touchstart', function() {
 			scroll(self,5,0);
 			return false;
 		});
 		this.hscroll.append(this.rightarrow);
 		this.hslider=$(document.createElement('div'));
 		this.hslider.addClass('slider');
-		this.hslider.mousedown(function(event){
-			dragSlider(self,Math.floor(event.pageX / pageZoom),true);
+    this.hslider.bind('touchstart', function(event) {
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+			dragSlider(self,Math.floor(touch.pageX / pageZoom),true);
 			return false;
 		});
 		this.hscroll.append(this.hslider);
@@ -282,10 +284,11 @@ Win.prototype.initScrollbars=function()
 		this.vscroll.addClass('vscroll');
 		this.vscroll.css('left',(this.width-VScrollWidth)+'px');
 		this.vscroll.css('height',(this.height-VScrollBucket-WinTitleHeight)+'px');
-		this.vscroll.mousedown(function(event){
+    this.vscroll.bind('touchstart', function(event) {
 			bringToFront(self);
 			var pos=self.vslider.offset().top;
-			if (Math.floor(event.pageY / pageZoom)<pos)
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+			if (Math.floor(touch.pageY / pageZoom)<pos)
 				scroll(self,0,-20);
 			else
 				scroll(self,0,20);
@@ -293,7 +296,7 @@ Win.prototype.initScrollbars=function()
 		});
 		var uparrow=$(document.createElement('div'));
 		uparrow.addClass('uparrow');
-		uparrow.mousedown(function(event){
+    uparrow.bind('touchstart', function() {
 			scroll(self,0,-5);
 			return false;
 		});
@@ -301,15 +304,16 @@ Win.prototype.initScrollbars=function()
 		this.downarrow=$(document.createElement('div'));
 		this.downarrow.addClass('downarrow');
 		this.downarrow.css('top',(this.height-VScrollArrowDown-GrowHeight-WinTitleHeight)+'px');
-		this.downarrow.mousedown(function(event){
+    this.downarrow.bind('touchstart', function() {
 			scroll(self,0,5);
 			return false;
 		});
 		this.vscroll.append(this.downarrow);
 		this.vslider=$(document.createElement('div'));
 		this.vslider.addClass('slider');
-		this.vslider.mousedown(function(event){
-			dragSlider(self,Math.floor(event.pageY / pageZoom),false);
+    this.vslider.bind('touchstart', function(event) {
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+			dragSlider(self,Math.floor(touch.pageY / pageZoom),false);
 			return false;
 		});
 		this.vscroll.append(this.vslider);
@@ -319,7 +323,7 @@ Win.prototype.initScrollbars=function()
 	this.grow.addClass('grow');
 	this.grow.css('top',(this.height-GrowHeight)+'px');
 	this.grow.css('left',(this.width-GrowWidth)+'px');
-	this.grow.mousedown(function(event){
+  this.grow.bind('touchstart', function(event) {
 		if (isPaused) return false;
 		bringToFront(self);
 		var proxy=$(document.createElement('div'));
@@ -332,27 +336,29 @@ Win.prototype.initScrollbars=function()
 		var y=self.win.height();
 		proxy.css('width',x+'px');
 		proxy.css('height',y+'px');
-		var oldX=Math.floor(event.pageX / pageZoom);
-		var oldY=Math.floor(event.pageY / pageZoom);
-		$(document).mousemove(function(event){
-			var newx=x+(Math.floor(event.pageX / pageZoom) - oldX);
-			var newy=y+(Math.floor(event.pageY / pageZoom) - oldY);
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		var oldX=Math.floor(touch.pageX / pageZoom);
+		var oldY=Math.floor(touch.pageY / pageZoom);
+    $(document).bind('touchmove', function(event) {
+      var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+			var newx=x+(Math.floor(touch.pageX / pageZoom) - oldX);
+			var newy=y+(Math.floor(touch.pageY / pageZoom) - oldY);
 			if (newx>100)
 			{
 				x=newx;
 				proxy.css('width',x+'px');
-				oldX=Math.floor(event.pageX / pageZoom);
+				oldX=Math.floor(touch.pageX / pageZoom);
 			}
 			if (newy>100)
 			{
 				y=newy;
 				proxy.css('height',y+'px');
-				oldY=Math.floor(event.pageY / pageZoom);
+				oldY=Math.floor(touch.pageY / pageZoom);
 			}
 		});
-		$(document).mouseup(function(event){
-			$(document).unbind('mousemove');
-			$(document).unbind('mouseup');
+    $(document).bind('touchend', function() {
+			$(document).unbind('touchmove');
+			$(document).unbind('touchend');
 			proxy.remove();
 			self.resize(x,y);
 		});
@@ -559,8 +565,8 @@ function scroll(win,x,y)
 		win.port.scrollTop(win.port.scrollTop()+y);
 		win.redrawTextScroll();
 		var repeat=setTimeout(function(){scroll(win,x,y)},50);
-		$(document).mouseup(function(event){
-			$(document).unbind('mouseup');
+    $(document).bind('touchend', function() {
+			$(document).unbind('touchend');
 			clearTimeout(repeat);
 		});
 		return;
@@ -588,8 +594,8 @@ function scroll(win,x,y)
 	win.refCon.updateScroll=true;
 	updateWindow(win);
 	var repeat=setTimeout(function(){scroll(win,x,y)},50);
-	$(document).mouseup(function(event){
-		$(document).unbind('mouseup');
+  $(document).bind('touchend', function() {
+		$(document).unbind('touchend');
 		clearTimeout(repeat);
 	});
 }
@@ -601,11 +607,12 @@ function dragSlider(win,start,horiz)
 		return;
 	}
 	var last=start;
-	$(document).mousemove(function(event){
+  $(document).bind('touchmove', function(event) {
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
 		if (horiz)
 		{
-			win.refCon.x+=Math.floor(event.pageX / pageZoom) - last;
-			last=Math.floor(event.pageX / pageZoom);
+			win.refCon.x+=Math.floor(touch.pageX / pageZoom) - last;
+			last=Math.floor(touch.pageX / pageZoom);
 			var min=win.hslider.data('min');
 			var max=win.hslider.data('max');
 			if (win.refCon.x<min)
@@ -615,8 +622,8 @@ function dragSlider(win,start,horiz)
 		}
 		else
 		{
-			win.refCon.y+=Math.floor(event.pageY / pageZoom)-last;
-			last=Math.floor(event.pageY / pageZoom);
+			win.refCon.y+=Math.floor(touch.pageY / pageZoom)-last;
+			last=Math.floor(touch.pageY / pageZoom);
 			var min=win.vslider.data('min');
 			var max=win.vslider.data('max');
 			if (win.refCon.y<min)
@@ -627,25 +634,26 @@ function dragSlider(win,start,horiz)
 		win.refCon.updateScroll=true;
 		updateWindow(win);
 	});
-	$(document).mouseup(function(event){
-		$(document).unbind('mouseup');
-		$(document).unbind('mousemove');
+  $(document).bind('touchend', function() {
+		$(document).unbind('touchend');
+		$(document).unbind('touchmove');
 	});
 }
 function dragText(win,start)
 {
 	var last=start;
-	$(document).mousemove(function(event){
+  $(document).bind('touchmove', function(event) {
 		var min=win.vslider.data('min');
 		var max=win.vslider.data('max');
-		var delta=(Math.floor(event.pageY / pageZoom)-last)*(max-min)/(win.height-WinTitleHeight-GrowHeight-VScrollBucketStart-VScrollArrowDown)|0;
-		last=Math.floor(event.pageY / pageZoom);
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		var delta=(Math.floor(touch.pageY / pageZoom)-last)*(max-min)/(win.height-WinTitleHeight-GrowHeight-VScrollBucketStart-VScrollArrowDown)|0;
+		last=Math.floor(touch.pageY / pageZoom);
 		win.port.scrollTop(win.port.scrollTop()+delta);
 		win.redrawTextScroll();
 	});
-	$(document).mouseup(function(event){
-		$(document).unbind('mouseup');
-		$(document).unbind('mousemove');
+  $(document).bind('touchend', function() {
+		$(document).unbind('touchend');
+		$(document).unbind('touchmove');
 	});
 }
 function resetWindows()
@@ -772,50 +780,54 @@ var wins=[];
 function titleDown(event,win)
 {
 	if (isPaused) return;
-	dragWindow(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
+  var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+	dragWindow(Math.floor(touch.pageX / pageZoom),Math.floor(touch.pageY / pageZoom),win);
 }
 function dragWindow(x,y,win)
 {
 	var lastX=x;
 	var lastY=y;
 	bringToFront(win);
-	$(document).mousemove(function(event){
+  $(document).bind('touchmove', function(event) {
 		var pos=win.win.position();
-		win.win.css('top',(pos.top+(Math.floor(event.pageY / pageZoom) -lastY))+'px');
-		win.win.css('left',(pos.left+(Math.floor(event.pageX / pageZoom) -lastX))+'px');
-		lastX=Math.floor(event.pageX / pageZoom);
-		lastY=Math.floor(event.pageY / pageZoom);
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		win.win.css('top',(pos.top+(Math.floor(touch.pageY / pageZoom) -lastY))+'px');
+		win.win.css('left',(pos.left+(Math.floor(touch.pageX / pageZoom) -lastX))+'px');
+		lastX=Math.floor(touch.pageX / pageZoom);
+		lastY=Math.floor(touch.pageY / pageZoom);
 	});
-	$(document).mouseup(function(event){
-		$(document).unbind('mousemove');
-		$(document).unbind('mouseup');
+  $(document).bind('touchend', function(event) {
+		$(document).unbind('touchmove');
+		$(document).unbind('touchend');
 		var pos=win.win.position();
-		win.win.css('top',(pos.top+(Math.floor(event.pageY / pageZoom) -lastY))+'px');
-		win.win.css('left',(pos.left+(Math.floor(event.pageX / pageZoom) -lastX))+'px');
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		win.win.css('top',(pos.top+(Math.floor(touch.pageY / pageZoom) -lastY))+'px');
+		win.win.css('left',(pos.left+(Math.floor(touch.pageX / pageZoom) -lastX))+'px');
 	});
 }
 function contentDown(event,win)
 {
 	if (isPaused) return;
 	bringToFront(win);
+  var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
 	switch (win.kind)
 	{
 		case 0x9: //commands
-			dragWindow(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
+			dragWindow(Math.floor(touch.pageX / pageZoom),Math.floor(touch.pageY / pageZoom),win);
 			break;
 		case 0xa: //main
 		case 0xe: //inventory
-			var obj=findObjectAt(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
+			var obj=findObjectAt(Math.floor(touch.pageX / pageZoom),Math.floor(touch.pageY / pageZoom),win);
 			var canDrag=false;
 			if (obj && !get(obj,3)) canDrag=true;
 			handleObjectSelect(obj,win,event,canDrag);
 			break;
 		case 0xc: //selfwin
-			var obj=findObjectAt(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
+			var obj=findObjectAt(Math.floor(touch.pageX / pageZoom),Math.floor(touch.pageY / pageZoom),win);
 			if (obj==1)
 				handleObjectSelect(obj,win,event,false);
 			else
-				dragWindow(Math.floor(event.pageX / pageZoom),Math.floor(event.pageY / pageZoom),win);
+				dragWindow(Math.floor(touch.pageX / pageZoom),Math.floor(touch.pageY / pageZoom),win);
 			break;
 		case 0xd: //exitwin
 			handleObjectSelect(get(1,0),win,event,false);
@@ -835,7 +847,7 @@ function findObjectAt(x,y,win)
 	}
 	return obj;
 }
-function closeClicked(event,win)
+function closeClicked(win)
 {
 	if (isPaused) return;
 	if (win.kind==0xe)
@@ -848,7 +860,7 @@ function closeClicked(event,win)
 	}
 	runMain();
 }
-function zoomClicked(event,win)
+function zoomClicked(win)
 {
 	if (isPaused) return;
 	var pos=win.win.position();

@@ -45,7 +45,7 @@ function CButtonCtl(bounds,refcon,opts)
 	obj.css('top',bounds[1]+'px');
 	obj.attr('width',bounds[2]);
 	obj.attr('height',bounds[3]);
-	obj.mousedown(function(event){
+  obj.bind('touchstart', function(event) {
 		buttonClicked(self,event);
 		return false;
 	});
@@ -135,7 +135,7 @@ function ButtonCtl(bounds,refcon,opts)
 	obj.css('height',bounds[3]+'px');
 	obj.css('line-height',bounds[3]+'px');
 	obj.html(opts[0]);
-	obj.mousedown(function(event){
+  obj.bind('touchstart', function(event) {
 		buttonClicked(self,event);
 		return false;
 	});
@@ -164,7 +164,7 @@ function TextLineCtl(bounds,refcon,opts)
 	this.obj.css('width',bounds[2]+'px');
 	this.obj.css('height',bounds[3]+'px');
 	this.refcon=refcon;
-	this.setText(opts[0]);	
+	this.setText(opts[0]);
 }
 TextLineCtl.prototype.getText=function()
 {
@@ -196,7 +196,7 @@ function InputCtl(bounds,refcon,opts)
 	obj.css('width',bounds[2]+'px');
 	obj.css('height',bounds[3]+'px');
 	obj.val(opts[0]);
-	obj.mousedown(function(){
+  obj.bind('touchstart', function() {
 		obj.focus();
 		return false;
 	});
@@ -318,24 +318,26 @@ function SliderCtl(bounds,refcon,opts)
 	slider.css('width','20px');
 	obj.append(slider);
 	this.slider=slider;
-	obj.mousedown(function(event){
+  obj.bind('touchstart', function(event) {
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
 		var pos=slider.offset().left;
-		if (Math.floor(event.pageX / pageZoom)<pos)
+		if (Math.floor(touch.pageX / pageZoom)<pos)
 			scrollCtl(self,-20);
 		else
 			scrollCtl(self,20);
 		return false;
 	});
-	leftarrow.mousedown(function(event){
+  leftarrow.bind('touchstart', function() {
 		scrollCtl(self,-5);
 		return false;
 	});
-	rightarrow.mousedown(function(event){
+  rightarrow.bind('touchstart', function() {
 		scrollCtl(self,5);
 		return false;
 	});
-	slider.mousedown(function(event){
-		dragCtl(self,Math.floor(event.pageX / pageZoom));
+  slider.bind('touchstart', function(event) {
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		dragCtl(self,Math.floor(touch.pageX / pageZoom));
 		return false;
 	});
 }
@@ -368,17 +370,18 @@ function scrollCtl(ctl,x)
 		ctl.value=ctl.max;
 	ctl.draw();
 	var repeat=setTimeout(function(){scrollCtl(ctl,x)},50);
-	$(document).mouseup(function(event){
-		$(document).unbind('mouseup');
+  $(document).bind('touchend', function() {
+		$(document).unbind('touchend');
 		clearTimeout(repeat);
 	});
 }
 function dragCtl(ctl,x)
 {
 	var last=x;
-	$(document).mousemove(function(event){
-		var delta=(Math.floor(event.pageX / pageZoom)-last)*(ctl.max-ctl.min)/(ctl.width-HScrollBucketStart-HScrollArrowRight-20-HScrollPadding)|0;
-		last=Math.floor(event.pageX / pageZoom);
+  $(document).bind('touchmove', function(event) {
+    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		var delta=(Math.floor(touch.pageX / pageZoom)-last)*(ctl.max-ctl.min)/(ctl.width-HScrollBucketStart-HScrollArrowRight-20-HScrollPadding)|0;
+		last=Math.floor(touch.pageX / pageZoom);
 		ctl.value+=delta;
 		if (ctl.value<ctl.min)
 			ctl.value=ctl.min;
@@ -386,9 +389,9 @@ function dragCtl(ctl,x)
 			ctl.value=ctl.max;
 		ctl.draw();
 	});
-	$(document).mouseup(function(event){
-		$(document).unbind('mouseup');
-		$(document).unbind('mousemove');
+  $(document).bind('touchend', function() {
+		$(document).unbind('touchend');
+		$(document).unbind('touchmove');
 	});
 }
 
@@ -405,7 +408,7 @@ function SButtonCtl(bounds,refcon,opts)
 	obj.css('width',(bounds[2]-2)+'px');
 	obj.css('height',(bounds[3]-2)+'px');
 	obj.html(opts[0]);
-	obj.mousedown(function(event){
+  obj.bind('touchstart', function(event) {
 		buttonClicked(self,event);
 		return false;
 	});
