@@ -1,7 +1,5 @@
 /********************** public functions *********************/
 
-var RELEASE=4;  //set to 0 for debug version
-var DOLOG = false;
 
 function resetEngine()
 {
@@ -140,8 +138,6 @@ function resumeOne(doAll)
 }
 function loadFunc(id)
 {
-  if (id == 0x50f)
-    DOLOG = true;
 	var func;
 	if (func=getObject(1,id))
 	{

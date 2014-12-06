@@ -13,6 +13,9 @@ var desktop;
 /** @type {number} */
 var pageZoom;
 
+/** @type {number} */
+var RELEASE;
+
 /** @type {string} */
 var fullGameName;
 
