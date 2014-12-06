@@ -16,6 +16,9 @@ var pageZoom;
 /** @type {function({request:string})} */
 var cefQuery;
 
+/** @type {number} */
+var RELEASE;
+
 /** @type {string} */
 var fullGameName;
 

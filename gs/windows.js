@@ -22,10 +22,10 @@ var GrowHeight=24;
 var winbg,exitbg,exitbga;
 
 var abouts=[
-"\x01\x4a\x01\x00^0 is a registered trademark of Zojoi LLC. All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun\r\x01\x4a\x01\x00Original Development Team: Dave Marsh, Karl Roelofs, Terry Schulenburg, Dave Feldman, Jay Zipnick, Todd Squires, Darin Adler, Tod Zipnick, Waldemar Horwat, Steven Hays",
 "\x01\x4a\x01\x00All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun\r\x01\x4a\x01\x00Original Development Team: Todd Squires, Craig Erickson, Kurt Nelson, Steven Hays, Terry Schulenburg, Darin Adler, Jay Zipnick, Waldemar Horwat, Mark Waterman, Dave Marsh, Karl Roelofs",
-"\x01\x4a\x01\x00All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun\r\x01\x4a\x01\x00Original Development Team: Darin Adler, Mitch Adler, Fred Allen, Brian Baker, Ed Dluzen, David Feldman, Steven Hays, Jay Zipnick, Julia Ulano, David Marsh, Karl Roelofs, Paul Snively, Todd Squires, Tod Zipnick, Waldemar Horwat, Michael Manning",
-"\x01\x4a\x01\x00All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun\r\x01\x4a\x01\x00Original Development Team: Jay Zipnick, Billy Wolfe, Terry Schulenburg, Mark Waterman, Darin Adler, Dave Marsh, Todd Squires, Karl Roelofs, Tod Zipnick, Steven Hays, Waldemar Horwat, Craig Erickson"
+"\x01\x4a\x01\x00All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun\r\x01\x4a\x01\x00Original Development Team: Jay Zipnick, Billy Wolfe, Terry Schulenburg, Mark Waterman, Darin Adler, Dave Marsh, Todd Squires, Karl Roelofs, Tod Zipnick, Steven Hays, Waldemar Horwat, Craig Erickson",
+"\x01\x4a\x01\x00^0 is a registered trademark of Zojoi LLC. All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun\r\x01\x4a\x01\x00Original Development Team: Dave Marsh, Karl Roelofs, Terry Schulenburg, Dave Feldman, Jay Zipnick, Todd Squires, Darin Adler, Tod Zipnick, Waldemar Horwat, Steven Hays",
+"\x01\x4a\x01\x00All rights reserved.\r\x01\x4a\x01\x00Programming by Sean Kasun\r\x01\x4a\x01\x00Original Development Team: Darin Adler, Mitch Adler, Fred Allen, Brian Baker, Ed Dluzen, David Feldman, Steven Hays, Jay Zipnick, Julia Ulano, David Marsh, Karl Roelofs, Paul Snively, Todd Squires, Tod Zipnick, Waldemar Horwat, Michael Manning"
 ];
 
 
@@ -35,15 +35,7 @@ function getAboutWin()
 	dialog.add(createCtl([96,205,118,20],1,0xa,["OK"]));
 
   var msg = "\x01\x4a\x01\x00^0\r\x01\x4a\x01\x00&#169; 2014 Zojoi LLC.\r";
-  var name = resGetGameName();
-  if (name.match(/II/))
-    msg += abouts[2];
-  else if (name.match(/Shadow/))
-    msg += abouts[0];
-  else if (name.match(/Uninv/))
-    msg += abouts[3];
-  else
-    msg += abouts[1];
+  msg += abouts[RELEASE - 1];
 
   dialog.add(createCtl([10,14,290,160], 2, 0x8016, [msg]));
 	dialog.param([resGetGameName()]);
