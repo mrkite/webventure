@@ -305,8 +305,8 @@ function objHit(pt,child)
 		// intersect
 		var t = Math.max(pt.v - 5, child.top) - child.top;
 		var l = Math.max(pt.h - 5, child.left) - child.left;
-		var b = Math.max(pt.v + 5, child.top + child.height) - child.top;
-		var r = Math.max(pt.h + 5, child.left + child.width) - child.left;
+		var b = Math.min(pt.v + 5, child.top + child.height) - child.top;
+		var r = Math.min(pt.h + 5, child.left + child.width) - child.left;
 		if (b > t && r > l) //intersect
 		{
 			var bmp;
