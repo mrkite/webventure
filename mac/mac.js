@@ -302,16 +302,25 @@ function createProxy(obj)
 function objHit(pt,child)
 {
 	var obj=0;
-	if (!get(child.id,4) &&
-		inRect(pt,child))
+	if (!get(child.id, 4))
 	{
-		var bmp;
-		if (bmp=getGraphic(child.id*2+1))
+		// intersect
+		var t = Math.max(pt.v - 5, child.top) - child.top;
+		var l = Math.max(pt.h - 5, child.left) - child.left;
+		var b = Math.min(pt.v + 5, child.top + child.height) - child.top;
+		var r = Math.min(pt.h + 5, child.left + child.width) - child.left;
+		if (b > t && r > l) //intersect
 		{
-			if (bmp.hit(pt.h-child.left,pt.v-child.top))
-				obj=child.id;
+			var bmp;
+			if (bmp=getGraphic(child.id*2+1))
+			{
+				for (var y = t; y < b && !obj; y++)
+					for (var x = l; x < r && !obj; x++)
+						if (bmp.hit(x,y))
+							obj=child.id;
+			}
+			else obj=child.id;
 		}
-		else obj=child.id;
 	}
 	return obj;
 }

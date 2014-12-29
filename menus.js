@@ -89,84 +89,41 @@ function menudown(event)
 	activeMenu.addClass('active');
 	var active=activeMenu.data('refCon');
 	desktop.append(active.menu);
+	var cancelMenu = $(document.createElement('div'));
+	cancelMenu.addClass('cancelMenu');
+	desktop.append(cancelMenu);
+
+	cancelMenu.bind('touchstart', function(event) {
+		active.menu.remove();
+		activeMenu.removeClass('active');
+		cancelMenu.remove();
+	});
+
 	var pos=activeMenu.position();
 	active.menu.css('top',(pos.top+MBHeight)+'px');
 	active.menu.css('left',pos.left+'px');
-	var selectedItem=-1;
-  $(document).bind('touchmove', function(event) {
-		var pos=menubar.offset();
-    var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
-		//over menubar?
-		if (Math.floor(touch.pageX / pageZoom)>=pos.left &&
-			Math.floor(touch.pageY / pageZoom)>pos.top &&
-			Math.floor(touch.pageX / pageZoom)<pos.left+menubar.width() &&
-			Math.floor(touch.pageY / pageZoom)<pos.top+menubar.height())
+
+	active.menu.bind('touchstart', function(event) {
+		var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+		pos = active.menu.offset();
+		for (var i = 0; i < active.items.length; i++)
 		{
-			for (var idx=0;idx<menus.length;idx++)
-			{
-				pos=menus[idx].obj.offset();
-				if (Math.floor(touch.pageX / pageZoom)>=pos.left &&
-					Math.floor(touch.pageX / pageZoom)<pos.left+menus[idx].obj.outerWidth())
-				{
-					active.menu.remove();
-					activeMenu.removeClass('active');
-					activeMenu=menus[idx].obj;
-					activeMenu.addClass('active');
-					active=activeMenu.data('refCon');
-					desktop.append(active.menu);
-					pos=activeMenu.position();
-					active.menu.css('top',(pos.top+MBHeight)+'px');
-					active.menu.css('left',pos.left+'px');
-					break;
-				}
-			}
-			for (var i=0;i<active.items.length;i++)
-				active.items[i].obj.removeClass('active');
-			selectedItem=-1;
+			var el = active.items[i].obj;
+			if (!el.hasClass('menuitem') || !active.items[i].enabled)
+				continue;
+			pos = el.offset();
+			if (Math.floor(touch.pageY / pageZoom) >= pos.top && Math.floor(touch.pageY / pageZoom) < pos.top + el.outerHeight())
+				selectedItem = i;
 		}
-		else
-		{
-			pos=active.menu.offset();
-			if (Math.floor(touch.pageX / pageZoom)>=pos.left &&
-				Math.floor(touch.pageY / pageZoom)>=pos.top &&
-				Math.floor(touch.pageX / pageZoom)<pos.left+active.menu.outerWidth() &&
-				Math.floor(touch.pageY / pageZoom)<pos.top+active.menu.outerHeight())
-			{
-				for (var i=0;i<active.items.length;i++)
-				{
-					var el=active.items[i].obj;
-					if (!el.hasClass('menuitem') || !active.items[i].enabled)
-						continue;
-					pos=el.offset();
-					if (Math.floor(touch.pageY / pageZoom)>=pos.top &&
-						Math.floor(touch.pageY / pageZoom)<pos.top+el.outerHeight())
-					{
-						selectedItem=i;
-						el.addClass('active');
-					}
-					else
-						el.removeClass('active');
-				}
-			}
-			else
-			{
-				for (var i=0;i<active.items.length;i++)
-					active.items[i].obj.removeClass('active');
-				selectedItem=-1;
-			}
-		}
-	});
-  $(document).bind('touchend', function() {
-		$(document).unbind('touchmove');
-		$(document).unbind('touchend');
+
 		active.menu.remove();
 		activeMenu.removeClass('active');
-		if (selectedItem!=-1)
-		{
-			active.items[selectedItem].obj.removeClass('active');
+		cancelMenu.remove();
+		if (selectedItem != -1)
 			menuSelect(active.items[selectedItem].id);
-		}
 	});
+
+	var selectedItem=-1;
 }
 
 /********************** private functions *********************/
