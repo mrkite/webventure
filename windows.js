@@ -31,8 +31,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 		if (this.hasClose)
 		{
 			var el=this.title.children('div.close');
-      el.bind('touchstart', function() { return false; });
-			el.click(function(){
+			el.bind('touchstart', function() {
 				closeClicked(self);
 				return false;
 			});
@@ -40,8 +39,7 @@ function Win(klass,hasClose,hasZoom,vScroll,hScroll,left,top,width,height)
 		if (this.hasZoom)
 		{
 			var el=this.title.children('div.resize');
-      el.bind('touchstart', function(){ return false; });
-			el.click(function(){
+			el.bind('touchstart', function() {
 				zoomClicked(self);
 				return false;
 			});

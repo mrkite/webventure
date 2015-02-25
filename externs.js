@@ -21,3 +21,6 @@ var fullGameName;
 
 /** @type {string} */
 var helpURL;
+
+/** @type {{plugins:{printer:{print:function(Element, string, Function)}}}} */
+var cordova;

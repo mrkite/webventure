@@ -193,7 +193,7 @@ function doDiploma()
 		{
 			case 1: //print
 				te.obj.blur();
-				window.print();
+				cordova.plugins.printer.print(diplomaWin.win[0], 'Certificate.html', function() {});
 				break;
 			case 2: //quit
 				runMain();

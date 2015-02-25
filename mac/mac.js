@@ -74,7 +74,7 @@ function loadGNRL(data)
 	inventory={};
 	inventory.top=data.r16();
 	inventory.left=data.r16();
-	inventory.height=data.r16();
+	inventory.height=Math.floor(data.r16() * 1.5);
 	inventory.width=data.r16();
 	inventory.stepy=data.r16();
 	inventory.stepx=data.r16();
@@ -118,7 +118,7 @@ function createWindows()
 			commandsWin.add(getCtl(getRes('CNTL',0x81+i)));
 	mainWin=getWindow(getRes('WIND',0x81));
 	mainWin.kind=0xa;
-	textWin=getWindow(getRes('WIND',0x82));
+	textWin=getWindowX(getRes('WIND',0x82));
 	textWin.kind=0xb;
 	textEdit=$(document.createElement('div'));
 	textEdit.addClass('textEdit');

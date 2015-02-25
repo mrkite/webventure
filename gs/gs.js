@@ -57,7 +57,7 @@ function loadGNRL()
 	inventory.top*=2;
 	inventory.left*=2;
 	inventory.width=inventory.right*2-inventory.left;
-	inventory.height=inventory.bottom*2-inventory.top;
+	inventory.height=Math.floor((inventory.bottom*2-inventory.top) * 1.6);
 	inventory.stepy=20;
 	inventory.stepx=20;
 	inventory.num=0;
@@ -79,7 +79,7 @@ function createWindows()
 	loadControls();
 	mainWin=getWindow(0);
 	mainWin.kind=0xa;
-	textWin=getWindow(1);
+	textWin=getWindowX(1);
 	textWin.kind=0xb;
 	textEdit=$(document.createElement('div'));
 	textEdit.addClass('textEdit');
@@ -325,6 +325,18 @@ function objHit(pt,child)
 
 /********************** private functions *********************/
 var hires=false;
+function getWindowX(id)
+{
+	var w=resGetWindow(id);
+	var lt=w.left;
+	var wd=w.right-w.left;
+	if (!hires)
+	{
+		lt*=2;
+		wd*=2;
+	}
+	return gsWindow(w.wFrame,lt,w.top*2,wd,Math.floor((w.bottom-w.top)*3.0));
+}
 function getWindow(id)
 {
 	var w=resGetWindow(id);
